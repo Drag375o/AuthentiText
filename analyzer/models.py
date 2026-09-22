@@ -113,8 +113,11 @@ class Analysis(models.Model):
             return self.title
         if self.filename:
             return self.filename
-        preview = " ".join(self.original_text.split()[:6])
-        return f"{preview}\u2026" if preview else "Untitled analysis"
+        words = self.original_text.split()
+        if not words:
+            return "Untitled analysis"
+        preview = " ".join(words[:6])
+        return f"{preview}\u2026" if len(words) > 6 else preview
 
 
 class SentenceAnalysis(models.Model):

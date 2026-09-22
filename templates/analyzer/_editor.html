@@ -1,0 +1,15 @@
+<div class="bento-card !p-0 overflow-hidden focus-within:border-ink transition-colors">
+  <label for="{{ form.title.id_for_label }}" class="sr-only">Title (optional)</label>
+  {{ form.title }}
+
+  <label for="{{ form.text.id_for_label }}" class="sr-only">Document text</label>
+  {{ form.text }}
+
+  <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-rule bg-fog/60 px-6 py-3">
+    <p class="meta tabular-nums" data-char-count aria-hidden="true">0 / {{ editor_config.maxChars|floatformat:"0g" }} characters</p>
+    <div class="flex items-center gap-5">
+      <p class="meta hidden sm:block"><kbd class="font-label">Ctrl</kbd> + <kbd class="font-label">Enter</kbd> to save</p>
+      <button type="button" class="link-arrow no-underline hover:underline" data-editor-clear>Clear</button>
+    </div>
+  </div>
+</div>

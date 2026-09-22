@@ -66,6 +66,12 @@
     });
   }
 
+  /** After a failed submit, put the cursor in the first field that needs fixing. */
+  function focusFirstInvalidField() {
+    const field = document.querySelector('[aria-invalid="true"]');
+    if (field) field.focus();
+  }
+
   /** Forms with data-confirm ask before submitting (e.g. delete). */
   function initConfirmForms() {
     document.querySelectorAll("form[data-confirm]").forEach((form) => {
@@ -92,5 +98,6 @@
     initHeroCard();
     initConfirmForms();
     initImageFallbacks();
+    focusFirstInvalidField();
   });
 })();

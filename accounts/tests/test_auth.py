@@ -124,3 +124,23 @@ class PasswordResetTests(TestCase):
     def test_bad_token_shows_expired_message(self):
         response = self.client.get(reverse("accounts:password_reset_confirm", args=["MQ", "bad-token"]))
         self.assertContains(response, "This link has expired")
+
+
+class RegistrationErrorSummaryTests(TestCase):
+    def test_password_errors_are_summarised_at_the_top(self):
+        response = self.client.post(reverse("accounts:register"),
+                                    {"username": "ayesha", "password1": "ayesha2024", "password2": "ayesha2024"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data-error-summary")
+        self.assertContains(response, "Check the fields below and try again.")
+        self.assertContains(response, 'href="#id_password2"')
+
+
+class AccountsRootTests(TestCase):
+    def test_root_redirects_to_login_when_signed_out(self):
+        self.assertRedirects(self.client.get("/accounts/"), reverse("accounts:login"))
+
+    def test_root_redirects_to_dashboard_when_signed_in(self):
+        User.objects.create_user("ayesha", password=PASSWORD)
+        self.client.login(username="ayesha", password=PASSWORD)
+        self.assertRedirects(self.client.get("/accounts/"), reverse("analyzer:dashboard"))

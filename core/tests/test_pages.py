@@ -16,7 +16,7 @@ class LandingPageTests(TestCase):
         self.assertContains(self.response, "Welcome to")
         self.assertContains(self.response, "AuthentiText.")
         self.assertContains(self.response, "Does your writing sound like AI?")
-        self.assertContains(self.response, reverse("core:analyze"))
+        self.assertContains(self.response, reverse("analyzer:analyze"))
         self.assertContains(self.response, 'href="#how-it-works"')
 
     def test_hero_field_is_decorative_and_wired(self):
@@ -54,7 +54,7 @@ class SecondaryPageTests(TestCase):
         self.assertEqual(self.client.get(reverse("core:about")).status_code, 200)
 
     def test_unbuilt_routes_are_honest(self):
-        for name in ["analyze", "compare", "profile"]:
+        for name in ["compare", "profile"]:
             response = self.client.get(reverse(f"core:{name}"))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "isn't built yet")

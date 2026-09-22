@@ -7,6 +7,13 @@ from django.views.generic import CreateView
 from .forms import LoginForm, NewPasswordForm, RegisterForm, ResetRequestForm
 
 
+def accounts_home(request):
+    """/accounts/ has no page of its own: send people where they most likely meant to go."""
+    if request.user.is_authenticated:
+        return redirect("analyzer:dashboard")
+    return redirect("accounts:login")
+
+
 class SignInView(auth_views.LoginView):
     template_name = "auth/login.html"
     authentication_form = LoginForm

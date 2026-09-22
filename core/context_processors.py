@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import HttpRequest
 
 PRIMARY_NAV = [
-    {"label": "Analyze", "url_name": "core:analyze"},
+    {"label": "Analyze", "url_name": "analyzer:analyze"},
     {"label": "Compare", "url_name": "core:compare"},
     {"label": "Profile", "url_name": "core:profile"},
     {"label": "About", "url_name": "core:about"},

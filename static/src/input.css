@@ -52,6 +52,11 @@
   .field-error { @apply text-[0.95rem] text-signal-high space-y-1; }
   .field-help { @apply text-[0.9rem] text-muted leading-snug [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1; }
 
+  /* Editor */
+  .editor-title { @apply block w-full border-0 border-b border-rule bg-transparent px-6 py-5 font-display text-2xl font-semibold tracking-[-0.01em] text-ink placeholder:text-muted/70 focus:outline-none focus:ring-0; }
+  .editor-textarea { @apply block w-full resize-y border-0 bg-transparent px-6 py-6 font-serif text-[1.15rem] leading-[1.85] text-ink placeholder:italic placeholder:text-muted focus:outline-none focus:ring-0 min-h-[26rem] max-h-[70vh]; field-sizing: content; }
+  .editor-over-limit { @apply text-signal-high; }
+
   .metric { @apply font-display font-extrabold text-5xl text-ink tabular-nums leading-none; }
   .meta { @apply font-label text-[0.72rem] tracking-[0.05em] text-muted; }
 

@@ -30,7 +30,8 @@ class AnalysisModelTests(TestCase):
     def test_display_name_fallbacks(self):
         self.assertEqual(make_analysis(self.user, title="Essay").display_name, "Essay")
         self.assertEqual(make_analysis(self.user, filename="draft.docx").display_name, "draft.docx")
-        self.assertTrue(make_analysis(self.user, text="one two three four five six seven").display_name.endswith("\u2026"))
+        self.assertEqual(make_analysis(self.user, text="one two three four five six seven").display_name, "one two three four five six\u2026")
+        self.assertEqual(make_analysis(self.user, text="just four short words").display_name, "just four short words")
 
     def test_probabilities_are_constrained_to_unit_interval(self):
         for field in ("ai_probability", "confidence", "uncertainty"):

@@ -6,6 +6,7 @@ from . import views
 app_name = "accounts"
 
 urlpatterns = [
+    path("", views.accounts_home, name="home"),  # /accounts/ -> dashboard or login
     path("login/", views.SignInView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),  # POST only (Django 5)
     path("register/", views.RegisterView.as_view(), name="register"),

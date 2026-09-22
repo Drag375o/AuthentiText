@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Analyze · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section pt-12 lg:pt-16">
+  <div class="page">
+    <h1 class="h-section">Analyze your writing.</h1>
+    <p class="lede mt-5">Paste or write your text. Around {{ editor_config.minWords }} words or more gives the analysis enough to work with.</p>
+
+    <form method="post" class="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] items-start" novalidate data-editor-form>
+      {% csrf_token %}
+
+      <div class="min-w-0 space-y-4">
+        {% if form.non_field_errors or form.text.errors or form.title.errors %}
+          <div class="rounded-md border border-signal-high/40 bg-signal-high-bg px-4 py-3 field-error" role="alert">
+            {% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}
+            {% for e in form.title.errors %}<p>Title: {{ e }}</p>{% endfor %}
+            {% for e in form.text.errors %}<p>{{ e }}</p>{% endfor %}
+          </div>
+        {% endif %}
+        {% include "analyzer/_editor.html" %}
+      </div>
+
+      {% include "analyzer/_editor_panel.html" %}
+    </form>
+  </div>
+</section>
+{{ editor_config|json_script:"editor-config" }}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/text-stats.js' %}" defer></script>
+  <script src="{% static 'js/analyzer.js' %}" defer></script>
+{% endblock %}

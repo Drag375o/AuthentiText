@@ -1,0 +1,26 @@
+<aside class="space-y-4 lg:sticky lg:top-24" aria-label="Document statistics">
+  <div class="bento-card !p-6">
+    <p class="meta">Words</p>
+    <p class="metric mt-2" data-stat="words">0</p>
+    <dl class="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-rule pt-5">
+      <div><dt class="meta">Sentences</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1" data-stat="sentences">0</dd></div>
+      <div><dt class="meta">Paragraphs</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1" data-stat="paragraphs">0</dd></div>
+      <div><dt class="meta">Characters</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1" data-stat="characters">0</dd></div>
+      <div><dt class="meta">Reading time</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1" data-stat="reading">0 min</dd></div>
+    </dl>
+  </div>
+
+  <div class="bento-card bento-card--fog !p-6">
+    <p class="meta">Enough text for analysis?</p>
+    <div class="meter mt-4" role="progressbar" aria-label="Words toward a reliable analysis"
+         aria-valuemin="0" aria-valuemax="{{ editor_config.minWords }}" aria-valuenow="0" data-evidence-meter>
+      <span style="transform: scaleX(0)"></span>
+    </div>
+    <p class="mt-3 text-[0.98rem] text-graphite" data-evidence-text>Add at least {{ editor_config.minWords }} words for a reliable result.</p>
+  </div>
+
+  <button type="submit" class="btn-primary w-full" data-editor-submit>Save document</button>
+  <p class="meta leading-relaxed">Counts are quick estimates. The full analysis uses proper sentence segmentation.</p>
+
+  <p class="sr-only" role="status" aria-live="polite" data-stats-announce></p>
+</aside>

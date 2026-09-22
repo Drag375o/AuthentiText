@@ -16,7 +16,7 @@
       {% else %}
         <a href="{% url 'accounts:login' %}" class="label hover:text-muted">Login</a>
       {% endif %}
-      <a href="{% url 'core:analyze' %}" class="btn-primary !py-3">Analyze writing</a>
+      <a href="{% url 'analyzer:analyze' %}" class="btn-primary !py-3">Analyze writing</a>
     </div>
 
     <button type="button" class="md:hidden p-2 -mr-2" aria-controls="mobile-menu" aria-expanded="false" data-menu-toggle>
@@ -36,7 +36,7 @@
       {% else %}
         <li><a href="{% url 'accounts:login' %}" class="label text-base">Login</a></li>
       {% endif %}
-      <li class="pt-2"><a href="{% url 'core:analyze' %}" class="btn-primary w-full">Analyze writing</a></li>
+      <li class="pt-2"><a href="{% url 'analyzer:analyze' %}" class="btn-primary w-full">Analyze writing</a></li>
     </ul>
   </div>
 </header>

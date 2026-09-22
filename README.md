@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 2 of the build.** Done so far: the Django foundation, design system, landing page, accounts, and the database models for analyses. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 3 of the build.** Done so far: the Django foundation, design system, landing page, accounts, database models, and the text editor. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -51,8 +51,11 @@ The hero has no photo. Behind the headline and the sample card is a faint field 
 ## Tests
 
 ```bash
-python manage.py test
+python manage.py test     # Python: models, views, permissions, text statistics
+npm run test:js           # JavaScript: the editor's counting rules
 ```
+
+The editor counts words, sentences and paragraphs in the browser (`static/js/text-stats.js`) and on the server (`analyzer/services/text_stats.py`). Both run against the same cases in `analyzer/tests/fixtures/text_stats_cases.json`, so the live counts always match what's saved. Add a case there whenever you change a counting rule.
 
 ## Design system
 
@@ -76,17 +79,25 @@ Signal strength is always shown three ways: underline style (dotted, dashed, sol
 - **Probabilities** are nullable and constrained to 0–1 in the database. "Insufficient evidence" is stored as no probability, never as a guessed number.
 - **Isolation:** views look analyses up only through `Analysis.objects.for_user(request.user)`. Another user's analysis returns 404, so its existence isn't revealed. Primary keys are UUIDs, so URLs can't be guessed by counting.
 
+## Analyze page
+
+`/analyze/` (signed in) is the editor. It shows live words, sentences, paragraphs, characters and reading time (238 words per minute), plus a gauge toward `ANALYSIS_MIN_WORDS` (150 by default). Below that, results will be reported as "Insufficient evidence". Texts over `ANALYSIS_MAX_CHARS` (100,000) are rejected on both the browser and the server. The original text is saved exactly as written, including leading and trailing spaces. Ctrl+Enter saves, and the page warns before you leave with unsaved text.
+
+The counts are rule-based estimates. Phase 4 replaces sentence segmentation with spaCy.
+
 ## Project layout
 
 ```
 config/            settings (env-driven, PostgreSQL-ready), urls
 core/              landing, about, placeholder routes, context processor
 accounts/          register, login, logout, styled forms
-analyzer/          models, dashboard, analysis page, delete, admin
+analyzer/          models, editor, dashboard, analysis page, delete, admin, services/
 templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
 static/css/        compiled CSS (built by npm run build:css)
-static/js/         app.js (site), hero-field.js (hero), heatmap.js (sentence viewer)
+static/js/         app.js (site), hero-field.js (hero), heatmap.js (sentence viewer),
+                   text-stats.js + analyzer.js (editor)
+tests/js/          Node tests for the browser code
 ```
 
 ## Roadmap

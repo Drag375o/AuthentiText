@@ -110,6 +110,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Analysis limits
+ANALYSIS_MAX_CHARS = int(os.getenv("ANALYSIS_MAX_CHARS", "100000"))
+# Below this many words, results are reported as "Insufficient evidence".
+ANALYSIS_MIN_WORDS = int(os.getenv("ANALYSIS_MIN_WORDS", "150"))
+
 # Upload limits (enforced again in the upload validator in the next phase).
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
