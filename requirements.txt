@@ -1,4 +1,6 @@
 Django>=5.1,<6.0
 python-dotenv>=1.0
+PyMuPDF>=1.24         # PDF text extraction (AGPL-3.0 licence)
+python-docx>=1.1      # DOCX text extraction
 # Added in later phases, only when used:
-# spacy, scikit-learn, textstat, sentence-transformers, PyMuPDF, python-docx
+# spacy, scikit-learn, textstat, sentence-transformers

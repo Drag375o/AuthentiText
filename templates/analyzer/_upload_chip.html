@@ -1,0 +1,10 @@
+{# Shows which file the editor text came from. Filled by the server (no-JS) or upload.js. #}
+<div class="upload-chip{% if not upload %} hidden{% endif %}" data-upload-chip>
+  <svg viewBox="0 0 24 24" class="w-5 h-5 shrink-0 text-ink mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/></svg>
+  <div class="min-w-0 flex-1">
+    <p class="text-ink break-all" data-chip-name>{{ upload.f }}</p>
+    <p class="meta mt-1" data-chip-meta>{% if upload %}{{ upload.k|upper }}{% if upload.pages %}, {{ upload.pages }} page{{ upload.pages|pluralize }}{% endif %}. Review the text, then save.{% endif %}</p>
+    <ul class="meta mt-1 space-y-0.5" data-chip-notes>{% for note in upload.notes %}<li>{{ note }}</li>{% endfor %}</ul>
+  </div>
+  <button type="button" class="link-arrow no-underline hover:underline shrink-0 hidden" data-upload-remove>Remove</button>
+</div>

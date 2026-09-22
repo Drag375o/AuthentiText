@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 3 of the build.** Done so far: the Django foundation, design system, landing page, accounts, database models, and the text editor. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 3 of the build (complete).** Done so far: the Django foundation, design system, landing page, accounts, database models, the text editor, and file upload. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -85,6 +85,19 @@ Signal strength is always shown three ways: underline style (dotted, dashed, sol
 
 The counts are rule-based estimates. Phase 4 replaces sentence segmentation with spaCy.
 
+## File upload
+
+The **Upload a file** tab on `/analyze/` accepts TXT, PDF and DOCX by drag-and-drop or file picker, up to `MAX_UPLOAD_SIZE_MB` (5 MB). The extracted text opens in the editor for review before saving. The uploaded file itself is never stored, only its text.
+
+- **Validation** (`analyzer/services/uploads.py`) uses the file's own bytes, not its name or the browser's claimed type. A PDF must start with `%PDF-`; a DOCX must be a zip that declares itself a Word document. Filenames are reduced to their last path component and stripped of control characters. DOCX archives are checked for zip bombs and macros before opening.
+- **Extraction** (`analyzer/services/parser.py`): PDFs keep their paragraphs (lines within a block are joined, and hyphenated words rejoined). DOCX body paragraphs are kept; tables, headers and footers are skipped and reported. TXT is read as UTF-8, UTF-16 with a byte-order mark, or Windows-1252.
+- **Clear refusals** for password-protected PDFs, scans with no selectable text (OCR isn't supported), `.doc` and macro-enabled files, and files over the page or length limits.
+- **Honest progress:** the bar shows real bytes sent, then "Extracting text…" while the server works.
+- **Signed upload token:** the server signs the filename and binds it to your account, so the saved document's "uploaded file" label and filename can't be forged. Tokens expire after 6 hours.
+- **Works without JavaScript:** the upload form submits normally and returns the pre-filled editor.
+
+PyMuPDF is licensed under AGPL-3.0, which suits an open-source portfolio project. For closed-source use, swap in `pypdf` inside `extract_pdf`.
+
 ## Managing documents
 
 - **Rename:** on a document's page, click **Rename** next to the title. Enter saves, Esc cancels, and the page updates without reloading (`static/js/rename.js`). An empty name falls back to the first words of the text. Without JavaScript, the same form submits normally.
@@ -103,7 +116,7 @@ templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
 static/css/        compiled CSS (built by npm run build:css)
 static/js/         app.js (site), hero-field.js (hero), heatmap.js (sentence viewer),
-                   text-stats.js + analyzer.js (editor), confirm-dialog.js, rename.js
+                   text-stats.js + analyzer.js (editor), upload.js, confirm-dialog.js, rename.js
 tests/js/          Node tests for the browser code
 ```
 
@@ -111,7 +124,7 @@ tests/js/          Node tests for the browser code
 
 1. Foundation, design system, landing page (done)
 2. Authentication and user-scoped models (done)
-3. Document ingestion (TXT/PDF/DOCX, validated uploads)
+3. Document ingestion: editor and validated TXT/PDF/DOCX uploads (done)
 4. NLP pipeline: preprocessing, lexical, syntactic, statistical, semantic, stylometric
 5. Detector interface with a clearly labelled demo mode, then a trained baseline
 6. Explainability, results dashboard, sentence heatmap

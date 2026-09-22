@@ -69,6 +69,7 @@ class CompiledCssTests(TestCase):
         from pathlib import Path
         from django.conf import settings
         css = (Path(settings.BASE_DIR) / "static" / "css" / "styles.css").read_text()
-        for cls in [".field-input", ".sig-low", ".sig-mid", ".sig-high", ".hero-card"]:
+        self.assertIn("display:none!important", css.replace(" ", ""))  # [hidden] beats component styles
+        for cls in [".field-input", ".sig-low", ".sig-mid", ".sig-high", ".hero-card", ".dropzone", ".btn-danger"]:
             with self.subTest(cls=cls):
                 self.assertIn(cls + "{", css.replace(" {", "{"))

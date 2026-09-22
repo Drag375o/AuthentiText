@@ -5,12 +5,18 @@
 <section class="section pt-12 lg:pt-16">
   <div class="page">
     <h1 class="h-section">Analyze your writing.</h1>
-    <p class="lede mt-5">Paste or write your text. Around {{ editor_config.minWords }} words or more gives the analysis enough to work with.</p>
+    <p class="lede mt-5">Paste your text or upload a file. Around {{ editor_config.minWords }} words or more gives the analysis enough to work with.</p>
 
-    <form method="post" class="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] items-start" novalidate data-editor-form>
+    {# The upload form lives outside the editor form; its fields join it via form="upload-form". #}
+    <form id="upload-form" method="post" action="{% url 'analyzer:extract' %}" enctype="multipart/form-data" hidden>{% csrf_token %}</form>
+
+    <form method="post" action="{% url 'analyzer:analyze' %}" class="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] items-start" novalidate data-editor-form>
       {% csrf_token %}
+      {{ form.upload_token }}
 
-      <div class="min-w-0 space-y-4">
+      <div class="min-w-0 space-y-4" data-input-modes>
+        {% include "analyzer/_input_tabs.html" %}
+
         {% if form.non_field_errors or form.text.errors or form.title.errors %}
           <div class="rounded-md border border-signal-high/40 bg-signal-high-bg px-4 py-3 field-error" role="alert">
             {% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}
@@ -18,7 +24,14 @@
             {% for e in form.text.errors %}<p>{{ e }}</p>{% endfor %}
           </div>
         {% endif %}
-        {% include "analyzer/_editor.html" %}
+
+        <div id="panel-upload" role="tabpanel" aria-labelledby="tab-upload" data-panel="upload">
+          {% include "analyzer/_upload_panel.html" %}
+        </div>
+        <div id="panel-write" role="tabpanel" aria-labelledby="tab-write" data-panel="write" class="space-y-4">
+          {% include "analyzer/_upload_chip.html" %}
+          {% include "analyzer/_editor.html" %}
+        </div>
       </div>
 
       {% include "analyzer/_editor_panel.html" %}
@@ -30,4 +43,5 @@
 {% block scripts %}
   <script src="{% static 'js/text-stats.js' %}" defer></script>
   <script src="{% static 'js/analyzer.js' %}" defer></script>
+  <script src="{% static 'js/upload.js' %}" defer></script>
 {% endblock %}

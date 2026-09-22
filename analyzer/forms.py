@@ -4,7 +4,9 @@ from django.conf import settings
 from .services.text_stats import normalize_newlines
 
 
-class PasteTextForm(forms.Form):
+class DocumentForm(forms.Form):
+    """The editor form. Text arrives pasted or typed, or pre-filled from an uploaded file."""
+
     title = forms.CharField(
         max_length=200,
         required=False,
@@ -25,6 +27,8 @@ class PasteTextForm(forms.Form):
         }),
         error_messages={"required": "Add some text to analyze first."},
     )
+    # Signed by the extract view; proves the text came from an upload (see views.upload_token).
+    upload_token = forms.CharField(required=False, widget=forms.HiddenInput)
 
     def clean_title(self) -> str:
         return self.cleaned_data["title"].strip()
@@ -54,3 +58,10 @@ class RenameForm(forms.Form):
     def clean_title(self) -> str:
         # Collapse runs of whitespace; an empty name falls back to the first words of the text.
         return " ".join(self.cleaned_data["title"].split())
+
+
+class UploadForm(forms.Form):
+    file = forms.FileField(
+        error_messages={"required": "Choose a file to upload."},
+        widget=forms.ClearableFileInput(attrs={"accept": ".txt,.pdf,.docx,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"}),
+    )

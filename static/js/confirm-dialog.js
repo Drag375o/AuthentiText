@@ -108,6 +108,7 @@
       el.message.textContent = message;
       el.okLabel.textContent = confirmLabel;
       dialog.dataset.tone = tone;
+      el.ok.className = `${tone === "danger" ? "btn-danger" : "btn-primary"} !py-3`;
       if (busyLabel) dialog.dataset.busyLabel = busyLabel;
       else delete dialog.dataset.busyLabel;
       reset();

@@ -115,10 +115,14 @@ ANALYSIS_MAX_CHARS = int(os.getenv("ANALYSIS_MAX_CHARS", "100000"))
 # Below this many words, results are reported as "Insufficient evidence".
 ANALYSIS_MIN_WORDS = int(os.getenv("ANALYSIS_MIN_WORDS", "150"))
 
-# Upload limits (enforced again in the upload validator in the next phase).
+# Upload limits (analyzer/services/uploads.py and parser.py)
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
+PDF_MAX_PAGES = int(os.getenv("PDF_MAX_PAGES", "300"))
+DOCX_MAX_UNCOMPRESSED_MB = 50   # zip-bomb guard
+DOCX_MAX_ENTRIES = 1000
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
+UPLOAD_TOKEN_MAX_AGE = 60 * 60 * 6  # an extracted file must be saved within 6 hours
 
 # Email: printed to the terminal in development. Set EMAIL_BACKEND and the
 # EMAIL_* variables in .env to send real mail (e.g. SMTP) in production.

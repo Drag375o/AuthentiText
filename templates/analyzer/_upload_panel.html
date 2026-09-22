@@ -1,0 +1,21 @@
+<div class="dropzone" data-dropzone>
+  <svg viewBox="0 0 48 48" class="w-12 h-12 text-ink" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M14 6h14l10 10v24a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M28 6v10h10"/><path d="M24 34V22m-5 5 5-5 5 5"/>
+  </svg>
+  <p class="mt-6 font-display font-semibold text-xl text-ink">Drop a TXT, PDF or DOCX file here</p>
+  <p class="mt-2 text-graphite">or</p>
+
+  <label class="btn-ghost mt-3 cursor-pointer has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-ink">
+    Choose a file
+    <input type="file" name="file" form="upload-form" class="sr-only" accept="{{ upload_form.file.field.widget.attrs.accept }}" data-file-input>
+  </label>
+  <button type="submit" form="upload-form" class="btn-primary mt-4" data-no-js-extract>Extract text</button>
+
+  <p class="meta mt-6">Up to {{ editor_config.maxUploadMb }} MB. The file itself isn't stored, only its text.</p>
+
+  <div class="mt-6 w-full max-w-sm hidden" data-upload-status aria-live="polite">
+    <div class="meter"><span class="!bg-ink" style="transform: scaleX(0)" data-upload-bar></span></div>
+    <p class="meta mt-3" data-upload-status-text>Uploading…</p>
+  </div>
+  <p class="field-error mt-6 max-w-md hidden" role="alert" data-upload-error></p>
+</div>
