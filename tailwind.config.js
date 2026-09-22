@@ -1,8 +1,8 @@
 /** AuthentiText design tokens. Change colours/fonts here, not in templates. */
 module.exports = {
-  content: ["./templates/**/*.html", "./**/templates/**/*.html", "./static/js/**/*.js", "./core/**/*.py"],
+  content: ["./templates/**/*.html", "./**/templates/**/*.html", "./static/js/**/*.js", "./core/**/*.py", "./accounts/**/*.py", "./analyzer/**/*.py"],
   // Built dynamically in templates (sig-{{ level }}), so the scanner can't see them.
-  safelist: ["sig-low", "sig-mid", "sig-high"],
+  safelist: ["sig-low", "sig-mid", "sig-high", "field-input", "field-checkbox"],
   theme: {
     extend: {
       colors: {
@@ -32,7 +32,9 @@ module.exports = {
       fontSize: {
         // Modular scale (~1.25) with editorial display sizes
         "display-xl": ["clamp(2.5rem, 4.4vw, 4.5rem)", { lineHeight: "0.95", letterSpacing: "-0.035em" }],
-        "display-brand": ["clamp(3.4rem, 5.6vw, 5.25rem)", { lineHeight: "1.05" }],
+        // Hero: thin "Welcome to" over a heavy "AuthentiText." (same face as section headings)
+        "hero-thin": ["clamp(2rem, 3.6vw, 3.25rem)", { lineHeight: "1.05", letterSpacing: "-0.03em" }],
+        "hero-bold": ["clamp(2.35rem, 4.9vw, 4.4rem)", { lineHeight: "1", letterSpacing: "-0.035em" }],
         "display-lg": ["clamp(2.5rem, 5vw, 4rem)", { lineHeight: "1.02", letterSpacing: "-0.03em" }],
         "display-md": ["clamp(1.75rem, 3vw, 2.5rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
       },

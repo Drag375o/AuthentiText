@@ -1,0 +1,7 @@
+{% if messages %}
+  <div class="mt-6 space-y-2" role="status" aria-live="polite">
+    {% for message in messages %}
+      <p class="rounded-md border border-rule bg-fog px-4 py-3 text-[0.95rem] text-ink">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}

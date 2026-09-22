@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ analysis.display_name }} · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section pt-14">
+  <div class="page">
+    <a href="{% url 'analyzer:dashboard' %}" class="link-arrow">&larr; Dashboard</a>
+    <h1 class="font-display font-bold text-display-md mt-6 break-words">{{ analysis.display_name }}</h1>
+    <p class="meta mt-3">{{ analysis.get_source_type_display }}, {{ analysis.created_at|date:"j M Y, H:i" }}</p>
+
+    <div class="bento mt-10">
+      <article class="bento-card"><p class="meta">Words</p><p class="metric mt-auto pt-6">{{ analysis.word_count }}</p></article>
+      <article class="bento-card"><p class="meta">Sentences</p><p class="metric mt-auto pt-6">{{ analysis.sentence_count }}</p></article>
+      <article class="bento-card"><p class="meta">Paragraphs</p><p class="metric mt-auto pt-6">{{ analysis.paragraph_count }}</p></article>
+      <article class="bento-card bento-card--fog">
+        <p class="meta">Result</p>
+        <p class="h-card mt-auto pt-6">{% if analysis.result_label %}{{ analysis.get_result_label_display }}{% else %}Not analyzed yet{% endif %}</p>
+      </article>
+
+      <article class="bento-card span-full">
+        <h2 class="label">Original text</h2>
+        <div class="mt-5 max-w-prose whitespace-pre-line text-ink max-h-[28rem] overflow-y-auto pr-2">{{ analysis.original_text }}</div>
+      </article>
+    </div>
+
+    <p class="meta mt-8">Sentence-level results, signals and explanations appear here once the analysis pipeline is built.</p>
+
+    <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-10" data-confirm="Delete this analysis? This can't be undone.">
+      {% csrf_token %}
+      <button type="submit" class="btn-ghost !border-signal-high !text-signal-high hover:!bg-signal-high hover:!text-paper">Delete analysis</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

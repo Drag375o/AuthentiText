@@ -45,6 +45,13 @@
   .span-wide { @apply md:col-span-3; }
   .span-full { @apply md:col-span-4; }
 
+  /* Forms: white fields with a hairline border, dark focus ring */
+  .field-input { @apply block w-full rounded-md border border-rule bg-paper px-3.5 py-3 font-serif text-[1.05rem] text-ink shadow-card transition-[border-color,box-shadow] placeholder:text-muted hover:border-muted focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink; }
+  .field-input[aria-invalid="true"] { @apply border-signal-high focus:ring-signal-high; }
+  .field-checkbox { @apply h-4 w-4 shrink-0 rounded-[3px] border-rule accent-ink cursor-pointer; }
+  .field-error { @apply text-[0.95rem] text-signal-high space-y-1; }
+  .field-help { @apply text-[0.9rem] text-muted leading-snug [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1; }
+
   .metric { @apply font-display font-extrabold text-5xl text-ink tabular-nums leading-none; }
   .meta { @apply font-label text-[0.72rem] tracking-[0.05em] text-muted; }
 

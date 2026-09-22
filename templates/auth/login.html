@@ -1,0 +1,31 @@
+{% extends "auth/_layout.html" %}
+{% block title %}Log in · {{ SITE_NAME }}{% endblock %}
+{% block auth_heading %}Log in{% endblock %}
+{% block auth_lede %}Welcome back. Enter your details below.{% endblock %}
+
+{% block auth_body %}
+<form method="post" class="space-y-5" novalidate>
+  {% csrf_token %}
+  {% include "auth/_form_errors.html" %}
+
+  {% include "components/form_field.html" with field=form.username %}
+
+  <div class="space-y-2">
+    <div class="flex items-baseline justify-between gap-4">
+      <label for="{{ form.password.id_for_label }}" class="label">{{ form.password.label }}</label>
+      <a href="{% url 'accounts:password_reset' %}" class="text-[0.92rem] text-muted underline-offset-4 hover:text-ink hover:underline">Forgot password?</a>
+    </div>
+    {{ form.password }}
+    {% if form.password.errors %}<ul class="field-error" role="alert">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+
+  <label class="flex items-center gap-3 text-[0.98rem] text-graphite cursor-pointer select-none">
+    {{ form.remember }} {{ form.remember.label }}
+  </label>
+
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <button type="submit" class="btn-primary w-full">Log in</button>
+</form>
+{% endblock %}
+
+{% block switch %}Don't have an account? <a href="{% url 'accounts:register' %}" class="text-ink underline underline-offset-4">Create one</a>{% endblock %}

@@ -11,9 +11,10 @@
 
     <div class="hidden md:flex items-center gap-6">
       {% if user.is_authenticated %}
-        <span class="meta">{{ user.get_username }}</span>
+        <a href="{% url 'analyzer:dashboard' %}" class="label hover:text-muted">Dashboard</a>
+        {% include "components/logout_button.html" %}
       {% else %}
-        <a href="{% url 'core:login' %}" class="label hover:text-muted">Login</a>
+        <a href="{% url 'accounts:login' %}" class="label hover:text-muted">Login</a>
       {% endif %}
       <a href="{% url 'core:analyze' %}" class="btn-primary !py-3">Analyze writing</a>
     </div>
@@ -29,7 +30,12 @@
       {% for item in PRIMARY_NAV %}
         <li><a href="{% url item.url_name %}" class="label text-base">{{ item.label }}</a></li>
       {% endfor %}
-      <li><a href="{% url 'core:login' %}" class="label text-base">Login</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'analyzer:dashboard' %}" class="label text-base">Dashboard</a></li>
+        <li>{% include "components/logout_button.html" with classes="label text-base" %}</li>
+      {% else %}
+        <li><a href="{% url 'accounts:login' %}" class="label text-base">Login</a></li>
+      {% endif %}
       <li class="pt-2"><a href="{% url 'core:analyze' %}" class="btn-primary w-full">Analyze writing</a></li>
     </ul>
   </div>

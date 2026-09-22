@@ -56,6 +56,25 @@
     bars.forEach((bar) => observer.observe(bar));
   }
 
+  /** Images marked data-hide-on-error disappear if the file is missing,
+   *  leaving their container's background instead of a broken icon. */
+  function initImageFallbacks() {
+    document.querySelectorAll("img[data-hide-on-error]").forEach((img) => {
+      const hide = () => img.remove();
+      if (img.complete && img.naturalWidth === 0) hide();
+      else img.addEventListener("error", hide, { once: true });
+    });
+  }
+
+  /** Forms with data-confirm ask before submitting (e.g. delete). */
+  function initConfirmForms() {
+    document.querySelectorAll("form[data-confirm]").forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+      });
+    });
+  }
+
   /** The page's single orchestrated moment: the hero card rises, then marks
    *  itself up. Waits for fonts so the card doesn't shift mid-animation. */
   function initHeroCard() {
@@ -71,5 +90,7 @@
     initStickyNav();
     initMeters();
     initHeroCard();
+    initConfirmForms();
+    initImageFallbacks();
   });
 })();

@@ -1,0 +1,30 @@
+<article class="bento-card span-full !p-0 overflow-hidden">
+  <h2 class="label px-7 pt-6 pb-4">Recent analyses</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead>
+        <tr class="meta border-y border-rule">
+          <th scope="col" class="px-7 py-3 font-normal">Document</th>
+          <th scope="col" class="px-4 py-3 font-normal">Date</th>
+          <th scope="col" class="px-4 py-3 font-normal text-right">Words</th>
+          <th scope="col" class="px-4 py-3 font-normal">Signal</th>
+          <th scope="col" class="px-7 py-3 font-normal">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for analysis in recent %}
+          <tr class="border-b border-rule last:border-0 hover:bg-fog transition-colors">
+            <td class="px-7 py-4"><a href="{% url 'analyzer:detail' analysis.id %}" class="text-ink hover:underline underline-offset-4">{{ analysis.display_name }}</a></td>
+            <td class="px-4 py-4 whitespace-nowrap">{{ analysis.created_at|date:"j M Y" }}</td>
+            <td class="px-4 py-4 text-right tabular-nums">{{ analysis.word_count }}</td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              {% if analysis.result_label %}{{ analysis.get_result_label_display }}{% if analysis.ai_probability is not None %} <span class="meta">({{ analysis.ai_probability|floatformat:2 }})</span>{% endif %}{% else %}<span class="text-muted">Not analyzed</span>{% endif %}
+              {% if analysis.is_demo %}<span class="meta ml-1 border border-rule rounded px-1.5 py-0.5">Demo</span>{% endif %}
+            </td>
+            <td class="px-7 py-4">{{ analysis.get_status_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</article>

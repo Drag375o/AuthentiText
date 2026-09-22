@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section pt-14">
+  <div class="page">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="font-script text-2xl text-slate">Hello, {{ user.get_username }}</p>
+        <h1 class="h-section mt-2">Your dashboard.</h1>
+      </div>
+      <a href="{% url 'core:analyze' %}" class="btn-primary">Analyze writing</a>
+    </div>
+
+    {% if total == 0 %}
+      {% include "analyzer/_empty_dashboard.html" %}
+    {% else %}
+      <div class="bento mt-12">
+        <article class="bento-card">
+          <p class="meta">Documents analyzed</p>
+          <p class="metric mt-auto pt-8">{{ total }}</p>
+        </article>
+        <article class="bento-card">
+          <p class="meta">Average length</p>
+          <p class="metric mt-auto pt-8">{{ average_words|floatformat:0 }}</p>
+          <p class="meta mt-2">words</p>
+        </article>
+        <a href="{% url 'analyzer:detail' latest.id %}" class="bento-card bento-card--fog bento-card--interactive span-2x1 group">
+          <p class="meta">Latest analysis</p>
+          <p class="h-card mt-auto pt-8 group-hover:underline underline-offset-4">{{ latest.display_name }}</p>
+          <p class="meta mt-2">{{ latest.created_at|date:"j M Y" }}, {{ latest.word_count }} words</p>
+        </a>
+        {% include "analyzer/_history_table.html" %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

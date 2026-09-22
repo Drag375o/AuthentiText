@@ -1,0 +1,15 @@
+{% extends "auth/_layout.html" %}
+{% block title %}Create account · {{ SITE_NAME }}{% endblock %}
+{% block auth_heading %}Create your account{% endblock %}
+{% block auth_lede %}Your analyses stay private. Only you can see the documents you analyze.{% endblock %}
+
+{% block auth_body %}
+<form method="post" class="space-y-5" novalidate>
+  {% csrf_token %}
+  {% include "auth/_form_errors.html" %}
+  {% for field in form.visible_fields %}{% include "components/form_field.html" %}{% endfor %}
+  <button type="submit" class="btn-primary w-full">Create account</button>
+</form>
+{% endblock %}
+
+{% block switch %}Already have an account? <a href="{% url 'accounts:login' %}" class="text-ink underline underline-offset-4">Log in</a>{% endblock %}

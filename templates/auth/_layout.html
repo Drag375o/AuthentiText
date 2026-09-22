@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %}
+  Split sign-in layout used by every account page (login, register, password reset).
+  Left: photo panel from static/images/hero.webp (min 1200x1600, portrait).
+  Right: the form column. Child templates fill the blocks below.
+  The site nav and footer are hidden here, as is standard for account pages.
+{% endcomment %}
+{% block navigation %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block messages %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-fog p-3 sm:p-5 lg:p-6 flex">
+  <div class="flex-1 grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-3 rounded-[1.75rem] border border-rule bg-paper p-3 shadow-card">
+
+    <aside class="relative hidden lg:flex flex-col justify-between overflow-hidden rounded-[1.25rem] bg-ink p-10 xl:p-12 min-h-[40rem]" aria-label="{{ SITE_NAME }}">
+      <img src="{% static 'images/hero.webp' %}" alt="" width="1600" height="2000"
+           class="absolute inset-0 h-full w-full object-cover" decoding="async" data-hide-on-error>
+      <!-- Scrim keeps the wordmark and heading readable on any photo. -->
+      <div class="absolute inset-0 bg-gradient-to-b from-ink/40 via-transparent to-ink/80" aria-hidden="true"></div>
+
+      <a href="{% url 'core:landing' %}" class="relative wordmark text-[2rem] !text-paper" aria-label="{{ SITE_NAME }} home">AuthentiText</a>
+
+      <div class="relative max-w-sm">
+        <p class="font-display font-bold text-[2rem] leading-[1.15] tracking-[-0.02em] text-paper">Analyze the signals behind your writing.</p>
+        <p class="mt-4 text-paper/80">Linguistic, statistical and stylistic analysis, with every result explained.</p>
+      </div>
+    </aside>
+
+    <section class="flex flex-col px-5 py-8 sm:px-10">
+      <a href="{% url 'core:landing' %}" class="wordmark text-[1.9rem] lg:hidden" aria-label="{{ SITE_NAME }} home">AuthentiText</a>
+
+      <div class="my-auto mx-auto w-full max-w-[24rem] py-10">
+        <h1 class="font-display font-bold text-[2rem] leading-tight tracking-[-0.02em] text-ink">{% block auth_heading %}{% endblock %}</h1>
+        <p class="mt-2 text-graphite">{% block auth_lede %}{% endblock %}</p>
+
+        {% include "partials/messages_inline.html" %}
+
+        <div class="mt-9">{% block auth_body %}{% endblock %}</div>
+
+        <p class="mt-8 text-[0.98rem] text-graphite">{% block switch %}{% endblock %}</p>
+      </div>
+
+      <a href="{% url 'core:landing' %}" class="link-arrow self-center lg:self-start">&larr; Back to home</a>
+    </section>
+  </div>
+</div>
+{% endblock %}

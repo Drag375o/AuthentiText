@@ -54,8 +54,21 @@ class SecondaryPageTests(TestCase):
         self.assertEqual(self.client.get(reverse("core:about")).status_code, 200)
 
     def test_unbuilt_routes_are_honest(self):
-        for name in ["analyze", "compare", "profile", "login", "register"]:
+        for name in ["analyze", "compare", "profile"]:
             response = self.client.get(reverse(f"core:{name}"))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "isn't built yet")
 
+
+
+class CompiledCssTests(TestCase):
+    """Guards against Tailwind purging classes that only appear in Python or
+    are built dynamically in templates (both have bitten this project)."""
+
+    def test_critical_classes_exist_in_built_css(self):
+        from pathlib import Path
+        from django.conf import settings
+        css = (Path(settings.BASE_DIR) / "static" / "css" / "styles.css").read_text()
+        for cls in [".field-input", ".sig-low", ".sig-mid", ".sig-high", ".hero-card"]:
+            with self.subTest(cls=cls):
+                self.assertIn(cls + "{", css.replace(" {", "{"))

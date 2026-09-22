@@ -1,0 +1,14 @@
+{% comment %}
+  One labelled form field. Django 5 adds aria-describedby (help text) and
+  aria-invalid (errors) to the input itself. Param: field
+{% endcomment %}
+<div class="space-y-2">
+  <label for="{{ field.id_for_label }}" class="label block">{{ field.label }}</label>
+  {{ field }}
+  {% if field.errors %}
+    <ul class="field-error" role="alert">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if field.help_text %}
+    <div id="{{ field.auto_id }}_helptext" class="field-help">{{ field.help_text|safe }}</div>
+  {% endif %}
+</div>

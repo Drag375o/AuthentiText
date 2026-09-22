@@ -28,8 +28,13 @@
         <div>
           <p class="label">Account</p>
           <ul class="mt-4 space-y-2 text-muted">
-            <li><a class="hover:text-ink" href="{% url 'core:login' %}">Login</a></li>
-            <li><a class="hover:text-ink" href="{% url 'core:register' %}">Create account</a></li>
+            {% if user.is_authenticated %}
+              <li><a class="hover:text-ink" href="{% url 'analyzer:dashboard' %}">Dashboard</a></li>
+              <li>{% include "components/logout_button.html" with classes="hover:text-ink" %}</li>
+            {% else %}
+              <li><a class="hover:text-ink" href="{% url 'accounts:login' %}">Login</a></li>
+              <li><a class="hover:text-ink" href="{% url 'accounts:register' %}">Create account</a></li>
+            {% endif %}
           </ul>
         </div>
       </div>

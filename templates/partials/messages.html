@@ -1,0 +1,9 @@
+{% if messages %}
+  <div class="page pt-6" role="status" aria-live="polite">
+    {% for message in messages %}
+      <p class="flex items-center gap-3 rounded-card border border-rule bg-paper px-5 py-3 text-ink">
+        <span class="w-1.5 h-1.5 rounded-full {% if message.tags == 'error' %}bg-signal-high{% else %}bg-signal-ok{% endif %}" aria-hidden="true"></span>{{ message }}
+      </p>
+    {% endfor %}
+  </div>
+{% endif %}

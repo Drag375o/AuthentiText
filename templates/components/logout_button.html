@@ -1,0 +1,5 @@
+{% comment %} Logout must be a POST with a CSRF token (Django 5). Param: classes {% endcomment %}
+<form method="post" action="{% url 'accounts:logout' %}" class="flex">
+  {% csrf_token %}
+  <button type="submit" class="{{ classes|default:'label hover:text-muted' }}">Log out</button>
+</form>

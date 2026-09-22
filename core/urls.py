@@ -12,6 +12,4 @@ urlpatterns = [
     path("analyze/", views.upcoming, {"feature": "Analyze"}, name="analyze"),
     path("compare/", views.upcoming, {"feature": "Compare"}, name="compare"),
     path("profile/", views.upcoming, {"feature": "Writing Profile"}, name="profile"),
-    path("login/", views.upcoming, {"feature": "Login"}, name="login"),
-    path("register/", views.upcoming, {"feature": "Register"}, name="register"),
 ]

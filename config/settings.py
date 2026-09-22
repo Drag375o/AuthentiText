@@ -6,6 +6,7 @@ Secrets and environment-specific values come from environment variables
 """
 from pathlib import Path
 import os
+import sys
 
 from dotenv import load_dotenv
 
@@ -30,6 +31,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Local apps
     "core",
+    "accounts",
+    "analyzer",
 ]
 
 MIDDLEWARE = [
@@ -90,6 +93,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# Tests create many users; a fast hasher keeps the suite quick.
+# Only active under `manage.py test`. Real passwords always use the default (PBKDF2).
+if len(sys.argv) > 1 and sys.argv[1] == "test":
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
@@ -106,6 +114,21 @@ MEDIA_ROOT = BASE_DIR / "media"
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+# Email: printed to the terminal in development. Set EMAIL_BACKEND and the
+# EMAIL_* variables in .env to send real mail (e.g. SMTP) in production.
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "AuthentiText <no-reply@localhost>")
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # reset links expire after 3 days
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "analyzer:dashboard"
+LOGOUT_REDIRECT_URL = "core:landing"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
