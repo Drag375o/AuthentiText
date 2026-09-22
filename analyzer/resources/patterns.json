@@ -1,0 +1,850 @@
+{
+  "version": 1,
+  "about": "Configurable pattern library for AuthentiText. 'strength' is how generic or formulaic a phrase is, not evidence of AI use. 'position': 'start' matches only at the start of a sentence. 'pos' limits a one-word pattern to a part of speech (e.g. 'may' as a verb, not the month).",
+  "categories": {
+    "transition": "Transitions",
+    "contrast": "Contrast",
+    "cause_effect": "Cause and effect",
+    "conclusion": "Conclusion",
+    "emphasis": "Emphasis",
+    "hedging": "Hedging",
+    "academic_formula": "Formulaic phrases"
+  },
+  "patterns": [
+    {
+      "pattern": "furthermore",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "moreover",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "additionally",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in addition",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "also",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "firstly",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "secondly",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "thirdly",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "lastly",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "finally",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "subsequently",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "meanwhile",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "likewise",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "similarly",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "besides",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "next",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "then",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "equally important",
+      "category": "transition",
+      "description": "Additive or sequencing transition.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "however",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "nevertheless",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "nonetheless",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "on the other hand",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in contrast",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "conversely",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "although",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "whereas",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "yet",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "but",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "that said",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "even so",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "despite",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "on the contrary",
+      "category": "contrast",
+      "description": "Marks a contrast or concession.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "therefore",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "thus",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "hence",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "consequently",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "as a result",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "because",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "due to",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "so",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "accordingly",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "for this reason",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "this means that",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "as a consequence",
+      "category": "cause_effect",
+      "description": "Marks a cause, reason or consequence.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in conclusion",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "to conclude",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in summary",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "to sum up",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "to summarize",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "overall",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "low",
+      "position": "start"
+    },
+    {
+      "pattern": "ultimately",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "all in all",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in the end",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in short",
+      "category": "conclusion",
+      "description": "Signals a summary or conclusion.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "indeed",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "notably",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "importantly",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "crucially",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "particularly",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "especially",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "undoubtedly",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "clearly",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "of course",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "above all",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in particular",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "without a doubt",
+      "category": "emphasis",
+      "description": "Adds emphasis or highlights a point.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "perhaps",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "possibly",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "arguably",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "may",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any",
+      "pos": "AUX"
+    },
+    {
+      "pattern": "might",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any",
+      "pos": "AUX"
+    },
+    {
+      "pattern": "it seems",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "it appears",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "seems to",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "appears to",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "somewhat",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "to some extent",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in some cases",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "tends to",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "suggests that",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "i think",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "i believe",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "generally",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "relatively",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "sort of",
+      "category": "hedging",
+      "description": "Softens a claim or signals uncertainty.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "it is important to note",
+      "category": "academic_formula",
+      "description": "Framing phrase that announces a point instead of making it.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "it's important to note",
+      "category": "academic_formula",
+      "description": "Framing phrase that announces a point instead of making it.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "it is worth noting",
+      "category": "academic_formula",
+      "description": "Framing phrase that announces a point instead of making it.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "it's worth noting",
+      "category": "academic_formula",
+      "description": "Framing phrase that announces a point instead of making it.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "it should be noted",
+      "category": "academic_formula",
+      "description": "Framing phrase that announces a point instead of making it.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "plays a vital role",
+      "category": "academic_formula",
+      "description": "Stock phrase; a more specific verb usually says more.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "plays a crucial role",
+      "category": "academic_formula",
+      "description": "Stock phrase; a more specific verb usually says more.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "plays a key role",
+      "category": "academic_formula",
+      "description": "Stock phrase; a more specific verb usually says more.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "plays an important role",
+      "category": "academic_formula",
+      "description": "Stock phrase; a more specific verb usually says more.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in today's fast-paced world",
+      "category": "academic_formula",
+      "description": "Generic opener that could begin almost any essay.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "in today's world",
+      "category": "academic_formula",
+      "description": "Generic opener that could begin almost any essay.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "in today's society",
+      "category": "academic_formula",
+      "description": "Generic opener that could begin almost any essay.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in the modern world",
+      "category": "academic_formula",
+      "description": "Generic opener that could begin almost any essay.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in the realm of",
+      "category": "academic_formula",
+      "description": "Ornate framing for “in”.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "delve into",
+      "category": "academic_formula",
+      "description": "Common framing verb in generic expository prose.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "navigate the complexities",
+      "category": "academic_formula",
+      "description": "Abstract stock phrase.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "a testament to",
+      "category": "academic_formula",
+      "description": "Stock evaluative phrase.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "serves as a reminder",
+      "category": "academic_formula",
+      "description": "Stock evaluative phrase.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "rich tapestry",
+      "category": "academic_formula",
+      "description": "Ornate stock metaphor.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "ever-evolving",
+      "category": "academic_formula",
+      "description": "Stock intensifier for change.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "foster a sense of",
+      "category": "academic_formula",
+      "description": "Stock phrase in generic expository prose.",
+      "strength": "high",
+      "position": "any"
+    },
+    {
+      "pattern": "a sense of belonging",
+      "category": "academic_formula",
+      "description": "Common abstract phrase.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "shed light on",
+      "category": "academic_formula",
+      "description": "Stock metaphor for explaining.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "pave the way",
+      "category": "academic_formula",
+      "description": "Stock metaphor for enabling.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "a wide range of",
+      "category": "academic_formula",
+      "description": "Generic quantifier.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "a variety of",
+      "category": "academic_formula",
+      "description": "Generic quantifier.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "not only",
+      "category": "academic_formula",
+      "description": "Often opens a balanced “not only … but also” template.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "it is essential to",
+      "category": "academic_formula",
+      "description": "Generic framing of importance.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "it is crucial to",
+      "category": "academic_formula",
+      "description": "Generic framing of importance.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "when it comes to",
+      "category": "academic_formula",
+      "description": "Wordy framing for “for” or “in”.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "at the end of the day",
+      "category": "academic_formula",
+      "description": "Conversational cliché.",
+      "strength": "medium",
+      "position": "any"
+    },
+    {
+      "pattern": "in recent years",
+      "category": "academic_formula",
+      "description": "Common temporal framing.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "in order to",
+      "category": "academic_formula",
+      "description": "Wordier form of “to”.",
+      "strength": "low",
+      "position": "any"
+    },
+    {
+      "pattern": "each and every",
+      "category": "academic_formula",
+      "description": "Redundant intensifier.",
+      "strength": "low",
+      "position": "any"
+    }
+  ]
+}

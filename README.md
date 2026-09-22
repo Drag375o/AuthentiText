@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 4 of the build.** Done so far: the Django foundation, design system, landing page, accounts, the editor and file upload, and the first stages of the NLP pipeline: spaCy preprocessing, document statistics and lexical features. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 4 complete.** Done so far: the Django foundation, design system, landing page, accounts, the editor and file upload, and the NLP pipeline's linguistic layer: spaCy preprocessing, document statistics, lexical, syntactic and discourse features, and a configurable pattern library. Next: statistical, semantic and stylometric features. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -107,6 +107,10 @@ python manage.py analyze_pending       # analyze documents saved before the pipe
 python manage.py feature_docs --write   # regenerate the feature table
 ```
 
+## Pattern library
+
+Discourse markers and formulaic phrases come from `analyzer/resources/patterns.json`. Add or edit entries there; each needs a `pattern`, `category`, `description` and `strength` (`low`, `medium` or `high`, meaning how generic the phrase is). Use `"position": "start"` for words that only count at the start of a sentence, and `"pos"` to restrict a one-word pattern to a part of speech. The file is validated when loaded. After editing, restart the server and run `python manage.py analyze_pending --all` to re-analyze saved documents.
+
 ## Managing documents
 
 - **Rename:** on a document's page, click **Rename** next to the title. Enter saves, Esc cancels, and the page updates without reloading (`static/js/rename.js`). An empty name falls back to the first words of the text. Without JavaScript, the same form submits normally.
@@ -122,7 +126,8 @@ core/              landing, about, placeholder routes, context processor
 accounts/          register, login, logout, styled forms
 analyzer/          models, editor, dashboard, analysis page, delete, admin,
                    services/ (nlp, segmentation, preprocessing, document_stats, lexical,
-                   features, pipeline, uploads, parser, text_stats), management commands
+                   syntax, discourse, features, pipeline, uploads, parser, text_stats),
+                   resources/patterns.json, management commands
 docs/              NLP_PIPELINE.md, FEATURES.md (generated), LIMITATIONS.md
 templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
@@ -138,11 +143,12 @@ tests/js/          Node tests for the browser code
 1. Foundation, design system, landing page (done)
 2. Authentication and user-scoped models (done)
 3. Document ingestion: editor and validated TXT/PDF/DOCX uploads (done)
-4. NLP pipeline: preprocessing, document statistics, lexical features (done); syntactic, statistical, semantic and stylometric next
-5. Detector interface with a clearly labelled demo mode, then a trained baseline
-6. Explainability, results dashboard, sentence heatmap
-7. Compare, writing profile, reports, dashboard
-8. Documentation in `docs/`
+4. NLP pipeline, linguistic layer: preprocessing, document statistics, lexical, syntactic and discourse features, pattern library (done)
+5. NLP pipeline, statistical and semantic layer: TF-IDF, entropy, burstiness, sentence embeddings, stylometric profile
+6. Detector interface with a clearly labelled demo mode, then a trained baseline
+7. Explainability, results dashboard, sentence heatmap
+8. Compare, writing profile, reports, dashboard
+9. Remaining documentation in `docs/`
 
 ## Limitations
 

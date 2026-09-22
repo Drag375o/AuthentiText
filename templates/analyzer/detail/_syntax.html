@@ -1,0 +1,35 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">Grammar and structure</h2>
+<p class="mt-3 text-graphite max-w-prose">What kinds of words the text uses, how deeply its sentences nest, and how they begin. These come from spaCy's statistical parser, so treat them as estimates.</p>
+<div class="bento mt-8">
+  <article class="bento-card span-2x1">
+    <p class="meta">Parts of speech</p>
+    <div class="relative mt-4 flex-1 min-h-[18rem]">
+      <canvas role="img" aria-label="Bar chart of parts of speech as a share of words. {% for row in groups.pos %}{{ row.spec.label }} {{ row.value|feature_display:'ratio' }}{% if not forloop.last %}, {% endif %}{% endfor %}." data-pos-chart></canvas>
+    </div>
+    <p class="meta mt-3">Share of all words.</p>
+  </article>
+  <article class="bento-card span-2x1">
+    <p class="meta">Sentence complexity</p>
+    {% include "analyzer/detail/_feature_list.html" with rows=groups.complexity %}
+  </article>
+
+  <article class="bento-card bento-card--fog">
+    <p class="meta">Voice</p>
+    <p class="metric mt-6">{{ values.passive_sentence_ratio|feature_display:"ratio" }}</p>
+    <p class="mt-2 text-graphite">of sentences use the passive voice.</p>
+    <div class="meter mt-5" role="img" aria-label="Passive: {{ values.passive_sentence_ratio|feature_display:'ratio' }}"><span style="transform: scaleX(0)" data-meter="{{ values.passive_sentence_ratio|percent_of:1 }}"></span></div>
+    <p class="meta mt-4 leading-relaxed">Passives are normal in scientific and formal writing. Missed: “get”-passives such as “got fired”.</p>
+  </article>
+  <article class="bento-card span-wide">
+    <p class="meta">Sentence openings</p>
+    {% include "analyzer/detail/_feature_list.html" with rows=groups.openings %}
+    {% if analysis.report.repeated_openings %}
+      <ul class="mt-5 flex flex-wrap gap-2" aria-label="Repeated openings">
+        {% for g in analysis.report.repeated_openings|slice:":6" %}
+          <li class="rounded-full border border-rule px-3 py-1 text-[0.95rem]">“{{ g.opening|capfirst }} …” <span class="meta">{{ g.count }}×</span></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </article>
+</div>

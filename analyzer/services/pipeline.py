@@ -10,6 +10,8 @@ and never exposes internals to the user.
       -> preprocess (paragraphs, spaCy per paragraph, English check)
       -> document statistics
       -> lexical features
+      -> syntactic features (POS, parse depth, clauses, voice)
+      -> discourse markers, formulaic phrases, sentence openings
       -> sentence rows + feature rows + report
 """
 from __future__ import annotations
@@ -21,14 +23,16 @@ from dataclasses import dataclass, field
 from django.db import transaction
 from django.utils import timezone
 
+from .discourse import compute_discourse
 from .document_stats import compute_document_stats
 from .features import BY_NAME
 from .lexical import RARE_ZIPF, compute_lexical, zipf
 from .preprocessing import ProcessedDocument, Sentence, preprocess
+from .syntax import compute_syntax, sentence_syntax
 
 logger = logging.getLogger("authentitext")
 
-PIPELINE_VERSION = "0.4.0"
+PIPELINE_VERSION = "0.5.0"
 
 
 @dataclass
@@ -69,13 +73,21 @@ def run_pipeline(text: str) -> PipelineResult:
     processed = timed("preprocess", preprocess, text)
     document = timed("document_stats", compute_document_stats, processed)
     lexical, lexical_details = timed("lexical", compute_lexical, processed)
+    syntax = timed("syntax", compute_syntax, processed)
+    discourse, discourse_details = timed("discourse", compute_discourse, processed)
+
+    markers_by_sentence: dict[int, list[str]] = {}
+    for pattern in discourse_details["patterns"]:
+        for _, _, sentence_index in pattern["spans"]:
+            markers_by_sentence.setdefault(sentence_index, []).append(pattern["category"])
     sentences = timed("sentences", lambda: [
         {"index": s.index, "text": processed.text_of(s.start, s.end), "start": s.start, "end": s.end,
-         "signals": {**sentence_signals(s), "paragraph": s.paragraph}}
+         "signals": {**sentence_signals(s), **sentence_syntax(s), "paragraph": s.paragraph,
+                     "markers": sorted(set(markers_by_sentence.get(s.index, [])))}}
         for s in processed.sentences
     ])
 
-    features = {**document, **lexical}
+    features = {**document, **lexical, **syntax, **discourse}
     unknown = set(features) - set(BY_NAME)
     assert not unknown, f"Unregistered features: {unknown}"   # every feature needs a label and explanation
 
@@ -84,6 +96,7 @@ def run_pipeline(text: str) -> PipelineResult:
         notes.append("This text doesn't read as English. AuthentiText currently analyzes English only, so these results aren't reliable.")
     report = {
         **lexical_details,
+        **discourse_details,
         "sentence_lengths": [s["signals"]["words"] for s in sentences],
         "language_checked": processed.language_checked,
         "notes": notes,

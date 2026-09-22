@@ -28,3 +28,8 @@ def percent_of(value, total) -> float:
         return round(100 * float(value) / float(total), 1) if total else 0
     except (TypeError, ValueError):
         return 0
+
+
+@register.filter
+def get_item(mapping, key):
+    return mapping.get(key, key) if hasattr(mapping, "get") else key

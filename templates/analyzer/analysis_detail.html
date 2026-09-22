@@ -19,6 +19,8 @@
       {% include "analyzer/detail/_summary.html" %}
       {% include "analyzer/detail/_rhythm.html" %}
       {% include "analyzer/detail/_lexical.html" %}
+      {% include "analyzer/detail/_syntax.html" %}
+      {% include "analyzer/detail/_patterns.html" %}
       {% include "analyzer/detail/_sentences.html" %}
     {% else %}
       {% include "analyzer/detail/_pending.html" %}
@@ -41,7 +43,7 @@
     </form>
   </div>
 </section>
-{% if chart_data %}{{ chart_data|json_script:"sentence-chart-data" }}{% endif %}
+{% if chart_data %}{{ chart_data|json_script:"sentence-chart-data" }}{{ pos_chart|json_script:"pos-chart-data" }}{% endif %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/rename.js' %}" defer></script>

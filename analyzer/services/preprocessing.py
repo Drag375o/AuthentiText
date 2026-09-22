@@ -38,7 +38,8 @@ class Token:
     pos: str
     tag: str
     dep: str
-    head: int          # index of the head token within the sentence
+    index: int         # spaCy's position within the sentence (whitespace tokens included)
+    head: int          # spaCy position of the head token within the sentence
     start: int         # absolute offsets into the original text
     end: int
     is_punct: bool
@@ -98,6 +99,7 @@ def _make_token(tok, offset: int, sentence_start_i: int) -> Token:
         pos=tok.pos_,
         tag=tok.tag_,
         dep=tok.dep_,
+        index=tok.i - sentence_start_i,
         head=tok.head.i - sentence_start_i,
         start=offset + tok.idx,
         end=offset + tok.idx + len(tok.text),

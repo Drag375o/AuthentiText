@@ -35,7 +35,6 @@
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const labels = data.lengths.map((_, i) => String(i + 1));
 
-    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     return new Chart(canvas, {
       data: {
         labels,
@@ -74,10 +73,45 @@
     });
   }
 
+  /** Horizontal bars: parts of speech as a share of words. */
+  function posChart(canvas, data) {
+    const ink = cssColor("text-ink", "#000");
+    const muted = cssColor("text-muted", "#6b6b6b");
+    const rule = cssColor("text-rule", "#e4e4e4");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return new Chart(canvas, {
+      type: "bar",
+      data: { labels: data.labels, datasets: [{ data: data.values, backgroundColor: ink, borderRadius: 2, maxBarThickness: 16 }] },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: reduceMotion ? false : { duration: 700, easing: "easeOutQuart" },
+        plugins: {
+          legend: { display: false },
+          tooltip: { displayColors: false, callbacks: { label: (item) => `${item.raw}% of words` } },
+        },
+        scales: {
+          x: { beginAtZero: true, grid: { color: rule }, ticks: { color: muted, callback: (v) => `${v}%` } },
+          y: { grid: { display: false }, ticks: { color: ink } },
+        },
+      },
+    });
+  }
+
+  function readJson(id) {
+    const el = document.getElementById(id);
+    try { return el ? JSON.parse(el.textContent) : null; } catch { return null; }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
-    const canvas = document.querySelector("[data-sentence-chart]");
-    const script = document.getElementById("sentence-chart-data");
-    if (!canvas || !script || !window.Chart) return;
-    sentenceChart(canvas, JSON.parse(script.textContent));
+    if (!window.Chart) return;
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    const rhythm = document.querySelector("[data-sentence-chart]");
+    const rhythmData = readJson("sentence-chart-data");
+    if (rhythm && rhythmData) sentenceChart(rhythm, rhythmData);
+    const pos = document.querySelector("[data-pos-chart]");
+    const posData = readJson("pos-chart-data");
+    if (pos && posData) posChart(pos, posData);
   });
 })();

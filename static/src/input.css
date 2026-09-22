@@ -4,7 +4,7 @@
 
 /* ---------- Base ---------- */
 @layer base {
-  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 6rem; } /* clears the sticky nav on in-page jumps */
   body { @apply bg-paper text-graphite font-serif antialiased; font-size: 1.125rem; line-height: 1.7; }
   h1, h2, h3, h4 { @apply font-display text-ink; }
   ::selection { @apply bg-ink text-paper; }
@@ -51,6 +51,18 @@
 
   /* Rename */
   .rename-trigger { @apply inline-flex items-center gap-1.5 rounded-[3px] px-2 py-1 -mx-2 font-label text-[0.78rem] tracking-[0.06em] text-muted transition-[color,background-color,transform] hover:bg-fog hover:text-ink active:scale-[0.97]; }
+
+  /* Pattern explorer */
+  .chip { @apply inline-flex items-center rounded-full border border-rule bg-paper px-2.5 py-0.5 font-label text-[0.7rem] tracking-[0.05em] text-graphite; }
+  .chip--marker { @apply border-slate/30 bg-slate-soft text-slate; }
+  /* Box-shadow pads the highlight visually without adding space before punctuation. */
+  .pattern-mark { @apply rounded-[2px] bg-brass-soft text-ink underline decoration-brass decoration-2 underline-offset-4; box-shadow: 0 0 0 2px theme("colors.brass.soft"); }
+  /* Strength: 1, 2 or 3 filled bars, so it reads without colour */
+  .strength { @apply inline-block h-3.5 w-5 shrink-0; --s1: theme("colors.rule"); --s2: theme("colors.rule"); --s3: theme("colors.rule");
+    background: linear-gradient(to right, var(--s1) 0 28%, transparent 28% 36%, var(--s2) 36% 64%, transparent 64% 72%, var(--s3) 72% 100%); }
+  .strength[data-strength="low"] { --s1: theme("colors.ink"); }
+  .strength[data-strength="medium"] { --s1: theme("colors.ink"); --s2: theme("colors.ink"); }
+  .strength[data-strength="high"] { --s1: theme("colors.ink"); --s2: theme("colors.ink"); --s3: theme("colors.ink"); }
 
   /* Confirmation dialog */
   .confirm-dialog { @apply m-auto w-[min(30rem,calc(100vw-2rem))] max-w-none rounded-card border border-rule bg-paper p-0 text-graphite shadow-lift; }

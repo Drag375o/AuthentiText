@@ -149,7 +149,43 @@ FEATURE_GROUPS = {
     "punctuation": ["commas_per_100", "semicolons_per_100", "colons_per_100", "dashes_per_100",
                     "questions_per_100", "exclamations_per_100", "parentheses_per_100", "quotes_per_100", "ellipses_per_100"],
     "repetition": ["repeated_phrase_count", "repeated_phrase_coverage"],
+    "complexity": ["parse_depth_mean", "dependency_distance_mean", "clauses_per_sentence",
+                   "subordinate_clauses_per_sentence", "coordination_per_sentence"],
+    "pos": ["pos_noun_ratio", "pos_verb_ratio", "pos_adj_ratio", "pos_adv_ratio", "pos_pron_ratio",
+            "pos_det_ratio", "pos_adp_ratio", "pos_conj_ratio", "pos_aux_ratio", "pos_propn_ratio", "pos_num_ratio"],
+    "openings": ["opening_pattern_diversity", "repeated_opening_ratio", "marker_initial_ratio"],
+    "discourse": ["transitions_per_100", "contrast_markers_per_100", "cause_effect_markers_per_100",
+                  "conclusion_markers_per_100", "emphasis_markers_per_100", "hedges_per_100", "formulaic_phrases_per_100"],
 }
+PATTERN_EXAMPLES = 3
+CONTEXT_CHARS = 70
+
+
+def pattern_examples(analysis: Analysis, sentences: list) -> list[dict]:
+    """
+    Each matched pattern with up to three examples split into (before, match, after),
+    so the template can highlight the match while Django escapes everything.
+    """
+    by_index = {s.sentence_index: s for s in sentences}
+    categories = analysis.report.get("pattern_categories", {})
+    entries = []
+    for pattern in analysis.report.get("patterns", []):
+        examples = []
+        for start, end, sentence_index in pattern["spans"][:PATTERN_EXAMPLES]:
+            sentence = by_index.get(sentence_index)
+            if not sentence:
+                continue
+            a, b = start - sentence.start_char, end - sentence.start_char
+            before, after = sentence.text[:a], sentence.text[b:]
+            examples.append({
+                "before": ("\u2026" + before[-CONTEXT_CHARS:].lstrip()) if len(before) > CONTEXT_CHARS else before,
+                "match": sentence.text[a:b],
+                "after": (after[:CONTEXT_CHARS].rstrip() + "\u2026") if len(after) > CONTEXT_CHARS else after,
+                "sentence": sentence_index,
+            })
+        entries.append({**pattern, "category_label": categories.get(pattern["category"], pattern["category"]),
+                        "count": len(pattern["spans"]), "examples": examples})
+    return entries
 
 
 def feature_rows(values: dict[str, float], names: list[str]) -> list[dict]:
@@ -173,6 +209,12 @@ def analysis_detail(request: HttpRequest, analysis_id) -> HttpResponse:
                 "mean": values.get("sentence_length_mean"),
             },
             "max_top_word": max((w["count"] for w in analysis.report.get("top_words", [])), default=1),
+            "pattern_entries": pattern_examples(analysis, sentences),
+            "marker_labels": analysis.report.get("pattern_categories", {}),
+            "pos_chart": {
+                "labels": [BY_NAME[n].label for n in FEATURE_GROUPS["pos"]],
+                "values": [round((values.get(n) or 0) * 100, 1) for n in FEATURE_GROUPS["pos"]],
+            },
         })
     return render(request, "analyzer/analysis_detail.html", context)
 

@@ -48,3 +48,45 @@ Don't edit this file by hand; change the registry and regenerate it.
 | `repeated_phrase_count` | Repeated phrases | count | Distinct phrases of three or more words that appear more than once. |
 | `repeated_phrase_coverage` | Text in repeated phrases | share (0-1, shown as %) | Share of words that sit inside a repeated phrase of three or more words. |
 
+## Syntactic
+
+| Name | Label | Unit | What it measures |
+|---|---|---|---|
+| `pos_noun_ratio` | Nouns | share (0-1, shown as %) | Share of words tagged as common nouns. |
+| `pos_propn_ratio` | Proper nouns | share (0-1, shown as %) | Share of words that are names of people, places or organisations. |
+| `pos_verb_ratio` | Verbs | share (0-1, shown as %) | Share of words tagged as main verbs. |
+| `pos_adj_ratio` | Adjectives | share (0-1, shown as %) | Share of words tagged as adjectives. |
+| `pos_adv_ratio` | Adverbs | share (0-1, shown as %) | Share of words tagged as adverbs. |
+| `pos_pron_ratio` | Pronouns | share (0-1, shown as %) | Share of words tagged as pronouns, such as “I”, “it” or “they”. |
+| `pos_det_ratio` | Determiners | share (0-1, shown as %) | Share of words like “the”, “a” and “this”. |
+| `pos_conj_ratio` | Conjunctions | share (0-1, shown as %) | Share of coordinating and subordinating conjunctions, such as “and” or “because”. |
+| `pos_adp_ratio` | Prepositions | share (0-1, shown as %) | Share of prepositions and postpositions, such as “in”, “of” or “with”. |
+| `pos_aux_ratio` | Auxiliaries | share (0-1, shown as %) | Share of helping verbs, such as “is”, “have” or “will”. |
+| `pos_num_ratio` | Numbers | share (0-1, shown as %) | Share of words that are numbers. |
+| `parse_depth_mean` | Parse depth | number | Average depth of each sentence's dependency tree: how many layers of structure it nests. Deeper trees usually mean more embedded phrases and clauses. |
+| `dependency_distance_mean` | Dependency distance | number | Average distance, in words, between each word and the word it attaches to (Liu, 2008). Longer distances are harder to process. |
+| `clauses_per_sentence` | Clauses per sentence | number | Main clauses plus clauses attached to them, per sentence. Estimated from the dependency parse. |
+| `subordinate_clauses_per_sentence` | Subordinate clauses | number | Clauses that depend on another, such as “because it rained” or “which nobody can read”, per sentence. |
+| `coordination_per_sentence` | Coordination | number | Coordinating conjunctions (“and”, “but”, “or”) per sentence. |
+| `passive_sentence_ratio` | Passive sentences | share (0-1, shown as %) | Share of sentences with a passive construction, such as “was eaten by”. “Get”-passives can be missed. |
+
+## Linguistic
+
+| Name | Label | Unit | What it measures |
+|---|---|---|---|
+| `transitions_per_100` | Transitions | per 100 words | Additive and sequencing transitions, such as “furthermore” or “in addition”, per 100 words. |
+| `contrast_markers_per_100` | Contrast markers | per 100 words | Words like “however” or “although”, per 100 words. |
+| `cause_effect_markers_per_100` | Cause and effect | per 100 words | Words like “therefore” or “because”, per 100 words. |
+| `conclusion_markers_per_100` | Conclusion markers | per 100 words | Phrases like “in conclusion” or “ultimately”, per 100 words. |
+| `emphasis_markers_per_100` | Emphasis markers | per 100 words | Words like “indeed” or “notably”, per 100 words. |
+| `hedges_per_100` | Hedges | per 100 words | Words that soften a claim, such as “perhaps” or “might”, per 100 words. |
+| `formulaic_phrases_per_100` | Formulaic phrases | per 100 words | Stock phrases from the pattern library, such as “it is important to note”, per 100 words. Common in many kinds of writing, so it's a signal to look at, not evidence. |
+| `marker_initial_ratio` | Sentences opening with a marker | share (0-1, shown as %) | Share of sentences that begin with a discourse marker, such as “However,” or “So”. |
+
+## Structural
+
+| Name | Label | Unit | What it measures |
+|---|---|---|---|
+| `repeated_opening_ratio` | Repeated openings | share (0-1, shown as %) | Share of sentences whose first two words also open another sentence. Needs at least three sentences. |
+| `opening_pattern_diversity` | Opening variety | share (0-1, shown as %) | Distinct grammatical openings (the part-of-speech pattern of the first three words) divided by the number of sentences. Higher means sentences begin in more varied ways. |
+
