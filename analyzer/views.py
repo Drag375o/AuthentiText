@@ -10,7 +10,9 @@ from django.views.decorators.http import require_POST
 
 from .forms import DocumentForm, RenameForm, UploadForm
 from .models import Analysis
+from .services.features import BY_NAME
 from .services.parser import extract_text
+from .services.pipeline import analyze_document
 from .services.text_stats import READING_WPM, compute_text_stats
 from .services.uploads import UploadRejected, validate_upload
 
@@ -82,7 +84,10 @@ def analyze(request: HttpRequest) -> HttpResponse:
             sentence_count=stats.sentences,
             paragraph_count=stats.paragraphs,
         )
-        messages.success(request, f"Saved \u201c{analysis.display_name}\u201d.")
+        if analyze_document(analysis):
+            messages.success(request, f"Analyzed \u201c{analysis.display_name}\u201d.")
+        else:
+            messages.error(request, "Your text is saved, but the analysis didn't finish. Try again from this page.")
         return redirect("analyzer:detail", analysis_id=analysis.pk)
 
     upload = read_upload_token(request.user, request.POST.get("upload_token", "")) if request.method == "POST" else None
@@ -135,10 +140,53 @@ def extract(request: HttpRequest) -> HttpResponse:
     return render(request, "analyzer/analyze.html", editor_context(form, upload=upload_info))
 
 
+# How the document page groups features. Every name must exist in the registry.
+FEATURE_GROUPS = {
+    "rhythm": ["sentence_length_mean", "sentence_length_median", "sentence_length_std",
+               "sentence_length_cv", "sentence_length_min", "sentence_length_max"],
+    "vocabulary": ["mattr", "mtld", "type_token_ratio", "hapax_ratio", "lexical_density", "function_word_ratio"],
+    "frequency": ["mean_content_zipf", "rare_word_ratio", "common_word_ratio", "long_word_ratio", "avg_word_length"],
+    "punctuation": ["commas_per_100", "semicolons_per_100", "colons_per_100", "dashes_per_100",
+                    "questions_per_100", "exclamations_per_100", "parentheses_per_100", "quotes_per_100", "ellipses_per_100"],
+    "repetition": ["repeated_phrase_count", "repeated_phrase_coverage"],
+}
+
+
+def feature_rows(values: dict[str, float], names: list[str]) -> list[dict]:
+    return [{"spec": BY_NAME[name], "value": values.get(name)} for name in names]
+
+
 @login_required
 def analysis_detail(request: HttpRequest, analysis_id) -> HttpResponse:
     analysis = owned_analysis_or_404(request, analysis_id)
-    return render(request, "analyzer/analysis_detail.html", {"analysis": analysis})
+    context = {"analysis": analysis}
+    if analysis.is_processed:
+        values = {f.feature_name: f.feature_value for f in analysis.features.all()}
+        sentences = list(analysis.sentences.all())
+        context.update({
+            "values": values,
+            "groups": {key: feature_rows(values, names) for key, names in FEATURE_GROUPS.items()},
+            "sentences": sentences,
+            "chart_data": {
+                "lengths": [s.signals.get("words", 0) for s in sentences],
+                "texts": [s.text[:140] + ("\u2026" if len(s.text) > 140 else "") for s in sentences],
+                "mean": values.get("sentence_length_mean"),
+            },
+            "max_top_word": max((w["count"] for w in analysis.report.get("top_words", [])), default=1),
+        })
+    return render(request, "analyzer/analysis_detail.html", context)
+
+
+@login_required
+@require_POST
+def analysis_run(request: HttpRequest, analysis_id) -> HttpResponse:
+    """Run (or re-run) the pipeline for a saved document."""
+    analysis = owned_analysis_or_404(request, analysis_id)
+    if analyze_document(analysis):
+        messages.success(request, f"Analyzed \u201c{analysis.display_name}\u201d.")
+    else:
+        messages.error(request, "The analysis didn't finish. Try again in a moment.")
+    return redirect("analyzer:detail", analysis_id=analysis.pk)
 
 
 @login_required

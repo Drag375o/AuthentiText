@@ -1,0 +1,15 @@
+{% load analysis_format %}
+{% comment %} A list of features with values and expandable explanations. Param: rows {% endcomment %}
+<dl class="mt-6 divide-y divide-rule border-t border-rule">
+  {% for row in rows %}
+    <div class="py-3">
+      <details class="group">
+        <summary class="flex cursor-pointer list-none items-baseline justify-between gap-4">
+          <dt class="text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ row.spec.label }}</dt>
+          <dd class="font-display font-bold text-lg text-ink tabular-nums shrink-0">{{ row.value|feature_display:row.spec.unit }}</dd>
+        </summary>
+        <p class="mt-2 text-[0.95rem] leading-relaxed text-graphite">{{ row.spec.description }}</p>
+      </details>
+    </div>
+  {% endfor %}
+</dl>

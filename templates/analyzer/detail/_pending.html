@@ -1,0 +1,13 @@
+<div class="mt-10 bento-card bento-card--fog !p-10 items-start">
+  {% if analysis.status == "failed" %}
+    <h2 class="font-display font-bold text-display-md">The analysis didn't finish.</h2>
+    <p class="lede mt-4">Your text is saved. Run the analysis again; if it keeps failing, the file's text may be unusual in a way the pipeline can't handle yet.</p>
+  {% else %}
+    <h2 class="font-display font-bold text-display-md">Not analyzed yet.</h2>
+    <p class="lede mt-4">This document was saved before the analysis pipeline existed. Run it now to see its statistics and vocabulary.</p>
+  {% endif %}
+  <form method="post" action="{% url 'analyzer:run' analysis.id %}" class="mt-8" data-busy-form>
+    {% csrf_token %}
+    <button type="submit" class="btn-primary"><span class="btn-spinner" aria-hidden="true"></span><span data-busy-label="Analyzing…">{% if analysis.status == "failed" %}Analyze again{% else %}Analyze now{% endif %}</span></button>
+  </form>
+</div>

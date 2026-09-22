@@ -1,0 +1,18 @@
+<h2 class="h-section !text-display-md mt-16">Sentence rhythm</h2>
+<p class="mt-3 text-graphite max-w-prose">How long each sentence is, in order. Varied lengths make a rhythm; very even lengths are one signal among many, and never evidence on their own.</p>
+<div class="bento mt-8">
+  <article class="bento-card span-wide">
+    <div class="flex items-baseline justify-between gap-4">
+      <p class="meta">Words per sentence</p>
+      <p class="meta"><span class="inline-block w-5 border-t-2 border-dashed border-brass align-middle mr-1.5" aria-hidden="true"></span>Average</p>
+    </div>
+    <div class="relative mt-4 flex-1 min-h-[16rem]">
+      <canvas role="img" aria-label="Bar chart of words per sentence for {{ values.sentence_count|floatformat:0 }} sentences. Average {{ values.sentence_length_mean|floatformat:1 }} words; shortest {{ values.sentence_length_min|floatformat:0 }}, longest {{ values.sentence_length_max|floatformat:0 }}." data-sentence-chart></canvas>
+    </div>
+    <p class="meta mt-3">Select a bar to jump to its sentence.</p>
+  </article>
+  <article class="bento-card">
+    <p class="meta">Length statistics</p>
+    {% include "analyzer/detail/_feature_list.html" with rows=groups.rhythm %}
+  </article>
+</div>

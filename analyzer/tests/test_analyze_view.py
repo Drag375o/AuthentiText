@@ -21,7 +21,7 @@ class AnalyzeViewTests(TestCase):
         self.assertContains(response, "Analyze your writing.")
         self.assertContains(response, 'id="editor-config" type="application/json"')
         self.assertContains(response, "js/text-stats.js")
-        self.assertContains(response, "Save document")
+        self.assertContains(response, "Analyze document")
 
     def test_saves_original_text_exactly(self):
         raw = "  First paragraph, with spaces kept.\r\n\r\nSecond one.  "
@@ -32,7 +32,7 @@ class AnalyzeViewTests(TestCase):
         self.assertEqual(analysis.title, "My essay")
         self.assertEqual(analysis.user, self.user)
         self.assertEqual(analysis.source_type, Analysis.SourceType.PASTE)
-        self.assertEqual(analysis.status, Analysis.Status.PENDING)
+        self.assertEqual(analysis.status, Analysis.Status.COMPLETE)
 
     def test_stores_counts(self):
         self.client.post(self.url, {"text": "One two three. Four five!\n\nSix."})
@@ -56,7 +56,7 @@ class AnalyzeViewTests(TestCase):
 
     def test_saved_message_and_title_fallback(self):
         response = self.client.post(self.url, {"text": "Short note about recipes and memory."}, follow=True)
-        self.assertContains(response, "Saved \u201cShort note about recipes and memory.\u201d")
+        self.assertContains(response, "Analyzed \u201cShort note about recipes and memory.\u201d")
 
     def test_csrf_required(self):
         from django.test import Client

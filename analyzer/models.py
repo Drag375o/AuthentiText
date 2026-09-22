@@ -85,6 +85,12 @@ class Analysis(models.Model):
     model_version = models.CharField(max_length=50, blank=True)
     is_demo = models.BooleanField(default=False, help_text="True when produced by the labelled demo detector.")
 
+    # Pipeline output
+    report = models.JSONField(default=dict, blank=True, help_text="Structured results: top words, repeated phrases, notes.")
+    pipeline_version = models.CharField(max_length=20, blank=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    processing_ms = models.PositiveIntegerField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -106,6 +112,10 @@ class Analysis(models.Model):
     def save(self, *args, **kwargs):
         self.text_hash = hash_text(self.original_text)
         super().save(*args, **kwargs)
+
+    @property
+    def is_processed(self) -> bool:
+        return self.status == self.Status.COMPLETE and self.processed_at is not None
 
     @property
     def display_name(self) -> str:

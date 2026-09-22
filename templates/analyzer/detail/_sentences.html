@@ -1,0 +1,11 @@
+<h2 class="h-section !text-display-md mt-16">Sentences</h2>
+<p class="mt-3 text-graphite max-w-prose">Every sentence as spaCy segmented it, with its length and vocabulary. Sentence-level signals will appear here with the classifier.</p>
+<ol class="mt-8 bento-card !p-0 divide-y divide-rule" data-sentence-list>
+  {% for s in sentences %}
+    <li id="sentence-{{ s.sentence_index }}" class="sentence-row grid gap-x-6 gap-y-2 px-6 py-4 sm:grid-cols-[2.5rem_minmax(0,1fr)_auto] scroll-mt-28" tabindex="-1">
+      <span class="meta tabular-nums pt-1">{{ s.sentence_index|add:1 }}</span>
+      <p class="text-ink leading-relaxed">{{ s.text }}</p>
+      <p class="meta whitespace-nowrap pt-1 tabular-nums">{{ s.signals.words }} words{% if s.signals.rare_words %}, {{ s.signals.rare_words }} rare{% endif %}</p>
+    </li>
+  {% endfor %}
+</ol>

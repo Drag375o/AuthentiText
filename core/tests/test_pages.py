@@ -73,3 +73,14 @@ class CompiledCssTests(TestCase):
         for cls in [".field-input", ".sig-low", ".sig-mid", ".sig-high", ".hero-card", ".dropzone", ".btn-danger"]:
             with self.subTest(cls=cls):
                 self.assertIn(cls + "{", css.replace(" {", "{"))
+
+
+class TemplateHygieneTests(TestCase):
+    def test_no_literal_unicode_escapes_in_templates(self):
+        """Django doesn't interpret \\uXXXX in templates; they would show up on the page."""
+        import re
+        from pathlib import Path
+        from django.conf import settings
+        offenders = [str(p) for p in (Path(settings.BASE_DIR) / "templates").rglob("*.html")
+                     if re.search(r"\\u[0-9a-fA-F]{4}", p.read_text(encoding="utf-8"))]
+        self.assertEqual(offenders, [])

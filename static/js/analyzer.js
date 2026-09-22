@@ -117,7 +117,7 @@
         return;
       }
       submitting = true;
-      submit.textContent = "Saving\u2026";
+      submit.querySelector("[data-editor-submit-label]").textContent = "Analyzing\u2026";
       submit.setAttribute("aria-busy", "true");
     });
 

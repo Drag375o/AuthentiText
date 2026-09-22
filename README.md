@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 3 of the build (complete).** Done so far: the Django foundation, design system, landing page, accounts, database models, the text editor, and file upload. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 4 of the build.** Done so far: the Django foundation, design system, landing page, accounts, the editor and file upload, and the first stages of the NLP pipeline: spaCy preprocessing, document statistics and lexical features. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -98,6 +98,15 @@ The **Upload a file** tab on `/analyze/` accepts TXT, PDF and DOCX by drag-and-d
 
 PyMuPDF is licensed under AGPL-3.0, which suits an open-source portfolio project. For closed-source use, swap in `pypdf` inside `extract_pdf`.
 
+## Analysis pipeline
+
+Analyzing a document runs it through spaCy (`en_core_web_sm`) and computes document statistics and lexical features. The results are saved as `SentenceAnalysis` and `Feature` rows and shown on the document page, with a sentence-rhythm chart and an explanation for every measure. See [docs/NLP_PIPELINE.md](docs/NLP_PIPELINE.md) for the design, [docs/FEATURES.md](docs/FEATURES.md) for every feature, and [docs/LIMITATIONS.md](docs/LIMITATIONS.md) for known limits.
+
+```bash
+python manage.py analyze_pending       # analyze documents saved before the pipeline existed
+python manage.py feature_docs --write   # regenerate the feature table
+```
+
 ## Managing documents
 
 - **Rename:** on a document's page, click **Rename** next to the title. Enter saves, Esc cancels, and the page updates without reloading (`static/js/rename.js`). An empty name falls back to the first words of the text. Without JavaScript, the same form submits normally.
@@ -111,12 +120,16 @@ PyMuPDF is licensed under AGPL-3.0, which suits an open-source portfolio project
 config/            settings (env-driven, PostgreSQL-ready), urls
 core/              landing, about, placeholder routes, context processor
 accounts/          register, login, logout, styled forms
-analyzer/          models, editor, dashboard, analysis page, delete, admin, services/
+analyzer/          models, editor, dashboard, analysis page, delete, admin,
+                   services/ (nlp, segmentation, preprocessing, document_stats, lexical,
+                   features, pipeline, uploads, parser, text_stats), management commands
+docs/              NLP_PIPELINE.md, FEATURES.md (generated), LIMITATIONS.md
 templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
 static/css/        compiled CSS (built by npm run build:css)
 static/js/         app.js (site), hero-field.js (hero), heatmap.js (sentence viewer),
-                   text-stats.js + analyzer.js (editor), upload.js, confirm-dialog.js, rename.js
+                   text-stats.js + analyzer.js (editor), upload.js, confirm-dialog.js, rename.js,
+                   charts.js (Chart.js visualisations)
 tests/js/          Node tests for the browser code
 ```
 
@@ -125,7 +138,7 @@ tests/js/          Node tests for the browser code
 1. Foundation, design system, landing page (done)
 2. Authentication and user-scoped models (done)
 3. Document ingestion: editor and validated TXT/PDF/DOCX uploads (done)
-4. NLP pipeline: preprocessing, lexical, syntactic, statistical, semantic, stylometric
+4. NLP pipeline: preprocessing, document statistics, lexical features (done); syntactic, statistical, semantic and stylometric next
 5. Detector interface with a clearly labelled demo mode, then a trained baseline
 6. Explainability, results dashboard, sentence heatmap
 7. Compare, writing profile, reports, dashboard

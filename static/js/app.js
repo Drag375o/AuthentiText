@@ -96,6 +96,18 @@
     });
   }
 
+  /** Forms marked data-busy-form show their spinner while the request runs. */
+  function initBusyForms() {
+    document.querySelectorAll("form[data-busy-form]").forEach((form) => {
+      form.addEventListener("submit", () => {
+        const button = form.querySelector("button[type=submit]");
+        const label = button.querySelector("[data-busy-label]");
+        button.setAttribute("aria-busy", "true");
+        if (label) label.textContent = label.dataset.busyLabel;
+      });
+    });
+  }
+
   /** The page's single orchestrated moment: the hero card rises, then marks
    *  itself up. Waits for fonts so the card doesn't shift mid-animation. */
   function initHeroCard() {

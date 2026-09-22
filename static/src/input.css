@@ -141,6 +141,12 @@
 @media (prefers-reduced-motion: no-preference) {
   .rename-flash { animation: rename-flash 900ms ease-out; }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .sentence-row.is-highlighted { animation: rename-flash 1400ms ease-out; }
+}
+.sentence-row:focus { outline: none; }
+.sentence-row.is-highlighted, .sentence-row:focus-visible { box-shadow: inset 3px 0 0 theme("colors.ink"); }
+
 @keyframes rename-flash { 0% { background-color: theme("colors.brass.soft"); } 100% { background-color: transparent; } }
 
 /* Indeterminate bar while the server extracts text */

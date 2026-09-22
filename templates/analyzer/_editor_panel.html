@@ -19,8 +19,8 @@
     <p class="mt-3 text-[0.98rem] text-graphite" data-evidence-text>Add at least {{ editor_config.minWords }} words for a reliable result.</p>
   </div>
 
-  <button type="submit" class="btn-primary w-full" data-editor-submit>Save document</button>
-  <p class="meta leading-relaxed">Counts are quick estimates. The full analysis uses proper sentence segmentation.</p>
+  <button type="submit" class="btn-primary w-full" data-editor-submit><span class="btn-spinner" aria-hidden="true"></span><span data-editor-submit-label>Analyze document</span></button>
+  <p class="meta leading-relaxed">Counts here are quick estimates. The analysis segments sentences with spaCy, so its numbers can differ slightly.</p>
 
   <p class="sr-only" role="status" aria-live="polite" data-stats-announce></p>
 </aside>

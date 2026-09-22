@@ -1,0 +1,11 @@
+{% load analysis_format %}
+<div class="bento mt-10">
+  <article class="bento-card"><p class="meta">Words</p><p class="metric mt-auto pt-6">{{ values.word_count|feature_display:"count" }}</p><p class="meta mt-2">{{ values.unique_word_count|feature_display:"count" }} unique</p></article>
+  <article class="bento-card"><p class="meta">Sentences</p><p class="metric mt-auto pt-6">{{ values.sentence_count|feature_display:"count" }}</p></article>
+  <article class="bento-card"><p class="meta">Paragraphs</p><p class="metric mt-auto pt-6">{{ values.paragraph_count|feature_display:"count" }}</p></article>
+  <article class="bento-card bento-card--fog">
+    <p class="meta">AI-associated signal</p>
+    <p class="h-card mt-auto pt-6">Not available yet</p>
+    <p class="meta mt-2 leading-relaxed">The classifier arrives in a later phase. Everything on this page is measured directly from the text.</p>
+  </article>
+</div>

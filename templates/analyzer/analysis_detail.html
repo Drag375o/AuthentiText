@@ -6,24 +6,28 @@
   <div class="page">
     <a href="{% url 'analyzer:dashboard' %}" class="link-arrow">&larr; Dashboard</a>
     {% include "analyzer/_rename.html" %}
-    <p class="meta mt-3">{{ analysis.get_source_type_display }}, {{ analysis.created_at|date:"j M Y, H:i" }}</p>
+    <p class="meta mt-3">
+      {{ analysis.get_source_type_display }}{% if analysis.filename %}, {{ analysis.filename }}{% endif %}, {{ analysis.created_at|date:"j M Y, H:i" }}
+      {% if analysis.is_processed %}. Analyzed in {{ analysis.processing_ms }} ms, pipeline {{ analysis.pipeline_version }}{% endif %}
+    </p>
 
-    <div class="bento mt-10">
-      <article class="bento-card"><p class="meta">Words</p><p class="metric mt-auto pt-6">{{ analysis.word_count }}</p></article>
-      <article class="bento-card"><p class="meta">Sentences</p><p class="metric mt-auto pt-6">{{ analysis.sentence_count }}</p></article>
-      <article class="bento-card"><p class="meta">Paragraphs</p><p class="metric mt-auto pt-6">{{ analysis.paragraph_count }}</p></article>
-      <article class="bento-card bento-card--fog">
-        <p class="meta">Result</p>
-        <p class="h-card mt-auto pt-6">{% if analysis.result_label %}{{ analysis.get_result_label_display }}{% else %}Not analyzed yet{% endif %}</p>
-      </article>
+    {% for note in analysis.report.notes %}
+      <p class="mt-6 rounded-md border border-signal-warn/40 bg-brass-soft px-4 py-3 text-ink" role="note">{{ note }}</p>
+    {% endfor %}
 
-      <article class="bento-card span-full">
-        <h2 class="label">Original text</h2>
-        <div class="mt-5 max-w-prose whitespace-pre-line text-ink max-h-[28rem] overflow-y-auto pr-2">{{ analysis.original_text }}</div>
-      </article>
-    </div>
+    {% if analysis.is_processed %}
+      {% include "analyzer/detail/_summary.html" %}
+      {% include "analyzer/detail/_rhythm.html" %}
+      {% include "analyzer/detail/_lexical.html" %}
+      {% include "analyzer/detail/_sentences.html" %}
+    {% else %}
+      {% include "analyzer/detail/_pending.html" %}
+    {% endif %}
 
-    <p class="meta mt-8">Sentence-level results, signals and explanations appear here once the analysis pipeline is built.</p>
+    <details class="mt-14 bento-card group">
+      <summary class="label cursor-pointer list-none flex items-center justify-between">Original text <span class="meta group-open:hidden">Show</span><span class="meta hidden group-open:inline">Hide</span></summary>
+      <div class="mt-5 max-w-prose whitespace-pre-line text-ink max-h-[32rem] overflow-y-auto pr-2">{{ analysis.original_text }}</div>
+    </details>
 
     <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-10"
           data-confirm-title="Delete this analysis?"
@@ -37,5 +41,12 @@
     </form>
   </div>
 </section>
+{% if chart_data %}{{ chart_data|json_script:"sentence-chart-data" }}{% endif %}
 {% endblock %}
-{% block scripts %}<script src="{% static 'js/rename.js' %}" defer></script>{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/rename.js' %}" defer></script>
+  {% if chart_data %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+    <script src="{% static 'js/charts.js' %}" defer></script>
+  {% endif %}
+{% endblock %}

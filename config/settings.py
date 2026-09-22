@@ -115,6 +115,9 @@ ANALYSIS_MAX_CHARS = int(os.getenv("ANALYSIS_MAX_CHARS", "100000"))
 # Below this many words, results are reported as "Insufficient evidence".
 ANALYSIS_MIN_WORDS = int(os.getenv("ANALYSIS_MIN_WORDS", "150"))
 
+# NLP: the spaCy model is loaded once per process (analyzer/services/nlp.py).
+SPACY_MODEL = os.getenv("SPACY_MODEL", "en_core_web_sm")
+
 # Upload limits (analyzer/services/uploads.py and parser.py)
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "5"))
 PDF_MAX_PAGES = int(os.getenv("PDF_MAX_PAGES", "300"))
