@@ -1,0 +1,4 @@
+Django>=5.1,<6.0
+python-dotenv>=1.0
+# Added in later phases, only when used:
+# spacy, scikit-learn, textstat, sentence-transformers, PyMuPDF, python-docx

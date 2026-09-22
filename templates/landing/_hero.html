@@ -1,0 +1,21 @@
+<section class="hero relative overflow-hidden" aria-labelledby="hero-title" data-hero>
+  <!-- Decorative reading-lens text field (static/js/hero-field.js). -->
+  <canvas class="absolute inset-0 h-full w-full pointer-events-none" aria-hidden="true" data-hero-field></canvas>
+
+  <div class="page relative z-10 grid gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16 items-center pt-12 lg:pt-20 pb-24 lg:pb-28 lg:min-h-[40rem]">
+    <div data-hero-quiet>
+      <h1 id="hero-title" class="text-ink">
+        <span class="block font-display font-extralight text-display-xl">Welcome to</span>
+        <span class="block wordmark text-display-brand mt-[0.1em] -ml-[0.04em]">AuthentiText.</span>
+      </h1>
+      <p class="mt-8 font-display font-semibold text-lg text-ink tracking-[-0.01em]">Does your writing sound like AI?</p>
+      <p class="lede mt-2 max-w-[28rem]">Analyze the linguistic, statistical, semantic, and stylistic characteristics behind a piece of writing.</p>
+      <div class="mt-10 flex flex-wrap items-center gap-8">
+        <a href="{% url 'core:analyze' %}" class="btn-primary">Analyze your writing</a>
+        <a href="#how-it-works" class="link-arrow">How it works &rarr;</a>
+      </div>
+    </div>
+
+    {% include "landing/_hero_document.html" %}
+  </div>
+</section>

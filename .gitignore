@@ -1,0 +1,13 @@
+.env
+*.sqlite3
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+staticfiles/
+media/
+ml/models/*.joblib
+ml/models/*.bin
+ml/models/*.pt
+.DS_Store

@@ -1,0 +1,26 @@
+<section class="section" aria-labelledby="sentences-title">
+  <div class="page">
+    <h2 id="sentences-title" class="h-section max-w-3xl">Read it sentence by sentence.</h2>
+    <p class="lede mt-6">Signals rarely spread evenly. The viewer shows where they cluster, and why. Select a sentence.</p>
+
+    <div class="bento mt-14" data-sentence-viewer data-viewer-id="main">
+      <article class="bento-card span-wide" aria-label="Sample document">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-rule pb-4">
+          <p class="label">family-recipes.docx</p>
+          {% include "components/signal_legend.html" %}
+        </div>
+        <p class="mt-6 text-xl leading-[2] text-ink max-w-3xl">
+          {% include "components/sentence_marks.html" with sentences=sample_document viewer_id="main" %}
+        </p>
+        <p class="meta mt-8">Illustrative example, not model output</p>
+      </article>
+
+      <aside id="main-detail" class="bento-card bento-card--fog" aria-live="polite" data-detail-panel>
+        <p class="font-script text-2xl text-ink">Why this sentence?</p>
+        <div class="mt-6" data-detail-body>
+          <p class="text-graphite">Select any sentence in the document to see the signals behind its mark.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

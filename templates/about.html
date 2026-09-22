@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}About · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="page grid md:grid-cols-12 gap-12">
+    <div class="md:col-span-7">
+      <h1 class="text-display-lg"><span class="block font-extralight">About</span><span class="block font-extrabold wordmark !font-script !font-normal text-[1.15em]">AuthentiText</span></h1>
+      <p class="lede mt-8">AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.</p>
+      <p class="mt-6 max-w-prose">It is a portfolio project. It makes no claim to research-grade accuracy, and every number it shows is traceable to a feature you can inspect.</p>
+    </div>
+    <aside class="md:col-span-5 bento-card bento-card--fog">
+      <p class="font-script text-2xl text-ink">The pipeline</p>
+      <ol class="mt-6 space-y-2 text-graphite list-decimal list-inside">
+        <li>Text extraction</li><li>Preprocessing</li><li>Linguistic analysis</li><li>Lexical features</li>
+        <li>Syntactic features</li><li>Statistical features</li><li>Semantic features</li><li>Stylometric features</li>
+        <li>ML classification</li><li>Explainability</li><li>Visual analytics</li>
+      </ol>
+    </aside>
+  </div>
+</section>
+{% endblock %}

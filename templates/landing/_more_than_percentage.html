@@ -1,0 +1,34 @@
+<section class="bg-fog section" aria-labelledby="percentage-title">
+  <div class="page grid md:grid-cols-12 gap-14 items-start">
+    <div class="md:col-span-7">
+      <h2 id="percentage-title" class="h-section">Detection is more than a percentage.</h2>
+      <p class="lede mt-6">No single metric means much on its own. AuthentiText combines five families of signals, weighs them, and reports how much it trusts the result.</p>
+
+      <dl class="mt-12 grid sm:grid-cols-2 gap-x-10 gap-y-8">
+        {% for family in signal_families %}
+          <div>
+            <dt class="h-card">{{ family.name }}</dt>
+            <dd class="mt-2 text-graphite">{{ family.detail }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+    </div>
+
+    <aside class="md:col-span-5 bg-paper rounded-card shadow-lift p-8 md:p-10" aria-label="Example of a combined result">
+      <p class="font-script text-2xl text-ink text-center">How a result is built</p>
+      <ul class="mt-8 space-y-5">
+        {% for family in signal_families %}
+          <li>
+            <div class="flex justify-between meta"><span class="text-ink">{{ family.name }}</span><span class="tabular-nums">{{ family.example_score }}</span></div>
+            <div class="meter mt-2"><span style="transform: scaleX(0)" data-meter="{{ family.example_score }}"></span></div>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="mt-10 pt-6 border-t border-rule grid grid-cols-2 gap-6">
+        <div><p class="meta">Combined signal</p><p class="metric mt-2">57%</p></div>
+        <div><p class="meta">Confidence</p><p class="font-display font-bold text-2xl text-ink mt-2">Medium</p><p class="meta mt-1">wide spread between families</p></div>
+      </div>
+      <p class="meta mt-6 text-center">Illustrative values</p>
+    </aside>
+  </div>
+</section>

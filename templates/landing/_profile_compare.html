@@ -1,0 +1,67 @@
+<section class="section pt-0" aria-labelledby="profile-title">
+  <div class="page">
+    <div class="bento">
+      <!-- Writing profile -->
+      <article class="bento-card span-2x2">
+        <h2 id="profile-title" class="font-display font-bold text-display-md">Your writing profile.</h2>
+        <p class="mt-4 text-graphite max-w-md">Feature scores from 0 to 100. They describe habits in the text, not the person who wrote it.</p>
+        <ul class="mt-10 space-y-6">
+          {% for m in profile_metrics %}
+            <li>
+              <div class="flex justify-between items-baseline"><span class="label">{{ m.name }}</span><span class="font-display font-bold text-ink tabular-nums">{{ m.value }}</span></div>
+              <div class="meter mt-2" role="img" aria-label="{{ m.name }}: {{ m.value }} out of 100"><span style="transform: scaleX(0)" data-meter="{{ m.value }}"></span></div>
+            </li>
+          {% endfor %}
+        </ul>
+      </article>
+
+      <article class="bento-card span-2x1">
+        <p class="meta">Sentence length, words</p>
+        <div class="mt-4 flex items-end gap-1.5 h-24" role="img" aria-label="Example sentence-length distribution, most sentences between 12 and 22 words">
+          {% for h in sentence_histogram %}
+            <span class="flex-1 rounded-t-sm {% if h >= 80 %}bg-ink{% elif h >= 50 %}bg-graphite{% else %}bg-rule{% endif %}" style="height: {{ h }}%"></span>
+          {% endfor %}
+        </div>
+        <div class="mt-5 flex gap-8">
+          <div><p class="metric text-4xl">17.4</p><p class="meta mt-1">mean</p></div>
+          <div><p class="metric text-4xl">6.2</p><p class="meta mt-1">std. dev.</p></div>
+        </div>
+      </article>
+
+      <article class="bento-card bento-card--ink span-2x1">
+        <p class="font-script text-xl text-paper">A note on variation</p>
+        <p class="mt-3 text-paper/80">Even sentence lengths can come from a model, an editor, or a careful writer. AuthentiText reports variation as one feature among many, never as a conclusion.</p>
+      </article>
+    </div>
+
+    <!-- Compare -->
+    <div class="mt-24 grid md:grid-cols-12 gap-10 items-start" aria-labelledby="compare-title">
+      <div class="md:col-span-4">
+        <h2 id="compare-title" class="font-display font-bold text-display-md">Compare two versions.</h2>
+        <p class="mt-4 text-graphite">See what changed between a draft and a revision: wording, rhythm, vocabulary, and how the signals moved.</p>
+        <a href="{% url 'core:compare' %}" class="link-arrow inline-block mt-8">Compare documents &rarr;</a>
+      </div>
+      <div class="md:col-span-8 bento-card !p-0 overflow-hidden">
+        <div class="grid grid-cols-2 border-b border-rule">
+          <p class="label p-5 border-r border-rule">A &nbsp;draft.txt</p>
+          <p class="label p-5">B &nbsp;revision.txt</p>
+        </div>
+        <div class="grid grid-cols-2 text-[1rem] leading-relaxed">
+          <p class="p-5 border-r border-rule">The results were <del class="decoration-signal-high bg-signal-high-bg">kind of surprising</del>, honestly.</p>
+          <p class="p-5">The results were <ins class="no-underline border-b-2 border-ink">notably unexpected</ins>, <ins class="no-underline border-b-2 border-ink">which underscores the need for further study</ins>.</p>
+        </div>
+        <div class="overflow-x-auto border-t border-rule">
+          <table class="w-full text-left">
+            <caption class="sr-only">Example metric changes between versions</caption>
+            <thead><tr class="meta"><th class="p-4 font-normal">Metric</th><th class="p-4 font-normal">A</th><th class="p-4 font-normal">B</th></tr></thead>
+            <tbody>
+              {% for row in compare_rows %}
+                <tr class="border-t border-rule"><td class="p-4">{{ row.metric }}</td><td class="p-4 tabular-nums">{{ row.a }}</td><td class="p-4 tabular-nums font-semibold text-ink">{{ row.b }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

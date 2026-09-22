@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Base ---------- */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { @apply bg-paper text-graphite font-serif antialiased; font-size: 1.125rem; line-height: 1.7; }
+  h1, h2, h3, h4 { @apply font-display text-ink; }
+  ::selection { @apply bg-ink text-paper; }
+  :focus-visible { outline: 2px solid theme("colors.ink"); outline-offset: 3px; }
+  [data-lucide] { stroke-width: 1.25; }
+}
+
+/* ---------- Components ---------- */
+@layer components {
+  .page { @apply mx-auto w-full max-w-page px-6 md:px-10; }
+  .section { @apply py-20 md:py-28; }
+
+  /* Type roles */
+  .wordmark { @apply font-script text-ink leading-none; }
+  .label { @apply font-label text-[0.8rem] tracking-[0.06em] text-ink; }
+  .lede { @apply font-serif text-lg md:text-xl text-graphite max-w-prose leading-[1.65]; }
+  .h-section { @apply font-display font-bold text-display-lg text-ink; }
+  .h-card { @apply font-display font-semibold text-lg text-ink leading-snug; }
+  .note { @apply font-script text-slate text-[1.05rem] leading-snug; }
+
+  /* Buttons + links (reference: black block button, underlined text link) */
+  .btn { @apply inline-flex items-center justify-center gap-2 font-label text-[0.8rem] tracking-[0.08em] px-6 py-4 rounded-[3px] transition-colors duration-200; }
+  .btn-primary { @apply btn bg-ink text-paper hover:bg-graphite; }
+  .btn-ghost { @apply btn border border-ink text-ink hover:bg-ink hover:text-paper; }
+  .link-arrow { @apply font-label text-[0.78rem] tracking-[0.06em] text-muted underline underline-offset-4 decoration-1 hover:text-ink transition-colors; }
+
+  /* ---------- Bento system ---------- */
+  .bento { @apply grid grid-cols-1 gap-4 md:grid-cols-4 md:auto-rows-[minmax(11rem,auto)]; }
+  .bento-card { @apply relative flex flex-col rounded-card border border-rule bg-paper p-7 md:p-8 shadow-card; }
+  .bento-card--fog { @apply bg-fog border-transparent; }
+  .bento-card--ink { @apply bg-ink text-paper/80 border-ink; }
+  .bento-card--ink h3, .bento-card--ink .h-card { @apply text-paper; }
+  .bento-card--interactive { @apply transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-lift; }
+  /* Sizes: 1x1 default */
+  .span-2x1 { @apply md:col-span-2; }
+  .span-1x2 { @apply md:row-span-2; }
+  .span-2x2 { @apply md:col-span-2 md:row-span-2; }
+  .span-wide { @apply md:col-span-3; }
+  .span-full { @apply md:col-span-4; }
+
+  .metric { @apply font-display font-extrabold text-5xl text-ink tabular-nums leading-none; }
+  .meta { @apply font-label text-[0.72rem] tracking-[0.05em] text-muted; }
+
+  /* ---------- Signal marks (never colour alone: underline style differs) ---------- */
+  .sig { @apply cursor-pointer rounded-[2px] px-0.5 -mx-0.5 transition-colors duration-200 underline underline-offset-[5px]; }
+  .sig-low  { @apply decoration-signal-low decoration-dotted decoration-2; }
+  .sig-mid  { @apply bg-signal-mid-bg decoration-signal-mid decoration-dashed decoration-2; }
+  .sig-high { @apply bg-signal-high-bg decoration-signal-high decoration-solid decoration-[3px]; }
+  .sig[aria-pressed="true"] { @apply bg-ink text-paper decoration-paper; }
+
+  .legend-swatch { @apply inline-block w-6 border-b-2 align-middle; }
+
+  /* Horizontal meter */
+  .meter { @apply h-1.5 w-full rounded-full bg-rule overflow-hidden; }
+  .meter > span { @apply block h-full rounded-full bg-ink origin-left; transition: transform 900ms cubic-bezier(.2,.7,.2,1); }
+}
+
+/* ---------- Hero ---------- */
+/* Colours the canvas reads at runtime (hero-field.js), kept next to the tokens. */
+:root {
+  --field-rest: theme("colors.field");
+  --field-ink: theme("colors.ink");
+  --field-low: theme("colors.signal.low");
+  --field-mid: theme("colors.signal.mid");
+  --field-high: theme("colors.signal.high");
+}
+
+/* One orchestrated load moment: the card rises, then marks itself up.
+   Text is always readable; only position, opacity and the marks animate. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero-card {
+    opacity: 0;
+    transform: translateY(48px);
+    transition: opacity .9s ease-out, transform 1.2s cubic-bezier(.16, .84, .32, 1);
+  }
+  .js .hero-card.is-in { opacity: 1; transform: none; }
+
+  .js .hero-doc .sig {
+    transition: text-decoration-color .6s ease, background-color .6s ease;
+    transition-delay: calc(var(--i, 0) * 220ms + 900ms);
+  }
+  .js .hero-card:not(.is-in) .sig { text-decoration-color: transparent; background-color: transparent; }
+  .js .hero-doc .margin-note { transition: opacity .7s ease 2.1s; }
+  .js .hero-card:not(.is-in) .margin-note { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

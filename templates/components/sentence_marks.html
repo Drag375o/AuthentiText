@@ -1,0 +1,13 @@
+{% comment %}
+  Renders sentences as focusable, toggleable marks.
+  Params: sentences (list of dicts: text, level, level_label), viewer_id (string)
+  <span role="button"> is used instead of <button> because buttons are always
+  inline-block and can't wrap mid-line like prose. heatmap.js adds Enter/Space.
+  Signal level is conveyed three ways: underline style, tint, screen-reader text.
+{% endcomment %}
+{% for s in sentences %}<span role="button" tabindex="0"
+  class="sig sig-{{ s.level }} [box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
+  style="--i: {{ forloop.counter0 }}"
+  aria-pressed="false"
+  aria-controls="{{ viewer_id }}-detail"
+  data-sentence-index="{{ forloop.counter0 }}">{{ s.text }}<span class="sr-only"> ({{ s.level_label }})</span></span>{% if not forloop.last %} {% endif %}{% endfor %}

@@ -1,0 +1,36 @@
+<header class="sticky top-0 z-40 bg-paper/90 backdrop-blur-sm border-b border-transparent transition-colors" data-sticky-nav>
+  <nav class="page flex items-center justify-between h-20" aria-label="Primary">
+    <a href="{% url 'core:landing' %}" class="wordmark text-[1.9rem]" aria-label="{{ SITE_NAME }} home">AuthentiText</a>
+
+    <ul class="hidden md:flex items-center gap-9">
+      {% for item in PRIMARY_NAV %}
+        {% url item.url_name as item_url %}
+        <li><a href="{{ item_url }}" class="label hover:text-muted transition-colors{% if request.path == item_url %} underline underline-offset-8{% endif %}"{% if request.path == item_url %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div class="hidden md:flex items-center gap-6">
+      {% if user.is_authenticated %}
+        <span class="meta">{{ user.get_username }}</span>
+      {% else %}
+        <a href="{% url 'core:login' %}" class="label hover:text-muted">Login</a>
+      {% endif %}
+      <a href="{% url 'core:analyze' %}" class="btn-primary !py-3">Analyze writing</a>
+    </div>
+
+    <button type="button" class="md:hidden p-2 -mr-2" aria-controls="mobile-menu" aria-expanded="false" data-menu-toggle>
+      <span class="sr-only">Open menu</span>
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="md:hidden hidden border-t border-rule bg-paper" data-menu>
+    <ul class="page py-6 space-y-5">
+      {% for item in PRIMARY_NAV %}
+        <li><a href="{% url item.url_name %}" class="label text-base">{{ item.label }}</a></li>
+      {% endfor %}
+      <li><a href="{% url 'core:login' %}" class="label text-base">Login</a></li>
+      <li class="pt-2"><a href="{% url 'core:analyze' %}" class="btn-primary w-full">Analyze writing</a></li>
+    </ul>
+  </div>
+</header>

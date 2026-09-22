@@ -1,0 +1,16 @@
+<section id="how-it-works" class="section scroll-mt-20" aria-labelledby="analyzes-title">
+  <div class="page">
+    <h2 id="analyzes-title" class="h-section max-w-3xl">What AuthentiText reads.</h2>
+    <p class="lede mt-6">Six layers of analysis, each built from standard NLP techniques you can inspect.</p>
+
+    <div class="bento mt-14">
+      {% for area in analysis_areas %}
+        <article class="bento-card bento-card--interactive {{ area.size }}{% if forloop.first %} bento-card--fog{% endif %}">
+          <i data-lucide="{{ area.icon }}" class="w-9 h-9 text-ink" aria-hidden="true"></i>
+          <h3 class="h-card mt-8">{{ area.title }}</h3>
+          <p class="mt-3 text-[1.02rem] text-graphite max-w-md">{{ area.body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

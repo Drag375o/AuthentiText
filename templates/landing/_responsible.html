@@ -1,0 +1,16 @@
+<section id="responsible" class="section scroll-mt-20" aria-labelledby="responsible-title">
+  <div class="page">
+    <h2 id="responsible-title" class="h-section max-w-3xl">Use it responsibly.</h2>
+    <p class="lede mt-6">Writing analysis is useful and fallible. Here is what a result can and can't tell you.</p>
+    <div class="mt-14 grid md:grid-cols-3 gap-12">
+      {% for item in limitations %}
+        <div>
+          <i data-lucide="{{ item.icon }}" class="w-10 h-10 text-ink" aria-hidden="true"></i>
+          <h3 class="h-card mt-6">{{ item.title }}</h3>
+          <p class="mt-3 text-graphite">{{ item.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'core:about' %}" class="link-arrow inline-block mt-12">Read the full limitations &rarr;</a>
+  </div>
+</section>

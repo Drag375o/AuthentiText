@@ -1,0 +1,21 @@
+<div class="hero-card relative" data-hero-card>
+  <article class="hero-doc bg-paper border border-rule rounded-card shadow-lift p-6 md:p-7"
+           data-sentence-viewer data-viewer-id="hero" aria-label="Sample document with highlighted sentences">
+    <div class="flex items-baseline justify-between gap-4 border-b border-rule pb-3 mb-4">
+      <p class="label">family-recipes.docx</p>
+      <p class="meta">5 sentences</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_8rem] gap-6">
+      <p class="text-[1.02rem] leading-[1.9] text-ink">
+        {% include "components/sentence_marks.html" with sentences=sample_document viewer_id="hero" %}
+      </p>
+      <ol class="hidden sm:flex flex-col gap-6 pt-6" aria-label="Reviewer notes">
+        {% for s in sample_document %}{% if s.note %}
+          <li class="margin-note note">s{{ forloop.counter }}: {{ s.note }}</li>
+        {% endif %}{% endfor %}
+      </ol>
+    </div>
+    <p id="hero-detail" class="mt-4 pt-3 border-t border-rule meta min-h-[1.5rem]" aria-live="polite" data-detail-compact>Select a sentence to see why it was marked.</p>
+  </article>
+  <p class="absolute -bottom-10 right-0 bg-ink text-paper px-2.5 py-1 font-label text-[0.7rem] tracking-[0.05em]">Illustrative example, not model output</p>
+</div>

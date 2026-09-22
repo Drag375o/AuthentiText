@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ feature }} · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="page max-w-3xl">
+    <p class="font-script text-3xl text-slate">In progress</p>
+    <h1 class="h-section mt-4">{{ feature }} isn't built yet.</h1>
+    <p class="lede mt-6">This part of AuthentiText is next in the build plan. Rather than show a mock-up, the page stays empty until it works.</p>
+    <a href="{% url 'core:landing' %}" class="btn-ghost mt-10">Back to the homepage</a>
+  </div>
+</section>
+{% endblock %}

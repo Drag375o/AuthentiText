@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ SITE_NAME }}: {{ SITE_TAGLINE }}{% endblock %}
+{% block content %}
+  {% include "landing/_hero.html" %}
+  {% include "landing/_analyzes.html" %}
+  {% include "landing/_more_than_percentage.html" %}
+  {% include "landing/_sentences.html" %}
+  {% include "landing/_profile_compare.html" %}
+  {% include "landing/_explainability.html" %}
+  {% include "landing/_responsible.html" %}
+  {% include "landing/_cta.html" %}
+  {{ sample_document|json_script:"sample-document" }}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/hero-field.js' %}" defer></script>
+  <script src="{% static 'js/heatmap.js' %}" defer></script>
+{% endblock %}

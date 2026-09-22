@@ -1,0 +1,12 @@
+{
+  "name": "authentitext-frontend",
+  "private": true,
+  "description": "Tailwind build for AuthentiText. Django serves the output from static/css/styles.css.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/src/input.css -o ./static/css/styles.css --minify",
+    "watch:css": "tailwindcss -i ./static/src/input.css -o ./static/css/styles.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
