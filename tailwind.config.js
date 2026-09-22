@@ -2,7 +2,7 @@
 module.exports = {
   content: ["./templates/**/*.html", "./**/templates/**/*.html", "./static/js/**/*.js", "./core/**/*.py", "./accounts/**/*.py", "./analyzer/**/*.py"],
   // Built dynamically in templates (sig-{{ level }}), so the scanner can't see them.
-  safelist: ["sig-low", "sig-mid", "sig-high", "field-input", "field-checkbox", "editor-title", "editor-textarea", "editor-over-limit"],
+  safelist: ["sig-low", "sig-mid", "sig-high", "field-input", "field-checkbox", "editor-title", "editor-textarea", "editor-over-limit", "btn-danger", "btn-danger-ghost", "confirm-dialog", "is-closing", "rename-trigger", "rename-flash"],
   theme: {
     extend: {
       colors: {

@@ -85,6 +85,13 @@ Signal strength is always shown three ways: underline style (dotted, dashed, sol
 
 The counts are rule-based estimates. Phase 4 replaces sentence segmentation with spaCy.
 
+## Managing documents
+
+- **Rename:** on a document's page, click **Rename** next to the title. Enter saves, Esc cancels, and the page updates without reloading (`static/js/rename.js`). An empty name falls back to the first words of the text. Without JavaScript, the same form submits normally.
+- **Delete:** asks through the shared confirmation dialog (`templates/components/confirm_dialog.html`, `static/js/confirm-dialog.js`). It's a native `<dialog>`: focus stays inside, Esc and clicking outside cancel, and **Cancel** is focused first so an accidental Enter never deletes. While deleting, the button shows a spinner and the dialog can't be dismissed.
+- **Reusing the dialog:** add `data-confirm="Message"` (plus optional `data-confirm-title`, `data-confirm-label`, `data-confirm-busy`) to any form, or call `await window.ConfirmDialog.ask({...})` from JavaScript. The editor's **Clear** uses it too.
+- **Motion:** buttons press in slightly on click, and the dialog fades and rises in. All motion is removed when the system's reduced-motion setting is on.
+
 ## Project layout
 
 ```
@@ -96,7 +103,7 @@ templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
 static/css/        compiled CSS (built by npm run build:css)
 static/js/         app.js (site), hero-field.js (hero), heatmap.js (sentence viewer),
-                   text-stats.js + analyzer.js (editor)
+                   text-stats.js + analyzer.js (editor), confirm-dialog.js, rename.js
 tests/js/          Node tests for the browser code
 ```
 

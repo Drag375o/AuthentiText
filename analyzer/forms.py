@@ -41,3 +41,16 @@ class PasteTextForm(forms.Form):
                 f"This text is {length:,} characters. The limit is {limit:,}; split it into smaller documents."
             )
         return text
+
+
+class RenameForm(forms.Form):
+    title = forms.CharField(
+        max_length=200,
+        required=False,
+        error_messages={"max_length": "Keep the name under 200 characters."},
+        widget=forms.TextInput(attrs={"autocomplete": "off", "class": "rename-input", "maxlength": 200}),
+    )
+
+    def clean_title(self) -> str:
+        # Collapse runs of whitespace; an empty name falls back to the first words of the text.
+        return " ".join(self.cleaned_data["title"].split())

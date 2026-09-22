@@ -87,8 +87,15 @@
       }
     });
 
-    form.querySelector("[data-editor-clear]").addEventListener("click", () => {
-      if (lastStats.words > 20 && !window.confirm("Clear the editor? Your text isn't saved yet.")) return;
+    form.querySelector("[data-editor-clear]").addEventListener("click", async () => {
+      if (lastStats.words > 20) {
+        const ok = await window.ConfirmDialog.ask({
+          title: "Clear the editor?",
+          message: "Your text isn't saved yet. Clearing removes it from the editor.",
+          confirmLabel: "Clear text",
+        });
+        if (!ok) return;
+      }
       textarea.value = "";
       if (title) title.value = "";
       render();

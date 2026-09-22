@@ -2,11 +2,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import PasteTextForm
+from .forms import PasteTextForm, RenameForm
 from .models import Analysis
 from .services.text_stats import READING_WPM, compute_text_stats
 
@@ -69,3 +69,28 @@ def analysis_delete(request: HttpRequest, analysis_id) -> HttpResponse:
     analysis.delete()
     messages.success(request, f"Deleted \u201c{name}\u201d.")
     return redirect("analyzer:dashboard")
+
+
+def wants_json(request: HttpRequest) -> bool:
+    return "application/json" in request.headers.get("Accept", "")
+
+
+@login_required
+@require_POST
+def analysis_rename(request: HttpRequest, analysis_id) -> HttpResponse:
+    """Rename a document. Answers JSON for the inline editor, or redirects for a plain form."""
+    analysis = owned_analysis_or_404(request, analysis_id)
+    form = RenameForm(request.POST)
+    if not form.is_valid():
+        error = form.errors["title"][0]
+        if wants_json(request):
+            return JsonResponse({"ok": False, "error": error}, status=400)
+        messages.error(request, error)
+        return redirect("analyzer:detail", analysis_id=analysis.pk)
+
+    analysis.title = form.cleaned_data["title"]
+    analysis.save(update_fields=["title", "updated_at"])
+    if wants_json(request):
+        return JsonResponse({"ok": True, "title": analysis.title, "display_name": analysis.display_name})
+    messages.success(request, f"Renamed to \u201c{analysis.display_name}\u201d.")
+    return redirect("analyzer:detail", analysis_id=analysis.pk)

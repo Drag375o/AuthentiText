@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ analysis.display_name }} · {{ SITE_NAME }}{% endblock %}
 {% block content %}
 <section class="section pt-14">
   <div class="page">
     <a href="{% url 'analyzer:dashboard' %}" class="link-arrow">&larr; Dashboard</a>
-    <h1 class="font-display font-bold text-display-md mt-6 break-words">{{ analysis.display_name }}</h1>
+    {% include "analyzer/_rename.html" %}
     <p class="meta mt-3">{{ analysis.get_source_type_display }}, {{ analysis.created_at|date:"j M Y, H:i" }}</p>
 
     <div class="bento mt-10">
@@ -24,10 +25,17 @@
 
     <p class="meta mt-8">Sentence-level results, signals and explanations appear here once the analysis pipeline is built.</p>
 
-    <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-10" data-confirm="Delete this analysis? This can't be undone.">
+    <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-10"
+          data-confirm-title="Delete this analysis?"
+          data-confirm="“{name}” and its results will be permanently deleted. This can't be undone."
+          data-confirm-name="{{ analysis.display_name }}"
+          data-confirm-label="Delete"
+          data-confirm-busy="Deleting…"
+          data-delete-form>
       {% csrf_token %}
-      <button type="submit" class="btn-ghost !border-signal-high !text-signal-high hover:!bg-signal-high hover:!text-paper">Delete analysis</button>
+      <button type="submit" class="btn-danger-ghost">Delete analysis</button>
     </form>
   </div>
 </section>
 {% endblock %}
+{% block scripts %}<script src="{% static 'js/rename.js' %}" defer></script>{% endblock %}

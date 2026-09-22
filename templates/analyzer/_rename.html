@@ -1,0 +1,31 @@
+{% comment %}
+  Document title with inline rename (static/js/rename.js).
+  Without JavaScript the <details> form works as a normal POST.
+{% endcomment %}
+<div class="mt-6" data-rename data-rename-url="{% url 'analyzer:rename' analysis.id %}">
+  <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2" data-rename-view>
+    <h1 class="font-display font-bold text-display-md break-words min-w-0" data-rename-title>{{ analysis.display_name }}</h1>
+    <button type="button" class="rename-trigger hidden" data-rename-open aria-label="Rename document">
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>
+      <span>Rename</span>
+    </button>
+  </div>
+
+  <details class="mt-3" data-rename-fallback>
+    <summary class="link-arrow cursor-pointer">Rename</summary>
+    <form method="post" action="{% url 'analyzer:rename' analysis.id %}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start max-w-2xl" data-rename-form>
+      {% csrf_token %}
+      <div class="flex-1 min-w-0">
+        <label for="rename-title" class="sr-only">Document name</label>
+        <input id="rename-title" name="title" type="text" value="{{ analysis.title }}" maxlength="200" autocomplete="off"
+               placeholder="{{ analysis.display_name }}" class="field-input" aria-describedby="rename-help" data-rename-input>
+        <p id="rename-help" class="meta mt-2" data-rename-help>Leave empty to use the first words of the text.</p>
+        <p class="field-error mt-2 hidden" role="alert" data-rename-error></p>
+      </div>
+      <div class="flex gap-3">
+        <button type="submit" class="btn-primary !py-3" data-rename-save><span class="btn-spinner" aria-hidden="true"></span><span data-rename-save-label>Save</span></button>
+        <button type="button" class="btn-ghost !py-3 hidden" data-rename-cancel>Cancel</button>
+      </div>
+    </form>
+  </details>
+</div>

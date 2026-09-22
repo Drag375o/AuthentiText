@@ -1,0 +1,26 @@
+{% comment %}
+  One shared confirmation dialog for the whole site (static/js/confirm-dialog.js).
+  Native <dialog>: focus stays inside, Esc closes, the page behind is inert.
+  Text and button labels are filled in per use.
+{% endcomment %}
+<dialog class="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message" data-confirm-dialog>
+  <form method="dialog" class="p-7 sm:p-8">
+    <div class="flex gap-5">
+      <span class="confirm-icon" aria-hidden="true" data-confirm-icon>
+        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>
+        </svg>
+      </span>
+      <div class="min-w-0">
+        <h2 id="confirm-title" class="font-display font-bold text-xl text-ink leading-snug" data-confirm-title>Are you sure?</h2>
+        <p id="confirm-message" class="mt-2 text-graphite leading-relaxed break-words" data-confirm-message></p>
+      </div>
+    </div>
+    <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <button type="submit" value="cancel" class="btn-ghost !py-3" data-confirm-cancel>Cancel</button>
+      <button type="submit" value="confirm" class="btn-danger !py-3" data-confirm-ok>
+        <span class="btn-spinner" aria-hidden="true"></span><span data-confirm-ok-label>Delete</span>
+      </button>
+    </div>
+  </form>
+</dialog>

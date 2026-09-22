@@ -26,9 +26,26 @@
   .note { @apply font-script text-slate text-[1.05rem] leading-snug; }
 
   /* Buttons + links (reference: black block button, underlined text link) */
-  .btn { @apply inline-flex items-center justify-center gap-2 font-label text-[0.8rem] tracking-[0.08em] px-6 py-4 rounded-[3px] transition-colors duration-200; }
+  /* Buttons: colour eases on hover, the button presses in on click. */
+  .btn { @apply relative inline-flex items-center justify-center gap-2 font-label text-[0.8rem] tracking-[0.08em] px-6 py-4 rounded-[3px] select-none transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-out active:scale-[0.97] active:duration-75; }
   .btn-primary { @apply btn bg-ink text-paper hover:bg-graphite; }
   .btn-ghost { @apply btn border border-ink text-ink hover:bg-ink hover:text-paper; }
+  .btn-danger { @apply btn bg-signal-high text-paper hover:bg-[#74303A] hover:shadow-[0_6px_16px_-8px_rgba(142,59,70,0.7)]; }
+  .btn-danger-ghost { @apply btn border border-signal-high text-signal-high hover:bg-signal-high hover:text-paper; }
+  .btn[aria-disabled="true"] { @apply pointer-events-none opacity-50; }
+
+  /* Loading state: the label slides over and a spinner appears. */
+  .btn-spinner { @apply hidden h-3.5 w-3.5 shrink-0 rounded-full border-2 border-current border-r-transparent; }
+  .btn[aria-busy="true"] { @apply pointer-events-none; }
+  .btn[aria-busy="true"] .btn-spinner { @apply inline-block animate-spin; }
+
+  /* Rename */
+  .rename-trigger { @apply inline-flex items-center gap-1.5 rounded-[3px] px-2 py-1 -mx-2 font-label text-[0.78rem] tracking-[0.06em] text-muted transition-[color,background-color,transform] hover:bg-fog hover:text-ink active:scale-[0.97]; }
+
+  /* Confirmation dialog */
+  .confirm-dialog { @apply m-auto w-[min(30rem,calc(100vw-2rem))] max-w-none rounded-card border border-rule bg-paper p-0 text-graphite shadow-lift; }
+  .confirm-dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+  .confirm-icon { @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-signal-high-bg text-signal-high; }
   .link-arrow { @apply font-label text-[0.78rem] tracking-[0.06em] text-muted underline underline-offset-4 decoration-1 hover:text-ink transition-colors; }
 
   /* ---------- Bento system ---------- */
@@ -102,6 +119,25 @@
   .js .hero-doc .margin-note { transition: opacity .7s ease 2.1s; }
   .js .hero-card:not(.is-in) .margin-note { opacity: 0; }
 }
+/* Dialog motion: fade and rise in, sink out. */
+@media (prefers-reduced-motion: no-preference) {
+  .confirm-dialog[open] { animation: dialog-in 220ms cubic-bezier(.16, .84, .32, 1); }
+  .confirm-dialog[open]::backdrop { animation: backdrop-in 220ms ease-out; }
+  .confirm-dialog.is-closing { animation: dialog-out 160ms ease-in forwards; }
+  .confirm-dialog.is-closing::backdrop { animation: backdrop-out 160ms ease-in forwards; }
+  .confirm-dialog [data-confirm-ok][aria-busy="true"] [data-confirm-ok-label] { animation: label-nudge 300ms ease-out; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rename-flash { animation: rename-flash 900ms ease-out; }
+}
+@keyframes rename-flash { 0% { background-color: theme("colors.brass.soft"); } 100% { background-color: transparent; } }
+
+@keyframes dialog-in { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes dialog-out { to { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes backdrop-in { from { opacity: 0; } }
+@keyframes backdrop-out { to { opacity: 0; } }
+@keyframes label-nudge { from { opacity: .3; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

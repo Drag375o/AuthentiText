@@ -72,11 +72,26 @@
     if (field) field.focus();
   }
 
-  /** Forms with data-confirm ask before submitting (e.g. delete). */
+  /**
+   * Forms with data-confirm ask through the shared dialog before submitting.
+   * Optional: data-confirm-title, data-confirm-label, data-confirm-busy, and
+   * data-confirm-name, which replaces {name} in the message (kept current
+   * by rename.js, so the dialog always shows the document's latest name).
+   */
   function initConfirmForms() {
     document.querySelectorAll("form[data-confirm]").forEach((form) => {
-      form.addEventListener("submit", (event) => {
-        if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+      form.addEventListener("submit", async (event) => {
+        if (form.dataset.confirmed === "true") return;
+        event.preventDefault();
+        const ok = await window.ConfirmDialog.ask({
+          title: form.dataset.confirmTitle,
+          message: form.dataset.confirm.replace("{name}", form.dataset.confirmName || ""),
+          confirmLabel: form.dataset.confirmLabel || "Confirm",
+          busyLabel: form.dataset.confirmBusy || "",
+        });
+        if (!ok) return;
+        form.dataset.confirmed = "true";
+        form.submit(); // native submit: doesn't re-fire this listener
       });
     });
   }
