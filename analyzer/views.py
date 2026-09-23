@@ -154,11 +154,75 @@ FEATURE_GROUPS = {
     "pos": ["pos_noun_ratio", "pos_verb_ratio", "pos_adj_ratio", "pos_adv_ratio", "pos_pron_ratio",
             "pos_det_ratio", "pos_adp_ratio", "pos_conj_ratio", "pos_aux_ratio", "pos_propn_ratio", "pos_num_ratio"],
     "openings": ["opening_pattern_diversity", "repeated_opening_ratio", "marker_initial_ratio"],
+    "statistical": ["word_entropy", "normalized_entropy", "sentence_length_burstiness",
+                    "bigram_repeat_rate", "trigram_repeat_rate", "zipf_slope"],
+    "semantic": ["local_coherence", "paragraph_coherence", "semantic_diversity", "semantic_redundancy",
+                 "max_sentence_similarity", "opening_closing_similarity"],
+    "stylometric": ["formality_score", "first_person_ratio", "contraction_ratio"],
     "discourse": ["transitions_per_100", "contrast_markers_per_100", "cause_effect_markers_per_100",
                   "conclusion_markers_per_100", "emphasis_markers_per_100", "hedges_per_100", "formulaic_phrases_per_100"],
 }
 PATTERN_EXAMPLES = 3
+SIMILAR_PAIRS_SHOWN = 4
+# Sentence heatmap bands. Kept here so the template and the legend agree.
+SIGNAL_BANDS = ((0.34, "low", "Low signal"), (0.60, "mid", "Medium signal"), (1.01, "high", "High signal"))
+
+
+def signal_band(probability: float | None) -> tuple[str, str]:
+    if probability is None:
+        return "none", "Not scored"
+    for ceiling, level, label in SIGNAL_BANDS:
+        if probability < ceiling:
+            return level, label
+    return "high", "High signal"
+
+
+def heatmap_sentences(sentences: list, detection: dict) -> list[dict]:
+    """Sentence rows for the interactive viewer, with reasons drawn from the signals."""
+    rows: list[dict] = []
+    for sentence in sentences:
+        level, level_label = signal_band(sentence.ai_probability)
+        signals = sentence.signals or {}
+        reasons = []
+        if signals.get("markers"):
+            reasons.append("Opens with or contains a discourse marker.")
+        if signals.get("passive"):
+            reasons.append("Passive construction.")
+        if not signals.get("rare_words"):
+            reasons.append("No uncommon vocabulary.")
+        if signals.get("type_token_ratio") is not None and signals["type_token_ratio"] < 0.7:
+            reasons.append("Words repeat within the sentence.")
+        if signals.get("heading"):
+            reasons = ["A heading, so it is not scored."]
+        rows.append({
+            "text": sentence.text, "level": level, "level_label": level_label,
+            "index": sentence.sentence_index, "probability": sentence.ai_probability,
+            "words": signals.get("words"), "reasons": reasons or ["Nothing notable in this sentence."],
+            "paragraph": signals.get("paragraph", 0), "heading": bool(signals.get("heading")), "note": None,
+        })
+    return rows
+
+
+def group_by_paragraph(rows: list[dict]) -> list[dict]:
+    """Keep the document's shape in the viewer: one block per paragraph, headings on their own."""
+    blocks: list[dict] = []
+    for row in rows:
+        if not blocks or blocks[-1]["paragraph"] != row["paragraph"] or row["heading"] or blocks[-1]["heading"]:
+            blocks.append({"paragraph": row["paragraph"], "heading": row["heading"], "sentences": []})
+        blocks[-1]["sentences"].append(row)
+    return blocks
 CONTEXT_CHARS = 70
+
+
+def similar_pair_rows(analysis: Analysis, sentences: list) -> list[dict]:
+    """The most similar sentence pairs, with their text, for the semantics card."""
+    by_index = {s.sentence_index: s for s in sentences}
+    rows = []
+    for pair in analysis.report.get("similar_pairs", [])[:SIMILAR_PAIRS_SHOWN]:
+        a, b = by_index.get(pair["a"]), by_index.get(pair["b"])
+        if a and b:
+            rows.append({**pair, "a_text": a.text, "b_text": b.text})
+    return rows
 
 
 def pattern_examples(analysis: Analysis, sentences: list) -> list[dict]:
@@ -210,6 +274,11 @@ def analysis_detail(request: HttpRequest, analysis_id) -> HttpResponse:
             },
             "max_top_word": max((w["count"] for w in analysis.report.get("top_words", [])), default=1),
             "pattern_entries": pattern_examples(analysis, sentences),
+            "detection": analysis.report.get("detection", {}),
+            "heatmap_sentences": (heat := heatmap_sentences(sentences, analysis.report.get("detection", {}))),
+            "heatmap_blocks": group_by_paragraph(heat),
+            "profile": analysis.report.get("profile", []),
+            "similar_pairs": similar_pair_rows(analysis, sentences),
             "marker_labels": analysis.report.get("pattern_categories", {}),
             "pos_chart": {
                 "labels": [BY_NAME[n].label for n in FEATURE_GROUPS["pos"]],

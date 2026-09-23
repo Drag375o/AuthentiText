@@ -12,6 +12,10 @@ and never exposes internals to the user.
       -> lexical features
       -> syntactic features (POS, parse depth, clauses, voice)
       -> discourse markers, formulaic phrases, sentence openings
+      -> statistical features (entropy, burstiness, n-gram repetition)
+      -> semantic features (sentence embeddings: similarity, coherence, redundancy)
+      -> stylometric features and the 0-100 Writing Profile
+      -> detector: document and sentence AI-associated signal
       -> sentence rows + feature rows + report
 """
 from __future__ import annotations
@@ -23,16 +27,20 @@ from dataclasses import dataclass, field
 from django.db import transaction
 from django.utils import timezone
 
+from .detector import DetectionResult, get_detector
 from .discourse import compute_discourse
 from .document_stats import compute_document_stats
 from .features import BY_NAME
 from .lexical import RARE_ZIPF, compute_lexical, zipf
 from .preprocessing import ProcessedDocument, Sentence, preprocess
+from .semantics import compute_semantics
+from .statistics_features import compute_statistics
+from .stylometry import build_profile, compute_stylometry
 from .syntax import compute_syntax, sentence_syntax
 
 logger = logging.getLogger("authentitext")
 
-PIPELINE_VERSION = "0.5.0"
+PIPELINE_VERSION = "0.7.0"
 
 
 @dataclass
@@ -41,6 +49,7 @@ class PipelineResult:
     features: dict[str, float | None]
     sentences: list[dict]
     report: dict
+    detection: "DetectionResult | None" = None
     timings_ms: dict[str, int] = field(default_factory=dict)
 
 
@@ -75,21 +84,35 @@ def run_pipeline(text: str) -> PipelineResult:
     lexical, lexical_details = timed("lexical", compute_lexical, processed)
     syntax = timed("syntax", compute_syntax, processed)
     discourse, discourse_details = timed("discourse", compute_discourse, processed)
+    statistical, statistical_details = timed("statistics", compute_statistics, processed)
+    semantic, semantic_details = timed("semantics", compute_semantics, processed)
+    stylometric = timed("stylometry", compute_stylometry, processed, syntax)
 
+    closest = {row["index"]: row for row in semantic_details.get("sentence_similarity", [])}
     markers_by_sentence: dict[int, list[str]] = {}
     for pattern in discourse_details["patterns"]:
         for _, _, sentence_index in pattern["spans"]:
             markers_by_sentence.setdefault(sentence_index, []).append(pattern["category"])
     sentences = timed("sentences", lambda: [
         {"index": s.index, "text": processed.text_of(s.start, s.end), "start": s.start, "end": s.end,
-         "signals": {**sentence_signals(s), **sentence_syntax(s), "paragraph": s.paragraph,
-                     "markers": sorted(set(markers_by_sentence.get(s.index, [])))}}
+         "signals": {**sentence_signals(s), **sentence_syntax(s), "paragraph": s.paragraph, "heading": s.is_heading,
+                     "markers": sorted(set(markers_by_sentence.get(s.index, []))),
+                     "closest_sentence": closest.get(s.index, {}).get("closest"),
+                     "closest_similarity": closest.get(s.index, {}).get("similarity")}}
         for s in processed.sentences
     ])
 
-    features = {**document, **lexical, **syntax, **discourse}
+    features = {**document, **lexical, **syntax, **discourse, **statistical, **semantic, **stylometric}
     unknown = set(features) - set(BY_NAME)
     assert not unknown, f"Unregistered features: {unknown}"   # every feature needs a label and explanation
+
+    detector = get_detector()
+    started = time.perf_counter()
+    detection = detector.analyze(features, word_count=int(features["word_count"] or 0))
+    timings["detection"] = round((time.perf_counter() - started) * 1000)
+    sentence_signal = detector.sentence_scores(sentences, features)
+    for sentence, score in zip(sentences, sentence_signal):
+        sentence["ai_probability"] = score
 
     notes = []
     if processed.language != "en":
@@ -97,12 +120,16 @@ def run_pipeline(text: str) -> PipelineResult:
     report = {
         **lexical_details,
         **discourse_details,
-        "sentence_lengths": [s["signals"]["words"] for s in sentences],
+        **statistical_details,
+        **semantic_details,
+        "profile": build_profile(features),
+        "detection": detection.as_dict(),
+        "sentence_lengths": [s["signals"]["words"] for s in sentences if not s["signals"]["heading"]],
         "language_checked": processed.language_checked,
         "notes": notes,
         "timings_ms": timings,
     }
-    return PipelineResult(processed, features, sentences, report, timings)
+    return PipelineResult(processed, features, sentences, report, detection, timings)
 
 
 def save_results(analysis, result: PipelineResult) -> None:
@@ -113,7 +140,8 @@ def save_results(analysis, result: PipelineResult) -> None:
         analysis.features.all().delete()
         SentenceAnalysis.objects.bulk_create([
             SentenceAnalysis(analysis=analysis, sentence_index=s["index"], text=s["text"],
-                             start_char=s["start"], end_char=s["end"], signals=s["signals"])
+                             start_char=s["start"], end_char=s["end"], signals=s["signals"],
+                             ai_probability=s.get("ai_probability"))
             for s in result.sentences
         ])
         Feature.objects.bulk_create([
@@ -125,6 +153,13 @@ def save_results(analysis, result: PipelineResult) -> None:
         analysis.sentence_count = int(f["sentence_count"])
         analysis.paragraph_count = int(f["paragraph_count"])
         analysis.language = result.processed.language
+        detection = result.detection
+        analysis.result_label = detection.label
+        analysis.ai_probability = detection.probability
+        analysis.confidence = detection.confidence
+        analysis.uncertainty = detection.uncertainty
+        analysis.model_version = detection.model_version
+        analysis.is_demo = detection.is_demo
         analysis.report = result.report
         analysis.pipeline_version = PIPELINE_VERSION
         analysis.processed_at = timezone.now()

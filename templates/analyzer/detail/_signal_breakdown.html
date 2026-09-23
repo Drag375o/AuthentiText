@@ -1,0 +1,56 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">Signal breakdown</h2>
+<p class="mt-3 text-graphite max-w-prose">Where the score came from, family by family. Every one of these patterns appears in human writing too, so read them as reasons to look closer.</p>
+
+<div class="bento mt-8">
+  <article class="bento-card span-wide">
+    <p class="meta">By family</p>
+    <dl class="mt-5 space-y-4">
+      {% for family in detection.families %}
+        <div>
+          <div class="flex items-baseline justify-between gap-4">
+            <dt class="text-ink">{{ family.label }}</dt>
+            <dd class="font-display font-bold text-ink tabular-nums">{% if family.score is None %}&mdash;{% else %}{{ family.score|percent_of:1|floatformat:0 }}%{% endif %}</dd>
+          </div>
+          <div class="meter mt-2" role="img" aria-label="{{ family.label }}: {% if family.score is None %}not measured{% else %}{{ family.score|percent_of:1|floatformat:0 }} percent{% endif %}">
+            <span style="transform: scaleX(0)" data-meter="{{ family.score|percent_of:1 }}"></span>
+          </div>
+        </div>
+      {% endfor %}
+    </dl>
+    <p class="meta mt-auto pt-6 leading-relaxed">Families that disagree with one another lower the confidence rather than being averaged away.</p>
+  </article>
+
+  <article class="bento-card bento-card--ink">
+    <p class="font-script text-2xl text-paper">Why was this flagged?</p>
+    <ul class="mt-5 space-y-3">
+      {% for signal in detection.signals|dictsortreversed:"score" %}
+        {% if signal.score is not None and signal.score >= 0.5 %}
+          <li class="flex gap-3"><span aria-hidden="true">&mdash;</span><span>{{ signal.text }}</span></li>
+        {% endif %}
+      {% empty %}
+        <li>No signal stood out in this text.</li>
+      {% endfor %}
+    </ul>
+    <p class="meta mt-auto pt-6 !text-paper/60">Signals, not proof.</p>
+  </article>
+</div>
+
+<article class="bento-card mt-4 !p-0 overflow-hidden">
+  <p class="label px-7 pt-6 pb-4">Every signal</p>
+  <ul class="divide-y divide-rule border-t border-rule">
+    {% for signal in detection.signals %}
+      <li class="px-7 py-4">
+        <details class="group">
+          <summary class="flex cursor-pointer list-none flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span class="text-ink">{{ signal.label }}</span>
+            <span class="chip">{{ signal.family_label }}</span>
+            <span class="ml-auto font-display font-bold tabular-nums text-ink">{% if signal.score is None %}&mdash;{% else %}{{ signal.score|percent_of:1|floatformat:0 }}%{% endif %}</span>
+          </summary>
+          <p class="mt-2 text-[0.95rem] text-graphite">{{ signal.text }}</p>
+          <p class="mt-1 text-[0.95rem] text-muted">{{ signal.caveat }}</p>
+        </details>
+      </li>
+    {% endfor %}
+  </ul>
+</article>

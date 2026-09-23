@@ -6,10 +6,17 @@ register = template.Library()
 
 @register.filter
 def feature_display(value, unit: str) -> str:
+    """
+    Formats a feature value for display.
+
+    Small values keep a decimal place: rounding 1.2% and 0.6% both to "1%" hid a
+    twofold difference between two documents. Likewise -0.04 must not render as "-0".
+    """
     if value is None:
         return "\u2014"
     if unit == "ratio":
-        return f"{value * 100:.0f}%"
+        percent = value * 100
+        return f"{percent:.1f}%" if 0 < abs(percent) < 10 else f"{percent:.0f}%"
     if unit == "count":
         return f"{int(round(value)):,}"
     if unit == "words":
@@ -18,7 +25,9 @@ def feature_display(value, unit: str) -> str:
         return f"{value:.1f}"
     if unit == "zipf":
         return f"{value:.2f}"
-    return f"{value:.1f}".rstrip("0").rstrip(".") if isinstance(value, float) else str(value)
+    if unit == "number":
+        return f"{value:.2f}" if abs(value) < 1 else f"{value:.1f}"
+    return str(value)
 
 
 @register.filter

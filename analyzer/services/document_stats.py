@@ -1,4 +1,11 @@
-"""Document statistics: sizes, sentence-length distribution, punctuation habits."""
+"""
+Document statistics: sizes, sentence-length distribution, punctuation habits.
+
+Sentence-length measures use body sentences only. A heading ("3.3 Data Split")
+is a few words long and would otherwise pull the mean down and inflate the
+variation: in testing, one heading moved burstiness by 0.16, more than the
+difference between two documents being compared.
+"""
 from __future__ import annotations
 
 import math
@@ -21,7 +28,7 @@ PUNCTUATION = {
 
 
 def sentence_lengths(doc: ProcessedDocument) -> list[int]:
-    return [len(s.words) for s in doc.sentences]
+    return [len(s.words) for s in doc.body_sentences]
 
 
 def _is_spaced_hyphen(doc: ProcessedDocument, token) -> bool:
@@ -60,6 +67,7 @@ def compute_document_stats(doc: ProcessedDocument) -> dict[str, float | None]:
         "word_count": word_count,
         "unique_word_count": len({w.norm for w in words}),
         "sentence_count": len(doc.sentences),
+        "heading_count": sum(1 for s in doc.sentences if s.is_heading),
         "paragraph_count": len(doc.paragraphs),
         "character_count": len(doc.original_text),
         "reading_minutes": math.ceil(word_count / READING_WPM) if word_count else 0,

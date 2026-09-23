@@ -110,6 +110,20 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Sentence embeddings (analyzer/services/embeddings.py)
+#   auto                  use sentence-transformers if it loads, else TF-IDF
+#   tfidf                 always TF-IDF (no model download)
+#   sentence-transformers require the transformer, and fail loudly if missing
+EMBEDDING_BACKEND = os.getenv("EMBEDDING_BACKEND", "auto")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+
+# Detector (analyzer/services/detector.py)
+#   auto     use the trained model if ml/models/baseline.joblib exists, else the demo
+#   trained  require the trained model
+#   demo     always use the labelled demo detector
+DETECTOR_BACKEND = os.getenv("DETECTOR_BACKEND", "auto")
+DETECTOR_MODEL_PATH = os.getenv("DETECTOR_MODEL_PATH", "")
+
 # Analysis limits
 ANALYSIS_MAX_CHARS = int(os.getenv("ANALYSIS_MAX_CHARS", "100000"))
 # Below this many words, results are reported as "Insufficient evidence".

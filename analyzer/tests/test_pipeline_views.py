@@ -22,6 +22,8 @@ class AnalyzeRunsPipelineTests(TestCase):
         response = self.client.post(reverse("analyzer:analyze"), {"text": TEXT}, follow=True)
         a = Analysis.objects.get()
         self.assertEqual((a.status, a.pipeline_version), ("complete", PIPELINE_VERSION))
+        self.assertTrue(a.features.filter(feature_name="word_entropy").exists())
+        self.assertTrue(a.report["profile"])
         self.assertEqual((a.sentence_count, a.paragraph_count), (3, 2))
         self.assertEqual(a.sentences.count(), 3)
         self.assertTrue(a.features.filter(feature_name="mattr").exists())
@@ -32,6 +34,10 @@ class AnalyzeRunsPipelineTests(TestCase):
         self.assertContains(response, "Grammar and structure")
         self.assertContains(response, "Pattern explorer")
         self.assertContains(response, 'id="pos-chart-data"')
+        self.assertContains(response, "Statistical and semantic signals")
+        self.assertContains(response, "Writing profile")
+        self.assertContains(response, "Feature scores, not personality judgments.")
+        self.assertContains(response, a.report["embedding_label"])   # which backend, always stated
 
     def test_failure_keeps_text_and_says_so(self):
         with mock.patch("analyzer.services.pipeline.preprocess", side_effect=RuntimeError("boom")), \

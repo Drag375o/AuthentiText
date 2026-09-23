@@ -135,7 +135,7 @@ class LexicalTests(SimpleTestCase):
         features, details = compute_lexical(preprocess(
             "The recipe used turmeric. Another recipe used tamarind. My recipes were simple."))
         self.assertGreater(features["rare_word_ratio"], 0)
-        self.assertEqual(details["top_words"][0], {"word": "recipe", "count": 3})
+        self.assertEqual(details["top_words"][0], {"word": "recipe", "count": 3})   # grouped by lemma, shown as written
 
 
 class PipelineTests(SimpleTestCase):
@@ -168,3 +168,80 @@ class FeatureDocsTests(SimpleTestCase):
         call_command("feature_docs", stdout=out)
         on_disk = (Path(settings.BASE_DIR) / "docs" / "FEATURES.md").read_text(encoding="utf-8")
         self.assertEqual(on_disk.strip(), out.getvalue().strip())
+
+
+class SoftWrapTests(SimpleTestCase):
+    """Text pasted from a PDF arrives hard-wrapped mid-sentence. Splitting there
+    would invent sentences like "We" and distort every rhythm measure."""
+
+    PASTED = ("The dataset was partitioned into training, development, and test sets, comprising 70%, 10%, and\n"
+              "20% of data, respectively, for our experiments. We\n"
+              "applied stratified sampling (Sechidis et al., 2011)\n"
+              "to ensure a balanced class label distribution across\n"
+              "all splits.")
+
+    def test_wrapped_lines_join_into_one_paragraph(self):
+        doc = preprocess(self.PASTED)
+        self.assertEqual(len(doc.paragraphs), 1)
+        self.assertEqual(len(doc.sentences), 2)
+        self.assertNotIn("We", [doc.text_of(s.start, s.end) for s in doc.sentences])
+
+    def test_real_breaks_are_still_breaks(self):
+        self.assertEqual(len(paragraph_spans("3.3 Data Split\nThe dataset was partitioned.")), 2)
+        self.assertEqual(len(paragraph_spans("First idea here.\nSecond idea here.")), 2)
+        self.assertEqual(len(paragraph_spans("Pick one:\n- first item\n- second item")), 3)
+        self.assertEqual(len(paragraph_spans("Steps:\n1. Wash rice\n2. Soak lentils")), 3)
+
+    def test_offsets_still_match_the_original(self):
+        doc = preprocess(self.PASTED)
+        for token in doc.tokens:
+            self.assertEqual(self.PASTED[token.start:token.end], token.text)
+
+    def test_wrapping_no_longer_changes_the_rhythm_measures(self):
+        """The same prose, wrapped and unwrapped, must measure the same."""
+        from analyzer.services.document_stats import compute_document_stats
+        unwrapped = " ".join(line.strip() for line in self.PASTED.split("\n"))
+        wrapped_stats = compute_document_stats(preprocess(self.PASTED))
+        flat_stats = compute_document_stats(preprocess(unwrapped))
+        for key in ("sentence_count", "sentence_length_mean", "sentence_length_cv"):
+            self.assertAlmostEqual(wrapped_stats[key], flat_stats[key], places=6, msg=key)
+
+
+class HeadingTests(SimpleTestCase):
+    """A heading is a few words long. Counting it as a sentence distorted
+    burstiness by 0.16 when comparing two documents: more than the difference
+    being measured."""
+
+    BODY = ("The dataset was partitioned into training and test sets for our experiments. "
+            "We applied stratified sampling to keep the class balance across all splits. "
+            "The result is reported in the table below for every annotation dimension.")
+
+    def test_heading_is_detected_and_excluded_from_rhythm(self):
+        from analyzer.services.document_stats import compute_document_stats
+        with_heading = compute_document_stats(preprocess(f"3.3 Data Split\n{self.BODY}"))
+        without = compute_document_stats(preprocess(self.BODY))
+        self.assertEqual(with_heading["heading_count"], 1)
+        self.assertEqual(with_heading["sentence_count"], without["sentence_count"] + 1)
+        for key in ("sentence_length_mean", "sentence_length_cv", "sentence_length_min"):
+            self.assertAlmostEqual(with_heading[key], without[key], places=6, msg=key)
+
+    def test_burstiness_ignores_headings(self):
+        from analyzer.services.statistics_features import compute_statistics
+        with_heading, _ = compute_statistics(preprocess(f"3.3 Data Split\n{self.BODY}"))
+        without, _ = compute_statistics(preprocess(self.BODY))
+        self.assertAlmostEqual(with_heading["sentence_length_burstiness"],
+                               without["sentence_length_burstiness"], places=6)
+
+    def test_real_sentences_are_not_treated_as_headings(self):
+        doc = preprocess("The rain stopped.\nWe went outside and sat on the steps until it was dark.")
+        self.assertEqual([s.is_heading for s in doc.sentences], [False, False])
+
+    def test_a_long_line_without_punctuation_is_not_a_heading(self):
+        long_line = " ".join(["word"] * 20)
+        doc = preprocess(f"{long_line}\nA second paragraph follows here.")
+        self.assertFalse(doc.sentences[0].is_heading)
+
+    def test_a_single_short_line_document_is_not_a_heading(self):
+        doc = preprocess("Just a short note")
+        self.assertFalse(doc.sentences[0].is_heading)
+        self.assertEqual(len(doc.body_sentences), 1)

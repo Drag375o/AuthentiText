@@ -1,0 +1,49 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">Statistical and semantic signals</h2>
+<p class="mt-3 text-graphite max-w-prose">How predictable the word choices are, and how much the sentences resemble one another. No single number here means anything on its own.</p>
+<div class="bento mt-8">
+  <article class="bento-card span-2x1">
+    <p class="meta">Statistical</p>
+    {% include "analyzer/detail/_feature_list.html" with rows=groups.statistical %}
+  </article>
+
+  <article class="bento-card span-2x1">
+    <div class="flex flex-wrap items-baseline justify-between gap-3">
+      <p class="meta">Semantic</p>
+      <p class="chip">{{ analysis.report.embedding_label }}</p>
+    </div>
+    {% if groups.semantic.0.value is None %}
+      <p class="mt-6 text-graphite">{{ analysis.report.semantics_skipped|default:"Not enough sentences for semantic measures." }}</p>
+    {% else %}
+      {% include "analyzer/detail/_feature_list.html" with rows=groups.semantic %}
+    {% endif %}
+    <p class="meta mt-5 leading-relaxed">{{ analysis.report.embedding_description }}</p>
+  </article>
+
+  {% if similar_pairs %}
+    <article class="bento-card span-2x1">
+      <p class="meta">Most similar sentence pairs</p>
+      <ul class="mt-5 space-y-4">
+        {% for pair in similar_pairs %}
+          <li class="border-l-2 {% if pair.near_duplicate %}border-signal-mid{% else %}border-rule{% endif %} pl-4">
+            <p class="meta">S{{ pair.a|add:1 }} and S{{ pair.b|add:1 }}, {{ pair.similarity|percent_of:1|floatformat:0 }}% similar{% if pair.near_duplicate %}, near-duplicate{% endif %}</p>
+            <p class="mt-1.5 text-[0.98rem] text-ink">{{ pair.a_text|truncatechars:110 }}</p>
+            <p class="mt-1 text-[0.98rem] text-graphite">{{ pair.b_text|truncatechars:110 }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </article>
+  {% endif %}
+
+  {% if analysis.report.distinctive_terms %}
+    <article class="bento-card {% if similar_pairs %}span-2x1{% else %}span-full{% endif %}">
+      <p class="meta">Distinctive terms</p>
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {% for term in analysis.report.distinctive_terms %}
+          <li class="rounded-full border border-rule px-3 py-1 text-[0.98rem] text-ink">{{ term.term }} <span class="meta">{{ term.count }}×</span></li>
+        {% endfor %}
+      </ul>
+      <p class="meta mt-5 leading-relaxed">Words that are frequent here but uncommon in everyday English (TF-IDF, with general-English frequencies as the background).</p>
+    </article>
+  {% endif %}
+</div>

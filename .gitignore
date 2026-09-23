@@ -8,6 +8,7 @@ node_modules/
 staticfiles/
 media/
 ml/models/*.joblib
+data/*.jsonl
 ml/models/*.bin
 ml/models/*.pt
 .DS_Store

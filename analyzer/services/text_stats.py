@@ -13,7 +13,9 @@ Rules
 - word:       letters/digits, allowing internal apostrophes or hyphens (it's, well-known);
               numbers with . or , separators count once (3.14, 1,000)
 - paragraph:  if the text contains a blank line, blank lines separate paragraphs;
-              otherwise each line break does. Only blocks containing a word count.
+              otherwise each line break does, except soft wraps (a line break in
+              the middle of a sentence, as when text is pasted from a PDF).
+              Only blocks containing a word count.
 - sentence:   within each paragraph, a split after . ! ? or ... (optionally followed
               by closing quotes/brackets) and whitespace. Only pieces with a word count.
 - characters: Unicode code points, with CRLF counted as one line break
@@ -53,8 +55,21 @@ def normalize_newlines(text: str) -> str:
 
 
 def split_paragraphs(text: str) -> list[str]:
-    splitter = PARAGRAPH_SPLIT_BLANK if BLANK_LINE_RE.search(text) else re.compile(r"\n")
-    return [block for block in splitter.split(text) if HAS_WORD_RE.search(block)]
+    """Mirrors segmentation.paragraph_spans, including its soft-wrap rule."""
+    from .segmentation import is_soft_wrap
+
+    if BLANK_LINE_RE.search(text):
+        blocks = PARAGRAPH_SPLIT_BLANK.split(text)
+    else:
+        blocks, current = [], ""
+        for index, line in enumerate(text.split("\n")):
+            if index and not is_soft_wrap(current, line):
+                blocks.append(current)
+                current = line
+            else:
+                current = f"{current}\n{line}" if index else line
+        blocks.append(current)
+    return [block for block in blocks if HAS_WORD_RE.search(block)]
 
 
 def split_sentences(paragraph: str) -> list[str]:

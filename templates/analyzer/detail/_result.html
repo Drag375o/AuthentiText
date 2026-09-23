@@ -1,0 +1,62 @@
+{% load analysis_format %}
+{% if analysis.is_demo %}
+  <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-signal-warn/40 bg-brass-soft px-5 py-3" role="note">
+    <span class="font-label text-[0.72rem] tracking-[0.08em] bg-ink text-paper px-2 py-0.5">{{ detection.notice }}</span>
+    <span class="text-ink">This score comes from hand-chosen heuristics, not a trained model. It has no measured accuracy.</span>
+  </p>
+{% endif %}
+
+<div class="bento mt-8">
+  <article class="bento-card span-2x2 bento-card--fog">
+    <p class="meta">AI-associated signal</p>
+    {% if detection.probability is None %}
+      <p class="font-display font-bold text-display-md mt-6">{{ analysis.get_result_label_display }}</p>
+      <ul class="mt-5 space-y-2 text-graphite">{% for reason in detection.reasons %}{% if reason %}<li>{{ reason }}</li>{% endif %}{% endfor %}</ul>
+    {% else %}
+      <p class="metric !text-7xl mt-6">{{ detection.probability|percent_of:1|floatformat:0 }}%</p>
+      <p class="font-display font-semibold text-xl text-ink mt-3">{{ analysis.get_result_label_display }}</p>
+      <div class="meter mt-5"><span style="transform: scaleX(0)" data-meter="{{ detection.probability|percent_of:1 }}"></span></div>
+      <p class="mt-6 text-graphite leading-relaxed">The analysis identified characteristics associated with AI-generated examples. It does not show who wrote this text.</p>
+    {% endif %}
+    <p class="meta mt-auto pt-6">Model {{ analysis.model_version }}</p>
+  </article>
+
+  <article class="bento-card">
+    <p class="meta">Confidence</p>
+    {% if detection.confidence is None %}
+      <p class="h-card mt-auto pt-6">Not available</p>
+    {% else %}
+      <p class="metric mt-auto pt-6">{{ detection.confidence|percent_of:1|floatformat:0 }}%</p>
+      <p class="meta mt-2">how much the evidence supports the estimate</p>
+    {% endif %}
+  </article>
+  <article class="bento-card">
+    <p class="meta">Uncertainty</p>
+    {% if detection.uncertainty is None %}
+      <p class="h-card mt-auto pt-6">Not available</p>
+    {% else %}
+      <p class="metric mt-auto pt-6">{{ detection.uncertainty|percent_of:1|floatformat:0 }}%</p>
+      <p class="meta mt-2">the part the evidence does not settle</p>
+    {% endif %}
+  </article>
+
+  <article class="bento-card span-2x1">
+    <p class="meta">Document</p>
+    <dl class="mt-4 grid grid-cols-3 gap-4">
+      <div><dt class="meta">Words</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1">{{ values.word_count|feature_display:"count" }}</dd></div>
+      <div><dt class="meta">Sentences</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1">{{ values.sentence_count|feature_display:"count" }}</dd></div>
+      <div><dt class="meta">Paragraphs</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1">{{ values.paragraph_count|feature_display:"count" }}</dd></div>
+    </dl>
+  </article>
+
+  {% if detection.reasons and detection.probability is not None %}
+    <article class="bento-card span-2x1">
+      <p class="meta">Why confidence is not higher</p>
+      <ul class="mt-4 space-y-2 text-graphite">{% for reason in detection.reasons %}{% if reason %}<li>{{ reason }}</li>{% endif %}{% endfor %}</ul>
+    </article>
+  {% endif %}
+</div>
+
+{% if detection.families %}
+  {% include "analyzer/detail/_signal_breakdown.html" %}
+{% endif %}

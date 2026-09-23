@@ -84,3 +84,15 @@ class TemplateHygieneTests(TestCase):
         offenders = [str(p) for p in (Path(settings.BASE_DIR) / "templates").rglob("*.html")
                      if re.search(r"\\u[0-9a-fA-F]{4}", p.read_text(encoding="utf-8"))]
         self.assertEqual(offenders, [])
+
+
+class SentenceMarkIndexTests(TestCase):
+    """The viewer looks sentences up by data-sentence-index, so the landing page's
+    sample must number its marks 0..n-1 even though its data has no index field."""
+
+    def test_landing_marks_are_numbered_in_order(self):
+        import re
+        html = self.client.get(reverse("core:landing")).content.decode()
+        indices = re.findall(r'data-sentence-index="(\d+)"', html)
+        expected = [str(i) for i in range(len(SAMPLE_DOCUMENT))]
+        self.assertEqual(indices, expected * 2)   # hero viewer + main viewer

@@ -10,4 +10,4 @@
   style="--i: {{ forloop.counter0 }}"
   aria-pressed="false"
   aria-controls="{{ viewer_id }}-detail"
-  data-sentence-index="{{ forloop.counter0 }}">{{ s.text }}<span class="sr-only"> ({{ s.level_label }})</span></span>{% if not forloop.last %} {% endif %}{% endfor %}
+  data-sentence-index="{{ s.index|default:forloop.counter0 }}">{{ s.text }}<span class="sr-only"> ({{ s.level_label }})</span></span>{% if not forloop.last %} {% endif %}{% endfor %}

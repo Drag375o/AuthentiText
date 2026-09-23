@@ -1,5 +1,5 @@
 <h2 class="h-section !text-display-md mt-16">Sentence rhythm</h2>
-<p class="mt-3 text-graphite max-w-prose">How long each sentence is, in order. Varied lengths make a rhythm; very even lengths are one signal among many, and never evidence on their own.</p>
+<p class="mt-3 text-graphite max-w-prose">How long each sentence is, in order. Varied lengths make a rhythm; very even lengths are one signal among many, and never evidence on their own.{% if values.heading_count %} {{ values.heading_count|floatformat:0 }} heading{{ values.heading_count|floatformat:0|pluralize }} excluded.{% endif %}</p>
 <div class="bento mt-8">
   <article class="bento-card span-wide">
     <div class="flex items-baseline justify-between gap-4">

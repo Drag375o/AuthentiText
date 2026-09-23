@@ -1,0 +1,26 @@
+<h2 class="h-section !text-display-md mt-16">Sentence heatmap</h2>
+<p class="mt-3 text-graphite max-w-prose">The document with each sentence marked by its own signal. Select a sentence to see what was measured in it.</p>
+
+<div class="bento mt-8" data-sentence-viewer data-viewer-id="doc">
+  <article class="bento-card span-wide">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-rule pb-4">
+      <p class="label">{{ analysis.display_name }}</p>
+      {% include "components/signal_legend.html" %}
+    </div>
+    <div class="mt-6 space-y-5 text-lg leading-[2] text-ink">
+      {% for block in heatmap_blocks %}
+        <p{% if block.heading %} class="font-display font-semibold"{% endif %}>
+          {% include "components/sentence_marks.html" with sentences=block.sentences viewer_id="doc" %}
+        </p>
+      {% endfor %}
+    </div>
+    <p class="meta mt-8">{% if analysis.is_demo %}Demo scoring: heuristics per sentence, not a trained model.{% else %}Sentence scores from {{ analysis.model_version }}.{% endif %}</p>
+  </article>
+
+  <aside id="doc-detail" class="bento-card bento-card--fog" aria-live="polite" data-detail-panel>
+    <p class="font-script text-2xl text-ink">Why this sentence?</p>
+    <div class="mt-6" data-detail-body>
+      <p class="text-graphite">Select any sentence to see the signals behind its mark.</p>
+    </div>
+  </aside>
+</div>

@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from spacy.lang.en.stop_words import STOP_WORDS
 
 from .nlp import get_nlp
-from .segmentation import paragraph_spans
+from .segmentation import looks_like_heading, paragraph_spans
 
 CLITICS = {"n't", "'s", "'re", "'ve", "'ll", "'d", "'m", "s"}
 CONTENT_POS = {"NOUN", "VERB", "ADJ", "ADV"}
@@ -61,6 +61,7 @@ class Sentence:
     start: int
     end: int
     tokens: list[Token] = field(default_factory=list)
+    is_heading: bool = False
 
     @property
     def words(self) -> list[Token]:
@@ -78,6 +79,11 @@ class ProcessedDocument:
     @property
     def tokens(self) -> list[Token]:
         return [t for s in self.sentences for t in s.tokens]
+
+    @property
+    def body_sentences(self) -> list[Sentence]:
+        """Sentences excluding headings: the basis for every rhythm measure."""
+        return [s for s in self.sentences if not s.is_heading]
 
     @property
     def words(self) -> list[Token]:
@@ -127,6 +133,7 @@ def preprocess(text: str) -> ProcessedDocument:
     for p_index, ((p_start, p_end), doc) in enumerate(
         zip(paragraphs, nlp.pipe(text[s:e] for s, e in paragraphs))
     ):
+        heading = looks_like_heading(text[p_start:p_end], len(paragraphs))
         for sent in doc.sents:
             tokens = [_make_token(t, p_start, sent.start) for t in sent if not t.is_space]
             if not any(t.is_word for t in tokens):
@@ -137,6 +144,7 @@ def preprocess(text: str) -> ProcessedDocument:
                 start=tokens[0].start,
                 end=tokens[-1].end,
                 tokens=tokens,
+                is_heading=heading,
             ))
     words = [w for s in sentences for w in s.words]
     language, checked = detect_language(words)

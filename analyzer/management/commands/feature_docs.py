@@ -22,9 +22,9 @@ class Command(BaseCommand):
                  "Generated from `analyzer/services/features.py` by `python manage.py feature_docs --write`.",
                  "Don't edit this file by hand; change the registry and regenerate it.", ""]
         for category in dict.fromkeys(f.category for f in FEATURES):
-            lines += [f"## {category.title()}", "", "| Name | Label | Unit | What it measures |", "|---|---|---|---|"]
+            lines += [f"## {category.title()}", "", "| Name | Label | Unit | What it measures | Not measured when |", "|---|---|---|---|---|"]
             for f in (f for f in FEATURES if f.category == category):
-                lines.append(f"| `{f.name}` | {f.label} | {UNITS[f.unit]} | {f.description} |")
+                lines.append(f"| `{f.name}` | {f.label} | {UNITS[f.unit]} | {f.description} | {f.unavailable or 'always available'} |")
             lines.append("")
         content = "\n".join(lines) + "\n"
         if write:

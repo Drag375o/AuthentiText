@@ -7,8 +7,9 @@
       <span class="meta tabular-nums pt-1">{{ s.sentence_index|add:1 }}</span>
       <div class="min-w-0">
         <p class="text-ink leading-relaxed">{{ s.text }}</p>
-        {% if s.signals.passive or s.signals.subordinate_clauses or s.signals.markers %}
+        {% if s.signals.heading or s.signals.passive or s.signals.subordinate_clauses or s.signals.markers %}
           <ul class="mt-2 flex flex-wrap gap-1.5" aria-label="Sentence features">
+            {% if s.signals.heading %}<li class="chip">Heading, excluded from length statistics</li>{% endif %}
             {% if s.signals.passive %}<li class="chip">Passive</li>{% endif %}
             {% if s.signals.subordinate_clauses %}<li class="chip">{{ s.signals.subordinate_clauses }} subordinate clause{{ s.signals.subordinate_clauses|pluralize }}</li>{% endif %}
             {% for m in s.signals.markers %}<li class="chip chip--marker">{{ marker_labels|get_item:m }}</li>{% endfor %}

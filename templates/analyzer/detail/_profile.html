@@ -1,0 +1,30 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">Writing profile</h2>
+<p class="mt-3 text-graphite max-w-prose">Seven habits of this text, each scored from 0 to 100 against a fixed reference range. These describe the writing, not the writer, and they are not percentiles.</p>
+<div class="bento mt-8">
+  <article class="bento-card span-wide">
+    <dl class="space-y-5">
+      {% for dimension in profile %}
+        <div>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-baseline justify-between gap-4">
+              <dt class="text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ dimension.label }}</dt>
+              <dd class="shrink-0 tabular-nums {% if dimension.score is None %}meta{% else %}font-display font-bold text-lg text-ink{% endif %}">{% if dimension.score is None %}Not measured{% else %}{{ dimension.score }}{% endif %}</dd>
+            </summary>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-graphite">{{ dimension.description }}</p>
+          </details>
+          <div class="meter mt-2" role="img" aria-label="{{ dimension.label }}: {% if dimension.score is None %}not available{% else %}{{ dimension.score }} out of 100{% endif %}">
+            <span style="transform: scaleX(0)" data-meter="{{ dimension.score|default:0 }}"></span>
+          </div>
+        </div>
+      {% endfor %}
+    </dl>
+  </article>
+
+  <article class="bento-card bento-card--fog">
+    <p class="font-script text-2xl text-ink">How to read this</p>
+    <p class="mt-4 text-graphite leading-relaxed">Each score rescales one measured feature between two fixed anchors, listed in its explanation. A high score means high <em>within that range</em>, not higher than other people.</p>
+    <p class="mt-4 text-graphite leading-relaxed">There is no “good” profile. Formal writing scores high on formality; a diary scores high on personal voice. Neither is better.</p>
+    <p class="meta mt-auto pt-6">Feature scores, not personality judgments.</p>
+  </article>
+</div>

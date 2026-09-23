@@ -17,6 +17,9 @@ class FeatureSpec:
     label: str
     unit: str
     description: str
+    # Why this feature is sometimes not measurable. Shown instead of a blank
+    # value, so an empty cell never looks like a broken page.
+    unavailable: str = ""
 
 
 FEATURES: list[FeatureSpec] = [
@@ -24,16 +27,18 @@ FEATURES: list[FeatureSpec] = [
     FeatureSpec("word_count", "document", "Words", "count", "Word tokens, counting contractions like \u201ccan't\u201d once."),
     FeatureSpec("unique_word_count", "document", "Unique words", "count", "Distinct word forms, ignoring case."),
     FeatureSpec("sentence_count", "document", "Sentences", "count", "Sentences found by spaCy's parser, never crossing a paragraph break."),
+    FeatureSpec("heading_count", "document", "Headings", "count",
+                "Short lines without sentence-ending punctuation. They are excluded from every sentence-length measure, because a heading is not a sentence."),
     FeatureSpec("paragraph_count", "document", "Paragraphs", "count", "Blocks separated by blank lines, or by line breaks if there are no blank lines."),
     FeatureSpec("character_count", "document", "Characters", "count", "All characters in the original text."),
     FeatureSpec("reading_minutes", "document", "Reading time", "number", "Minutes at 238 words per minute, rounded up."),
-    FeatureSpec("sentence_length_mean", "document", "Mean sentence length", "words", "Average words per sentence."),
+    FeatureSpec("sentence_length_mean", "document", "Mean sentence length", "words", "Average words per sentence, excluding headings."),
     FeatureSpec("sentence_length_median", "document", "Median sentence length", "words", "The middle sentence length; less affected by one very long sentence."),
-    FeatureSpec("sentence_length_std", "document", "Sentence length spread", "words", "Standard deviation of sentence lengths. Higher means more varied rhythm."),
+    FeatureSpec("sentence_length_std", "document", "Sentence length spread", "words", "Standard deviation of sentence lengths, excluding headings. Higher means more varied rhythm."),
     FeatureSpec("sentence_length_min", "document", "Shortest sentence", "words", "Words in the shortest sentence."),
     FeatureSpec("sentence_length_max", "document", "Longest sentence", "words", "Words in the longest sentence."),
     FeatureSpec("sentence_length_cv", "document", "Sentence length variation", "ratio",
-                "Spread divided by the mean, so texts with long and short average sentences can be compared. Low variation is common in careful editing as well as generated text; it isn't evidence on its own."),
+                "Spread divided by the mean, so texts with long and short average sentences can be compared. Low variation is common in careful editing as well as generated text; it isn't evidence on its own.", unavailable="Needs at least one sentence, excluding headings."),
     FeatureSpec("paragraph_length_mean", "document", "Mean paragraph length", "words", "Average words per paragraph."),
     FeatureSpec("avg_word_length", "document", "Average word length", "number", "Average letters per word."),
     FeatureSpec("commas_per_100", "document", "Commas", "per100", "Commas per 100 words."),
@@ -51,7 +56,7 @@ FEATURES: list[FeatureSpec] = [
     FeatureSpec("mattr", "lexical", "Moving-average TTR", "ratio",
                 "Type-token ratio averaged over every 50-word window. Unlike plain TTR, it stays comparable across texts of different lengths."),
     FeatureSpec("mtld", "lexical", "MTLD", "number",
-                "Measure of Textual Lexical Diversity: roughly how many words it takes before vocabulary starts repeating. Higher means more varied vocabulary. Needs 50 or more words."),
+                "Measure of Textual Lexical Diversity: roughly how many words it takes before vocabulary starts repeating. Higher means more varied vocabulary. Needs 50 or more words.", unavailable="Needs at least 50 words."),
     FeatureSpec("hapax_ratio", "lexical", "Words used once", "ratio", "Share of words that appear only once in the text."),
     FeatureSpec("lexical_density", "lexical", "Lexical density", "ratio", "Share of words that carry content (nouns, verbs, adjectives, adverbs) rather than grammar."),
     FeatureSpec("function_word_ratio", "lexical", "Function words", "ratio", "Share of words like \u201cthe\u201d, \u201cof\u201d and \u201cand\u201d that hold sentences together."),
@@ -97,9 +102,33 @@ FEATURES: list[FeatureSpec] = [
                 "Stock phrases from the pattern library, such as \u201cit is important to note\u201d, per 100 words. Common in many kinds of writing, so it's a signal to look at, not evidence."),
     FeatureSpec("marker_initial_ratio", "linguistic", "Sentences opening with a marker", "ratio", "Share of sentences that begin with a discourse marker, such as \u201cHowever,\u201d or \u201cSo\u201d."),
     # ---- Structural ----
-    FeatureSpec("repeated_opening_ratio", "structural", "Repeated openings", "ratio", "Share of sentences whose first two words also open another sentence. Needs at least three sentences."),
+    FeatureSpec("repeated_opening_ratio", "structural", "Repeated openings", "ratio", "Share of sentences whose first two words also open another sentence. Needs at least three sentences.", unavailable="Needs at least three sentences of two words or more."),
+    # ---- Statistical ----
+    FeatureSpec("word_entropy", "statistical", "Word entropy", "number",
+                "Shannon entropy of the word distribution, in bits: how unpredictable the next word is, given only how often each word appears. Longer texts naturally score higher."),
+    FeatureSpec("normalized_entropy", "statistical", "Entropy, normalised", "ratio",
+                "Word entropy divided by the maximum possible for this vocabulary size, so texts of different lengths can be compared. Near 100% means words are spread evenly; lower means a few words dominate.", unavailable="Needs at least two distinct words."),
+    FeatureSpec("sentence_length_burstiness", "statistical", "Burstiness", "number",
+                "Unevenness of sentence lengths on a scale from -1 to +1 (Goh & Barabasi, 2008). -1 is perfectly regular, 0 is random-like, and positive values mean bursts of short and long sentences. Regular rhythm alone is not evidence of anything.", unavailable="Needs at least three sentences, excluding headings."),
+    FeatureSpec("bigram_repeat_rate", "statistical", "Repeated word pairs", "ratio", "Share of two-word sequences that occur more than once."),
+    FeatureSpec("trigram_repeat_rate", "statistical", "Repeated word triples", "ratio", "Share of three-word sequences that occur more than once."),
+    FeatureSpec("zipf_slope", "statistical", "Frequency slope", "number",
+                "Slope of word frequency against rank on a log scale. Natural English text sits near -1; a flatter slope means no small set of words dominates.", unavailable="Needs at least ten distinct words."),
+    # ---- Semantic ----
+    FeatureSpec("local_coherence", "semantic", "Local coherence", "ratio",
+                "Average similarity between neighbouring sentences. Very low means the text jumps between ideas; very high means consecutive sentences restate each other.", unavailable="Needs at least four sentences."),
+    FeatureSpec("paragraph_coherence", "semantic", "Paragraph coherence", "ratio", "How closely each sentence sits to the average of its own paragraph.", unavailable="Needs a paragraph containing at least two sentences."),
+    FeatureSpec("semantic_redundancy", "semantic", "Redundancy", "ratio", "Share of sentence pairs similar enough to count as near-duplicates.", unavailable="Needs at least four sentences."),
+    FeatureSpec("semantic_diversity", "semantic", "Semantic diversity", "ratio", "How much sentences differ from one another overall. Higher means the text covers more ground.", unavailable="Needs at least four sentences."),
+    FeatureSpec("opening_closing_similarity", "semantic", "Opening and closing", "ratio", "Similarity between the first and last paragraphs. High values mean the ending returns to where the text began.", unavailable="Needs at least two paragraphs: a single-paragraph text has no separate opening and closing."),
+    FeatureSpec("max_sentence_similarity", "semantic", "Closest sentence pair", "ratio", "The highest similarity between any two sentences in the text.", unavailable="Needs at least four sentences."),
+    # ---- Stylometric ----
+    FeatureSpec("formality_score", "stylometric", "Formality (F-score)", "number",
+                "Heylighen & Dewaele's F-score from part-of-speech shares: nouns, adjectives, prepositions and articles raise it; pronouns, verbs and adverbs lower it. Around 50 is neutral, academic writing runs higher, conversation lower.", unavailable="Needs at least one word."),
+    FeatureSpec("first_person_ratio", "stylometric", "First-person pronouns", "ratio", "Share of words that are first-person pronouns such as \u201cI\u201d, \u201cmy\u201d or \u201cwe\u201d."),
+    FeatureSpec("contraction_ratio", "stylometric", "Contractions", "ratio", "Contractions such as \u201ccan't\u201d or \u201cit's\u201d, as a share of words."),
     FeatureSpec("opening_pattern_diversity", "structural", "Opening variety", "ratio",
-                "Distinct grammatical openings (the part-of-speech pattern of the first three words) divided by the number of sentences. Higher means sentences begin in more varied ways."),
+                "Distinct grammatical openings (the part-of-speech pattern of the first three words) divided by the number of sentences. Higher means sentences begin in more varied ways.", unavailable="Needs at least three sentences of two words or more."),
 ]
 
 BY_NAME: dict[str, FeatureSpec] = {f.name: f for f in FEATURES}

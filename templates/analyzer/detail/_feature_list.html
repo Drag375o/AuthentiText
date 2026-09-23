@@ -6,8 +6,13 @@
       <details class="group">
         <summary class="flex cursor-pointer list-none items-baseline justify-between gap-4">
           <dt class="text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ row.spec.label }}</dt>
-          <dd class="font-display font-bold text-lg text-ink tabular-nums shrink-0">{{ row.value|feature_display:row.spec.unit }}</dd>
+          <dd class="shrink-0 tabular-nums {% if row.value is None %}meta{% else %}font-display font-bold text-lg text-ink{% endif %}">
+            {% if row.value is None %}Not measured{% else %}{{ row.value|feature_display:row.spec.unit }}{% endif %}
+          </dd>
         </summary>
+        {% if row.value is None and row.spec.unavailable %}
+          <p class="mt-2 text-[0.95rem] leading-relaxed text-ink">{{ row.spec.unavailable }}</p>
+        {% endif %}
         <p class="mt-2 text-[0.95rem] leading-relaxed text-graphite">{{ row.spec.description }}</p>
       </details>
     </div>

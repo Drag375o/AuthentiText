@@ -1,18 +1,173 @@
 [
-  {"name": "empty", "text": "", "characters": 0, "words": 0, "sentences": 0, "paragraphs": 0, "reading_minutes": 0},
-  {"name": "whitespace only", "text": "  \n\n  ", "characters": 6, "words": 0, "sentences": 0, "paragraphs": 0, "reading_minutes": 0},
-  {"name": "one sentence", "text": "Hello world.", "characters": 12, "words": 2, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "mixed terminators, no final stop", "text": "One. Two! Three? Four", "characters": 21, "words": 4, "sentences": 4, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "apostrophes and hyphens", "text": "It's a well-known fact that we\u2019re here.", "characters": 39, "words": 7, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "decimals don't split", "text": "Pi is roughly 3.14 today.", "characters": 25, "words": 5, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "closing quote after stop", "text": "He said \"Stop.\" Then he left.", "characters": 29, "words": 6, "sentences": 2, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "ellipsis and ?!", "text": "Wait\u2026 what?! Really.", "characters": 20, "words": 3, "sentences": 3, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "blank-line paragraphs", "text": "Para one.\n\nPara two.\nStill two.", "characters": 31, "words": 6, "sentences": 3, "paragraphs": 2, "reading_minutes": 1},
-  {"name": "line-break paragraphs", "text": "Line one\nLine two\nLine three", "characters": 28, "words": 6, "sentences": 3, "paragraphs": 3, "reading_minutes": 1},
-  {"name": "CRLF counted once", "text": "A b.\r\n\r\nC d.", "characters": 10, "words": 4, "sentences": 2, "paragraphs": 2, "reading_minutes": 1},
-  {"name": "thousands separator", "text": "We sold 1,000 copies.", "characters": 21, "words": 4, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "accents", "text": "Caf\u00e9 na\u00efve r\u00e9sum\u00e9 42.", "characters": 21, "words": 4, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "emoji is one character", "text": "Great \ud83d\udc4d job.", "characters": 12, "words": 2, "sentences": 1, "paragraphs": 1, "reading_minutes": 1},
-  {"name": "reading time rounds up", "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word", "characters": 1194, "words": 239, "sentences": 1, "paragraphs": 1, "reading_minutes": 2},
-  {"name": "punctuation only", "text": "... !!! ???", "characters": 11, "words": 0, "sentences": 0, "paragraphs": 0, "reading_minutes": 0}
+  {
+    "name": "empty",
+    "text": "",
+    "characters": 0,
+    "words": 0,
+    "sentences": 0,
+    "paragraphs": 0,
+    "reading_minutes": 0
+  },
+  {
+    "name": "whitespace only",
+    "text": "  \n\n  ",
+    "characters": 6,
+    "words": 0,
+    "sentences": 0,
+    "paragraphs": 0,
+    "reading_minutes": 0
+  },
+  {
+    "name": "one sentence",
+    "text": "Hello world.",
+    "characters": 12,
+    "words": 2,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "mixed terminators, no final stop",
+    "text": "One. Two! Three? Four",
+    "characters": 21,
+    "words": 4,
+    "sentences": 4,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "apostrophes and hyphens",
+    "text": "It's a well-known fact that we’re here.",
+    "characters": 39,
+    "words": 7,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "decimals don't split",
+    "text": "Pi is roughly 3.14 today.",
+    "characters": 25,
+    "words": 5,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "closing quote after stop",
+    "text": "He said \"Stop.\" Then he left.",
+    "characters": 29,
+    "words": 6,
+    "sentences": 2,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "ellipsis and ?!",
+    "text": "Wait… what?! Really.",
+    "characters": 20,
+    "words": 3,
+    "sentences": 3,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "blank-line paragraphs",
+    "text": "Para one.\n\nPara two.\nStill two.",
+    "characters": 31,
+    "words": 6,
+    "sentences": 3,
+    "paragraphs": 2,
+    "reading_minutes": 1
+  },
+  {
+    "name": "line-break paragraphs",
+    "text": "Line one\nLine two\nLine three",
+    "characters": 28,
+    "words": 6,
+    "sentences": 3,
+    "paragraphs": 3,
+    "reading_minutes": 1
+  },
+  {
+    "name": "CRLF counted once",
+    "text": "A b.\r\n\r\nC d.",
+    "characters": 10,
+    "words": 4,
+    "sentences": 2,
+    "paragraphs": 2,
+    "reading_minutes": 1
+  },
+  {
+    "name": "thousands separator",
+    "text": "We sold 1,000 copies.",
+    "characters": 21,
+    "words": 4,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "accents",
+    "text": "Café naïve résumé 42.",
+    "characters": 21,
+    "words": 4,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "emoji is one character",
+    "text": "Great 👍 job.",
+    "characters": 12,
+    "words": 2,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "reading time rounds up",
+    "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word",
+    "characters": 1194,
+    "words": 239,
+    "sentences": 1,
+    "paragraphs": 1,
+    "reading_minutes": 2
+  },
+  {
+    "name": "hard-wrapped sentence stays one paragraph",
+    "text": "The dataset was split into training, and\n20% for testing. We\napplied sampling.",
+    "characters": 78,
+    "words": 13,
+    "sentences": 2,
+    "paragraphs": 1,
+    "reading_minutes": 1
+  },
+  {
+    "name": "heading then body stays two paragraphs",
+    "text": "3.3 Data Split\nThe dataset was partitioned.",
+    "characters": 43,
+    "words": 7,
+    "sentences": 2,
+    "paragraphs": 2,
+    "reading_minutes": 1
+  },
+  {
+    "name": "list markers are not joined",
+    "text": "Pick one:\n- first item\n- second item",
+    "characters": 36,
+    "words": 6,
+    "sentences": 3,
+    "paragraphs": 3,
+    "reading_minutes": 1
+  },
+  {
+    "name": "punctuation only",
+    "text": "... !!! ???",
+    "characters": 11,
+    "words": 0,
+    "sentences": 0,
+    "paragraphs": 0,
+    "reading_minutes": 0
+  }
 ]

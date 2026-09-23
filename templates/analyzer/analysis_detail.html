@@ -16,11 +16,14 @@
     {% endfor %}
 
     {% if analysis.is_processed %}
-      {% include "analyzer/detail/_summary.html" %}
+      {% include "analyzer/detail/_result.html" %}
+      {% include "analyzer/detail/_heatmap.html" %}
       {% include "analyzer/detail/_rhythm.html" %}
       {% include "analyzer/detail/_lexical.html" %}
       {% include "analyzer/detail/_syntax.html" %}
       {% include "analyzer/detail/_patterns.html" %}
+      {% include "analyzer/detail/_statistical.html" %}
+      {% include "analyzer/detail/_profile.html" %}
       {% include "analyzer/detail/_sentences.html" %}
     {% else %}
       {% include "analyzer/detail/_pending.html" %}
@@ -43,10 +46,11 @@
     </form>
   </div>
 </section>
-{% if chart_data %}{{ chart_data|json_script:"sentence-chart-data" }}{{ pos_chart|json_script:"pos-chart-data" }}{% endif %}
+{% if chart_data %}{{ chart_data|json_script:"sentence-chart-data" }}{{ pos_chart|json_script:"pos-chart-data" }}{{ heatmap_sentences|json_script:"sample-document" }}{% endif %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/rename.js' %}" defer></script>
+  <script src="{% static 'js/heatmap.js' %}" defer></script>
   {% if chart_data %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
     <script src="{% static 'js/charts.js' %}" defer></script>

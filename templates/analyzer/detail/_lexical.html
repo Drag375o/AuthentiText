@@ -47,7 +47,7 @@
     <p class="meta">Punctuation per 100 words</p>
     <dl class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-5">
       {% for row in groups.punctuation %}
-        <div><dt class="meta">{{ row.spec.label }}</dt><dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1">{{ row.value|feature_display:row.spec.unit }}</dd></div>
+        <div><dt class="meta">{{ row.spec.label }}</dt><dd class="mt-1 tabular-nums {% if row.value is None %}meta{% else %}font-display font-bold text-2xl text-ink{% endif %}">{% if row.value is None %}Not measured{% else %}{{ row.value|feature_display:row.spec.unit }}{% endif %}</dd></div>
       {% endfor %}
     </dl>
   </article>

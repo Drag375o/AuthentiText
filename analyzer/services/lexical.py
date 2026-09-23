@@ -137,8 +137,14 @@ def phrase_coverage(doc: ProcessedDocument, phrases: list[dict]) -> float | None
 # ---------- Top words ----------
 
 def top_content_words(words: list[Token]) -> list[dict]:
-    counts = Counter(w.lemma for w in words if w.is_content and not w.is_stop and w.is_alpha and len(w.lemma) > 1)
-    return [{"word": lemma, "count": n} for lemma, n in counts.most_common(TOP_WORDS) if n > 1]
+    """Grouped by lemma so “recipe” and “recipes” count together, but shown
+    in the form that actually appears most often in the text."""
+    from .statistics_features import surface_forms
+
+    content = [w for w in words if w.is_content and not w.is_stop and w.is_alpha and len(w.lemma) > 1]
+    counts = Counter(w.lemma for w in content)
+    display = surface_forms(content)
+    return [{"word": display[lemma], "count": n} for lemma, n in counts.most_common(TOP_WORDS) if n > 1]
 
 
 # ---------- Entry point ----------

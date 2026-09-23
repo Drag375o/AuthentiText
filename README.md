@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 4 complete.** Done so far: the Django foundation, design system, landing page, accounts, the editor and file upload, and the NLP pipeline's linguistic layer: spaCy preprocessing, document statistics, lexical, syntactic and discourse features, and a configurable pattern library. Next: statistical, semantic and stylometric features. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 6 complete.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Next: document comparison, the writing profile page, and reports. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -107,6 +107,33 @@ python manage.py analyze_pending       # analyze documents saved before the pipe
 python manage.py feature_docs --write   # regenerate the feature table
 ```
 
+## Detection
+
+The result on every document is produced by a detector behind one interface (`analyzer/services/detector.py`). Probability, confidence and uncertainty are reported separately, and texts under 150 words return "Insufficient evidence" with no number at all.
+
+**The shipped detector is a demo.** It combines ten hand-chosen signals deterministically and is labelled `DEMO ANALYSIS — not a real prediction` on every result. It has no measured accuracy because it was never trained on labelled data.
+
+To train a real one:
+
+```bash
+python manage.py train_detector data/labelled.jsonl   # {"text": ..., "label": "human"|"ai"} per line
+```
+
+It trains on features from the application's own pipeline, measures itself on held-out data, and saves those metrics with the model. Drop the bundle in `ml/models/` and AuthentiText uses it automatically. See [docs/DETECTION.md](docs/DETECTION.md).
+
+## Semantic embeddings
+
+Sentence similarity, coherence and redundancy run through a swappable embedder (`analyzer/services/embeddings.py`).
+
+- **Default (no setup):** scikit-learn TF-IDF, which compares the words sentences share. Deterministic and instant, but blind to paraphrase.
+- **Optional, better:** install sentence-transformers and AuthentiText uses it automatically. The first run downloads a model of a few hundred MB.
+
+  ```bash
+  pip install "sentence-transformers>=3.0"
+  ```
+
+Set `EMBEDDING_BACKEND` in `.env` to `tfidf` to force the default, or `sentence-transformers` to fail loudly if the model is missing. The document page always names the backend that produced the numbers.
+
 ## Pattern library
 
 Discourse markers and formulaic phrases come from `analyzer/resources/patterns.json`. Add or edit entries there; each needs a `pattern`, `category`, `description` and `strength` (`low`, `medium` or `high`, meaning how generic the phrase is). Use `"position": "start"` for words that only count at the start of a sentence, and `"pos"` to restrict a one-word pattern to a part of speech. The file is validated when loaded. After editing, restart the server and run `python manage.py analyze_pending --all` to re-analyze saved documents.
@@ -126,9 +153,11 @@ core/              landing, about, placeholder routes, context processor
 accounts/          register, login, logout, styled forms
 analyzer/          models, editor, dashboard, analysis page, delete, admin,
                    services/ (nlp, segmentation, preprocessing, document_stats, lexical,
-                   syntax, discourse, features, pipeline, uploads, parser, text_stats),
+                   syntax, discourse, statistics_features, semantics, embeddings, stylometry,
+                   features, pipeline, uploads, parser, text_stats),
                    resources/patterns.json, management commands
-docs/              NLP_PIPELINE.md, FEATURES.md (generated), LIMITATIONS.md
+docs/              NLP_PIPELINE.md, DETECTION.md, FEATURES.md (generated), LIMITATIONS.md
+ml/                training/ (train_baseline.py), models/ (bundles, not committed)
 templates/         base, partials/, components/, landing/, auth/, analyzer/
 static/src/        Tailwind source
 static/css/        compiled CSS (built by npm run build:css)
@@ -144,9 +173,8 @@ tests/js/          Node tests for the browser code
 2. Authentication and user-scoped models (done)
 3. Document ingestion: editor and validated TXT/PDF/DOCX uploads (done)
 4. NLP pipeline, linguistic layer: preprocessing, document statistics, lexical, syntactic and discourse features, pattern library (done)
-5. NLP pipeline, statistical and semantic layer: TF-IDF, entropy, burstiness, sentence embeddings, stylometric profile
-6. Detector interface with a clearly labelled demo mode, then a trained baseline
-7. Explainability, results dashboard, sentence heatmap
+5. NLP pipeline, statistical and semantic layer: entropy, burstiness, sentence embeddings, stylometric profile (done)
+6. Detector interface, demo mode, trained baseline, explainability, results dashboard, sentence heatmap (done)
 8. Compare, writing profile, reports, dashboard
 9. Remaining documentation in `docs/`
 

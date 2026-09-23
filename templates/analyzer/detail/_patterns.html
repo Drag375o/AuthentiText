@@ -8,7 +8,7 @@
       {% for row in groups.discourse %}
         <div>
           <dt class="meta">{{ row.spec.label }}</dt>
-          <dd class="font-display font-bold text-2xl text-ink tabular-nums mt-1">{{ row.value|feature_display:row.spec.unit }}</dd>
+          <dd class="mt-1 tabular-nums {% if row.value is None %}meta{% else %}font-display font-bold text-2xl text-ink{% endif %}">{% if row.value is None %}Not measured{% else %}{{ row.value|feature_display:row.spec.unit }}{% endif %}</dd>
         </div>
       {% endfor %}
     </dl>
