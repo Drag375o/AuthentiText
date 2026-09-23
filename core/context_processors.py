@@ -5,7 +5,7 @@ from django.http import HttpRequest
 PRIMARY_NAV = [
     {"label": "Analyze", "url_name": "analyzer:analyze"},
     {"label": "Compare", "url_name": "analyzer:compare"},
-    {"label": "Profile", "url_name": "core:profile"},
+    {"label": "Profile", "url_name": "analyzer:profile"},
     {"label": "About", "url_name": "core:about"},
 ]
 

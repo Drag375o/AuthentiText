@@ -17,6 +17,7 @@ from .services.features import BY_NAME
 from .services.parser import extract_text
 from .services.pipeline import analyze_document
 from .services.compare import build_comparison
+from .services.profile import MIN_DOCUMENTS, build_writing_profile
 from .services.reports.data import build_report
 from .services.signals import FAMILY_DESCRIPTIONS
 from .services.summary import build_summary
@@ -409,3 +410,14 @@ def compare(request: HttpRequest) -> HttpResponse:
     elif any(ids):
         context["error"] = "One of those documents could not be found in your account."
     return render(request, "analyzer/compare.html", context)
+
+
+@login_required
+def writing_profile(request: HttpRequest) -> HttpResponse:
+    """The user's writing habits across every document they have analyzed."""
+    analyses = list(Analysis.objects.for_user(request.user).filter(status=Analysis.Status.COMPLETE))
+    return render(request, "analyzer/profile.html", {
+        "profile": build_writing_profile(analyses),
+        "analyses": analyses,
+        "minimum": MIN_DOCUMENTS,
+    })

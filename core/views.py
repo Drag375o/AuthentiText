@@ -10,7 +10,3 @@ def landing(request: HttpRequest) -> HttpResponse:
 
 def about(request: HttpRequest) -> HttpResponse:
     return render(request, "about.html")
-
-
-def upcoming(request: HttpRequest, feature: str) -> HttpResponse:
-    return render(request, "upcoming.html", {"feature": feature})

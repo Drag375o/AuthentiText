@@ -1,0 +1,26 @@
+<div class="bento mt-10">
+  <article class="bento-card">
+    <p class="meta">Documents</p>
+    <p class="metric mt-auto pt-6">{{ profile.documents }}</p>
+    {% if profile.first %}<p class="meta mt-2">since {{ profile.first|date:"j M Y" }}</p>{% endif %}
+  </article>
+  <article class="bento-card">
+    <p class="meta">Words analyzed</p>
+    <p class="metric mt-auto pt-6">{{ profile.total_words|floatformat:"0g" }}</p>
+    <p class="meta mt-2">median {{ profile.median_words }} per document</p>
+  </article>
+
+  <article class="bento-card bento-card--fog span-2x1">
+    <p class="font-script text-2xl text-ink">How to read this</p>
+    {% if profile.enough %}
+      <p class="mt-4 text-graphite leading-relaxed">
+        {% if profile.widest %}Your documents differ most in <strong class="text-ink">{{ profile.widest.label|lower }}</strong>, spanning {{ profile.widest.spread }} points.{% endif %}
+        {% if profile.steadiest and profile.steadiest.spread is not None %} They are steadiest in <strong class="text-ink">{{ profile.steadiest.label|lower }}</strong>.{% endif %}
+      </p>
+      <p class="mt-3 text-graphite leading-relaxed">A wide spread usually means you write in different genres, not that your writing is inconsistent. An essay and a set of notes should look different.</p>
+    {% else %}
+      <p class="mt-4 text-graphite leading-relaxed">With one document there is no spread to show yet. Analyze another and this page will show how much your writing varies between them.</p>
+    {% endif %}
+    <p class="meta mt-auto pt-6">Feature scores, not personality judgments.</p>
+  </article>
+</div>

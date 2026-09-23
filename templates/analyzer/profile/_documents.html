@@ -1,0 +1,26 @@
+<h2 class="h-section !text-display-md mt-16">The documents behind it</h2>
+<div class="bento-card mt-6 !p-0 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <caption class="sr-only">Every analyzed document and its profile scores</caption>
+      <thead>
+        <tr class="meta border-b border-rule">
+          <th scope="col" class="px-7 py-3 font-normal">Document</th>
+          <th scope="col" class="px-4 py-3 font-normal text-right">Words</th>
+          {% for row in profile.rows %}<th scope="col" class="px-3 py-3 font-normal text-right whitespace-nowrap">{{ row.label|truncatechars:14 }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for analysis in analyses %}
+          <tr class="border-b border-rule last:border-0 hover:bg-fog transition-colors">
+            <td class="px-7 py-3"><a href="{% url 'analyzer:detail' analysis.id %}" class="text-ink hover:underline underline-offset-4">{{ analysis.display_name|truncatechars:44 }}</a></td>
+            <td class="px-4 py-3 text-right tabular-nums">{{ analysis.word_count }}</td>
+            {% for dimension in analysis.report.profile %}
+              <td class="px-3 py-3 text-right tabular-nums">{% if dimension.score is None %}<span class="meta">&mdash;</span>{% else %}{{ dimension.score }}{% endif %}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -58,6 +58,13 @@
   /* Summary: justified, with hyphenation so the ragged gaps stay small */
   .summary-text { @apply text-justify [hyphens:auto]; }
 
+  /* Writing profile: one dot per document on a 0-100 track */
+  .profile-track { @apply relative h-6; }
+  .profile-track::before { content: ""; @apply absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-rule; }
+  .profile-range { @apply absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-slate-soft; }
+  .profile-dot { @apply absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-paper bg-ink transition-transform hover:scale-150 focus-visible:scale-150; }
+  .profile-median { @apply absolute top-1/2 h-5 w-px -translate-x-1/2 -translate-y-1/2 bg-ink/60; }
+
   /* Comparison: never colour alone, so the diff reads in greyscale too */
   .diff-removed { @apply line-through decoration-signal-high decoration-2 bg-signal-high-bg/70 text-ink; }
   .diff-added { @apply underline decoration-signal-ok decoration-2 underline-offset-4 bg-signal-ok/10 text-ink; }

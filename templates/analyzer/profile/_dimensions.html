@@ -1,0 +1,36 @@
+<h2 class="h-section !text-display-md mt-16">Across your documents</h2>
+<p class="mt-3 text-graphite max-w-prose">Each dimension runs from 0 to 100 against a fixed reference range, not a percentile. Select a dimension to see how it is measured.</p>
+
+<div class="bento-card mt-8">
+  <dl class="space-y-8">
+    {% for row in profile.rows %}
+      <div>
+        <details class="group">
+          <summary class="flex cursor-pointer list-none flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <dt class="text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ row.label }}</dt>
+            <dd class="meta">
+              {% if row.count == 0 %}Not measured
+              {% elif row.spread %}{{ row.low }}&ndash;{{ row.high }} &middot; median <span class="font-display font-bold text-ink">{{ row.median }}</span>
+              {% else %}<span class="font-display font-bold text-ink">{{ row.median }}</span>{% endif %}
+            </dd>
+          </summary>
+          <p class="mt-2 text-[0.95rem] leading-relaxed text-graphite">{{ row.description }}</p>
+        </details>
+
+        {% if row.count %}
+          <div class="profile-track mt-3" role="img"
+               aria-label="{{ row.label }}: {{ row.count }} document{{ row.count|pluralize }}, {% if row.spread %}from {{ row.low }} to {{ row.high }}, median {{ row.median }}{% else %}score {{ row.median }}{% endif %}, out of 100">
+            {% if row.spread %}<span class="profile-range" style="left: {{ row.low }}%; width: {{ row.spread }}%"></span>{% endif %}
+            {% for point in row.points %}
+              <a href="{% url 'analyzer:detail' point.analysis_id %}" class="profile-dot" style="left: {{ point.score }}%"
+                 title="{{ point.title }}: {{ point.score }}"><span class="sr-only">{{ point.title }}: {{ point.score }}</span></a>
+            {% endfor %}
+            {% if row.spread %}<span class="profile-median" style="left: {{ row.median }}%" aria-hidden="true"></span>{% endif %}
+          </div>
+          <div class="mt-1.5 flex justify-between meta" aria-hidden="true"><span>0</span><span>100</span></div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </dl>
+  <p class="meta mt-8">Each dot is one document; the bar spans your lowest to highest score, and the line marks the median. Select a dot to open that document.</p>
+</div>

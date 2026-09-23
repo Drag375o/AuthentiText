@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 7 in progress.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Reports download as PDF, Word and PDF heatmaps, JSON and CSV, and two documents can be compared side by side. Next: the writing profile page and the remaining documentation. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 7 in progress.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Reports download as PDF, Word and PDF heatmaps, JSON and CSV, and two documents can be compared side by side. Next: dashboard widgets and the remaining documentation. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -120,6 +120,10 @@ python manage.py train_detector data/labelled.jsonl   # {"text": ..., "label": "
 ```
 
 It trains on features from the application's own pipeline, measures itself on held-out data, and saves those metrics with the model. Drop the bundle in `ml/models/` and AuthentiText uses it automatically. See [docs/DETECTION.md](docs/DETECTION.md).
+
+## Writing profile
+
+`/profile/` shows seven habits across every document you have analyzed: each document is a dot on a 0-100 track, with the range and median beside it. It deliberately avoids a single average, because averaging a lab report with a diary describes neither, and the page says plainly that a wide spread usually means different genres rather than inconsistent writing.
 
 ## Comparing documents
 

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from core.context_processors import PRIMARY_NAV
 from core.landing_content import SAMPLE_DOCUMENT
 
 
@@ -53,11 +54,11 @@ class SecondaryPageTests(TestCase):
     def test_about(self):
         self.assertEqual(self.client.get(reverse("core:about")).status_code, 200)
 
-    def test_unbuilt_routes_are_honest(self):
-        for name in ["profile"]:
-            response = self.client.get(reverse(f"core:{name}"))
-            self.assertEqual(response.status_code, 200)
-            self.assertContains(response, "isn't built yet")
+    def test_every_navigation_link_resolves(self):
+        from django.urls import reverse
+        for item in PRIMARY_NAV:
+            with self.subTest(item=item["label"]):
+                self.assertTrue(reverse(item["url_name"]))
 
 
 

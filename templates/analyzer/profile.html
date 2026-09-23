@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load analysis_format %}
+{% block title %}Writing profile · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section pt-12 lg:pt-16">
+  <div class="page">
+    <h1 class="h-section">Your writing profile.</h1>
+    <p class="lede mt-5">Seven habits measured across every document you have analyzed. Each dot is one document, so you can see the range rather than a single number.</p>
+
+    {% if profile.documents == 0 %}
+      {% include "analyzer/profile/_empty.html" %}
+    {% else %}
+      {% include "analyzer/profile/_summary.html" %}
+      {% include "analyzer/profile/_dimensions.html" %}
+      {% include "analyzer/profile/_documents.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
