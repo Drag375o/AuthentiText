@@ -1,0 +1,20 @@
+<article class="bento-card span-2x1">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+    <p class="meta">Last {{ activity.weeks|length }} weeks</p>
+    <p class="meta">{{ activity.documents }} document{{ activity.documents|pluralize }} &middot; {{ activity.words|floatformat:"0g" }} words</p>
+  </div>
+
+  {% if activity.any %}
+    <div class="activity mt-5" role="img"
+         aria-label="Documents analyzed each week since {{ activity.first_start|date:'j M' }}: {% for week in activity.weeks %}{{ week.documents }}{% if not forloop.last %}, {% endif %}{% endfor %}.">
+      {% for week in activity.weeks %}
+        <div class="activity-col" title="Week of {{ week.start|date:'j M' }}: {{ week.documents }} document{{ week.documents|pluralize }}">
+          <span class="activity-bar{% if not week.documents %} is-empty{% endif %}" style="height: {{ week.height }}%"></span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="mt-3 flex justify-between meta"><span>{{ activity.first_start|date:"j M" }}</span><span>this week</span></div>
+  {% else %}
+    <p class="mt-auto pt-6 text-graphite">Nothing analyzed in the last {{ activity.weeks|length }} weeks.</p>
+  {% endif %}
+</article>

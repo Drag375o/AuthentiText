@@ -1,7 +1,7 @@
 <article class="bento-card mt-4 !p-0 overflow-hidden">
   <div class="flex flex-wrap items-baseline justify-between gap-4 px-7 pt-6 pb-4">
     <h2 class="label">Recent analyses</h2>
-    <p class="meta">Select a document to open its full results and downloads.</p>
+    <p class="meta">{% if results %}{% for result in results %}{{ result.count }} &times; {{ result.label }}{% if not forloop.last %} &middot; {% endif %}{% endfor %} &middot; {% endif %}select a document to open its results</p>
   </div>
   <div class="overflow-x-auto">
     <table class="w-full text-left">

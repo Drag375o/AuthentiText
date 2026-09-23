@@ -58,6 +58,16 @@
   /* Summary: justified, with hyphenation so the ragged gaps stay small */
   .summary-text { @apply text-justify [hyphens:auto]; }
 
+  /* Dashboard activity */
+  .activity { @apply flex items-end gap-1.5 h-24; }
+  .activity-col { @apply flex-1 h-full flex flex-col justify-end; }
+  .activity-bar { @apply block rounded-t-sm bg-ink; transition: height 700ms cubic-bezier(.2,.7,.2,1); }
+  .activity-bar.is-empty { @apply bg-rule h-[3px]; }
+  .attention-dot { @apply mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted; }
+  .attention-dot--warn { @apply bg-signal-warn; }
+  .attention-dot--high { @apply bg-signal-high; }
+  .attention-dot--ok { @apply bg-signal-ok; }
+
   /* Writing profile: one dot per document on a 0-100 track */
   .profile-track { @apply relative h-6; }
   .profile-track::before { content: ""; @apply absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-rule; }

@@ -8,6 +8,7 @@ AuthentiText measures characteristics of text. It does not prove authorship, AI 
 - **No result identifies authorship.** Every signal the system measures occurs in human writing. A high score means the text shares measurable characteristics with AI-generated examples, nothing more.
 - **Genre confounds everything.** Formality, personal voice and contraction use say more about register than about who wrote a text. A lab report and a diary differ far more than two authors do.
 - **Adversarial editing is not handled.** A few edits to sentence lengths and connectives will move these scores substantially.
+- **Rewritten text scores lower than the human original.** In testing, AI rewrites of human documents consistently scored *below* the originals, because a rewrite repeats itself less than natural writing does. Text generated from a prompt behaves differently and does score higher. See [EVALUATION.md](EVALUATION.md).
 
 ## Language
 

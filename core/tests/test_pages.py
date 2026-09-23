@@ -97,3 +97,43 @@ class SentenceMarkIndexTests(TestCase):
         indices = re.findall(r'data-sentence-index="(\d+)"', html)
         expected = [str(i) for i in range(len(SAMPLE_DOCUMENT))]
         self.assertEqual(indices, expected * 2)   # hero viewer + main viewer
+
+
+class DocumentationTests(TestCase):
+    """The README is the first thing a reviewer reads, so keep it truthful."""
+
+    def readme(self) -> str:
+        from pathlib import Path
+        from django.conf import settings
+        return (Path(settings.BASE_DIR) / "README.md").read_text(encoding="utf-8")
+
+    def test_the_screenshot_guide_lists_every_referenced_image(self):
+        """Someone replacing the screenshots should find all of them documented."""
+        import re
+        from pathlib import Path
+        from django.conf import settings
+        guide = (Path(settings.BASE_DIR) / "docs" / "screenshots" / "README.md").read_text(encoding="utf-8")
+        referenced = set(re.findall(r"docs/screenshots/([\w-]+\.png)", self.readme()))
+        self.assertTrue(referenced)
+        for name in referenced:
+            with self.subTest(image=name):
+                self.assertIn(f"`{name}`", guide)
+
+    def test_every_linked_document_and_screenshot_exists(self):
+        import re
+        from pathlib import Path
+        from django.conf import settings
+        base = Path(settings.BASE_DIR)
+        targets = re.findall(r"\]\((docs/[^)#]+)\)", self.readme())
+        self.assertGreater(len(targets), 8)
+        missing = [target for target in targets if not (base / target).exists()]
+        self.assertEqual(missing, [])
+
+    def test_it_does_not_claim_certainty(self):
+        text = self.readme().lower()
+        for phrase in ["definitely written by ai", "proves", "guaranteed", "100% accurate"]:
+            self.assertNotIn(phrase, text)
+
+    def test_it_says_the_shipped_detector_is_a_demo(self):
+        self.assertIn("DEMO ANALYSIS", self.readme())
+        self.assertIn("no measured accuracy", self.readme())

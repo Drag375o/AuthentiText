@@ -1,0 +1,20 @@
+<article class="bento-card span-2x1">
+  <p class="meta">Needs attention</p>
+  {% if attention %}
+    <ul class="mt-4 space-y-3">
+      {% for item in attention %}
+        <li class="flex gap-3">
+          <span class="attention-dot attention-dot--{{ item.tone }}" aria-hidden="true"></span>
+          <span class="text-graphite">
+            <a href="{% url 'analyzer:detail' item.analysis.id %}" class="text-ink underline decoration-dotted decoration-rule underline-offset-4 hover:decoration-ink">{{ item.analysis.display_name|truncatechars:38 }}</a>
+            {{ item.text }}
+            <a href="{% url 'analyzer:detail' item.analysis.id %}" class="link-arrow ml-1 whitespace-nowrap">{{ item.action }} &rarr;</a>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="mt-4 text-graphite">Everything is analyzed and up to date.</p>
+  {% endif %}
+  <p class="meta mt-auto pt-6">Documents that were never analyzed, that failed, or that predate the current pipeline.</p>
+</article>
