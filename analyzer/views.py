@@ -5,7 +5,9 @@ from django.core import signing
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg
+import statistics
+from collections import Counter
+
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -34,12 +36,28 @@ def owned_analysis_or_404(request: HttpRequest, analysis_id) -> Analysis:
 
 @login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
+    """A short overview: enough to act on, not a wall of numbers."""
     analyses = Analysis.objects.for_user(request.user)
+    completed = list(analyses.filter(status=Analysis.Status.COMPLETE))
+    profile = build_writing_profile(completed)
+
+    labels = Counter(a.result_label for a in completed if a.result_label)
+    results = [{"label": Analysis.ResultLabel(value).label, "count": count,
+                "share": round(count * 100 / len(completed)) if completed else 0}
+               for value, count in labels.most_common()]
+
     context = {
         "recent": analyses[:8],
         "total": analyses.count(),
-        "latest": analyses.first(),
-        "average_words": analyses.aggregate(avg=Avg("word_count"))["avg"],
+        "completed": len(completed),
+        # Both of these describe results, so they count analyzed documents only.
+        "latest": completed[0] if completed else None,
+        "average_words": round(statistics.fmean(a.word_count for a in completed)) if completed else 0,
+        "profile": profile,
+        "profile_rows": [row for row in profile["rows"] if row["median"] is not None],
+        "results": results,
+        "pending": analyses.exclude(status=Analysis.Status.COMPLETE).count(),
+        "can_compare": len(completed) >= 2,
     }
     return render(request, "analyzer/dashboard.html", context)
 

@@ -2,7 +2,7 @@
   <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
     <div>
       <label for="pick-a" class="label block">Document A</label>
-      <select id="pick-a" name="a" class="field-input mt-2">
+      <select id="pick-a" name="a" class="field-select mt-2">
         <option value="">Choose a document…</option>
         {% for item in analyses %}
           <option value="{{ item.pk }}" {% if choices.a == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.display_name }} · {{ item.created_at|date:"j M Y" }}</option>
@@ -11,7 +11,7 @@
     </div>
     <div>
       <label for="pick-b" class="label block">Document B</label>
-      <select id="pick-b" name="b" class="field-input mt-2">
+      <select id="pick-b" name="b" class="field-select mt-2">
         <option value="">Choose a document…</option>
         {% for item in analyses %}
           <option value="{{ item.pk }}" {% if choices.b == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.display_name }} · {{ item.created_at|date:"j M Y" }}</option>

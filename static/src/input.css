@@ -108,6 +108,12 @@
   .field-input { @apply block w-full rounded-md border border-rule bg-paper px-3.5 py-3 font-serif text-[1.05rem] text-ink shadow-card transition-[border-color,box-shadow] placeholder:text-muted hover:border-muted focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink; }
   .field-input[aria-invalid="true"] { @apply border-signal-high focus:ring-signal-high; }
   .field-checkbox { @apply h-4 w-4 shrink-0 rounded-[3px] border-rule accent-ink cursor-pointer; }
+  /* Selects: the browser's own arrow sits flush against the border, so draw our
+     own and leave it room. */
+  .field-select { @apply field-input cursor-pointer appearance-none bg-no-repeat pr-11;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236B6B6B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 1rem center;
+    background-size: 1rem 1rem; }
   .field-error { @apply text-[0.95rem] text-signal-high space-y-1; }
   .field-help { @apply text-[0.9rem] text-muted leading-snug [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1; }
 

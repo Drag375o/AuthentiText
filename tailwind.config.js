@@ -2,7 +2,7 @@
 module.exports = {
   content: ["./templates/**/*.html", "./**/templates/**/*.html", "./static/js/**/*.js", "./core/**/*.py", "./accounts/**/*.py", "./analyzer/**/*.py"],
   // Built dynamically in templates (sig-{{ level }}), so the scanner can't see them.
-  safelist: ["sig-low", "sig-mid", "sig-high", "field-input", "field-checkbox", "editor-title", "editor-textarea", "editor-over-limit", "btn-danger", "btn-danger-ghost", "confirm-dialog", "is-closing", "rename-trigger", "rename-flash", "tab", "dropzone", "is-dragover", "is-busy", "upload-chip", "is-indeterminate", "is-highlighted", "sentence-row", "text-justify", "hyphens-auto", "text-rule", "text-brass", "chip", "chip--marker", "profile-track", "profile-range", "profile-dot", "profile-median", "diff-removed", "diff-added", "delta-up", "delta-down", "pattern-mark", "strength", "summary-text"],
+  safelist: ["sig-low", "sig-mid", "sig-high", "field-input", "field-checkbox", "field-select", "editor-title", "editor-textarea", "editor-over-limit", "btn-danger", "btn-danger-ghost", "confirm-dialog", "is-closing", "rename-trigger", "rename-flash", "tab", "dropzone", "is-dragover", "is-busy", "upload-chip", "is-indeterminate", "is-highlighted", "sentence-row", "text-justify", "hyphens-auto", "text-rule", "text-brass", "chip", "chip--marker", "profile-track", "profile-range", "profile-dot", "profile-median", "diff-removed", "diff-added", "delta-up", "delta-down", "pattern-mark", "strength", "summary-text"],
   theme: {
     extend: {
       colors: {

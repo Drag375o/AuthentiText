@@ -1,0 +1,64 @@
+<div class="bento mt-12">
+  <article class="bento-card">
+    <p class="meta">Documents analyzed</p>
+    <p class="metric mt-auto pt-6">{{ completed }}</p>
+    {% if pending %}<p class="meta mt-2">{{ pending }} not analyzed yet</p>{% endif %}
+  </article>
+
+  <article class="bento-card">
+    <p class="meta">Average length</p>
+    <p class="metric mt-auto pt-6">{{ average_words|floatformat:0 }}</p>
+    <p class="meta mt-2">words per document</p>
+  </article>
+
+  {% if latest %}
+    <a href="{% url 'analyzer:detail' latest.id %}" class="bento-card bento-card--fog bento-card--interactive span-2x1 group no-underline">
+      <p class="meta">Latest analysis</p>
+      <p class="h-card mt-4 group-hover:underline underline-offset-4 break-words">{{ latest.display_name }}</p>
+      <p class="meta mt-2">{{ latest.created_at|date:"j M Y" }} &middot; {{ latest.word_count }} words</p>
+      <p class="mt-auto pt-6 font-display font-semibold text-ink">
+        {% if latest.result_label %}{{ latest.get_result_label_display }}{% else %}Not analyzed yet{% endif %}
+        {% if latest.is_demo %}<span class="chip ml-2">Demo</span>{% endif %}
+      </p>
+    </a>
+  {% endif %}
+
+  {% if profile_rows %}
+    <a href="{% url 'analyzer:profile' %}" class="bento-card bento-card--interactive span-2x1 group no-underline">
+      <div class="flex items-baseline justify-between gap-4">
+        <p class="meta">Writing profile</p>
+        <span class="link-arrow no-underline group-hover:underline">Open &rarr;</span>
+      </div>
+      <dl class="mt-5 space-y-3">
+        {% for row in profile_rows %}
+          <div>
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-[0.98rem]">{{ row.label }}</dt>
+              <dd class="tabular-nums font-display font-bold text-ink">{{ row.median }}</dd>
+            </div>
+            <div class="meter mt-1.5"><span style="transform: scaleX(0)" data-meter="{{ row.median }}"></span></div>
+          </div>
+        {% endfor %}
+      </dl>
+      <p class="meta mt-5">{% if profile.enough %}Median across {{ profile.documents }} documents.{% else %}From your one analyzed document.{% endif %}</p>
+    </a>
+  {% endif %}
+
+  {% if results %}
+    <article class="bento-card span-2x1">
+      <p class="meta">Results so far</p>
+      <dl class="mt-5 space-y-3">
+        {% for result in results %}
+          <div>
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-[0.98rem]">{{ result.label }}</dt>
+              <dd class="tabular-nums meta">{{ result.count }} of {{ completed }}</dd>
+            </div>
+            <div class="meter mt-1.5"><span style="transform: scaleX(0)" data-meter="{{ result.share }}"></span></div>
+          </div>
+        {% endfor %}
+      </dl>
+      <p class="meta mt-5 leading-relaxed">Counts of the labels given so far. They describe measured characteristics, never authorship.</p>
+    </article>
+  {% endif %}
+</div>

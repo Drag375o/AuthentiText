@@ -169,3 +169,11 @@ class ComparisonContentTests(TestCase):
             self.assertIn("a", row)
             self.assertIn("b", row)
         self.assertEqual(len(self.comparison["detection"]["families"]), 5)
+
+
+class PickerStylingTests(ComparePageTests):
+    def test_selects_use_the_custom_arrow_with_room_for_it(self):
+        """The browser's own arrow sits flush against the border."""
+        page = self.client.get(self.url()).content.decode()
+        self.assertEqual(page.count('class="field-select mt-2"'), 2)
+        self.assertNotIn('name="a" class="field-input', page)
