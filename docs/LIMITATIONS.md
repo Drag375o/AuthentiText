@@ -17,7 +17,7 @@ AuthentiText measures characteristics of text. It does not prove authorship, AI 
 
 - **Sentence-final abbreviations.** A custom rule handles common cases ("at 5 p.m. It rained"). Abbreviations outside its list, or followed by a word that isn't a typical sentence opener, may still merge two sentences.
 - **Hard-wrapped text.** Text copied from a PDF arrives with a line break every 70-odd characters. AuthentiText rejoins those lines when a break falls inside a sentence (the line before lacks ending punctuation and the line after starts in lower case). Words hyphenated across a line break ("annota-\ntion") are still counted as two words, because the original text is never modified.
-- **Headings** are detected as short lines (12 words or fewer) with no sentence-ending punctuation, and excluded from every sentence-length measure. A short sentence that is a whole paragraph and ends without punctuation would be misread as a heading.
+- **Headings** are detected as short lines (12 words or fewer) with no sentence-ending punctuation. They count as sentences in every measure and are reported separately, since they are short and pull the mean sentence length down. A short sentence that is a whole paragraph and ends without punctuation would be misread as a heading.
 - **Bulleted list items** are still treated as sentences and counted in sentence-length statistics.
 - **Quick counts versus analysis.** The editor's live counts use simple rules; the analysis uses spaCy. Sentence counts can differ slightly between them. The saved document uses the analysis counts.
 

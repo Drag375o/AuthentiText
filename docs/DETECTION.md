@@ -46,7 +46,11 @@ One pair proves nothing, but it is enough to show why thresholds picked by hand 
 
 ## Sentence-level scores
 
-Each sentence also gets its own score, from what can be measured inside one sentence: discourse markers and stock phrases, repetition within the sentence, and whether it uses any uncommon vocabulary. It is deliberately conservative, because a single sentence holds far less evidence than a document: a plain sentence with none of those features scores near zero. Without that, the heatmap contradicted the document score, marking most sentences of a document that scored 11% overall.
+Each sentence is marked relative to the document's own score, so the heatmap can never contradict the headline. Its evidence is what can be seen in one sentence, or the sentence's own part in a document-wide pattern: stock phrases and discourse markers, repetition within the sentence, ordinary vocabulary, an opening shared with other sentences, resemblance to its closest neighbour, and (only when the document's lengths are unusually even) a length matching the average. A sentence carrying more of that evidence than its neighbours sits above the document score; one carrying less sits below. Every mark lists its reasons, and a sentence with none says so plainly: "Marked at the document's overall level: nothing in this sentence itself stands out."
+
+**When the evidence is not local at all.** Several signals belong to the whole set rather than to any sentence: how evenly lengths are spread, how far meanings travel, whether contractions appear anywhere. When most of a document's score comes from those, the heatmap says so instead of spreading the blame evenly:
+
+> Most of this document's signal comes from patterns across the whole text (vocabulary spread, contractions, sentence openings) rather than from anything inside a particular sentence.
 
 The three bands are low (under 34%), medium (34-60%) and high (above 60%). In both exported heatmaps each band has a tint **and** a different underline, so the marks never depend on colour alone: in the PDF, high signal is a red tint with a double underline, medium a grey tint with a single underline, and low is left plain; the Word file uses highlight colours with dotted and dashed underlines.
 

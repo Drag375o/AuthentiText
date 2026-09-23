@@ -1,10 +1,11 @@
 """
 Document statistics: sizes, sentence-length distribution, punctuation habits.
 
-Sentence-length measures use body sentences only. A heading ("3.3 Data Split")
-is a few words long and would otherwise pull the mean down and inflate the
-variation: in testing, one heading moved burstiness by 0.16, more than the
-difference between two documents being compared.
+Headings count as sentences everywhere, so nothing is silently dropped. They
+are still detected and counted separately (`heading_count`), because a
+three-word heading legitimately pulls the mean sentence length down: the
+interface says "includes 2 headings" next to the rhythm figures so a reader can
+see why a number looks the way it does.
 """
 from __future__ import annotations
 
@@ -28,7 +29,7 @@ PUNCTUATION = {
 
 
 def sentence_lengths(doc: ProcessedDocument) -> list[int]:
-    return [len(s.words) for s in doc.body_sentences]
+    return [len(s.words) for s in doc.sentences]
 
 
 def _is_spaced_hyphen(doc: ProcessedDocument, token) -> bool:

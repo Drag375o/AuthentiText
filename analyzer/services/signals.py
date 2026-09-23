@@ -48,6 +48,11 @@ class Signal:
     high_text: str      # shown when the contribution is high
     low_text: str       # shown when the contribution is low
     caveat: str
+    # True when the evidence lives inside a single sentence, so the heatmap can
+    # show it. Signals about the whole set (how evenly lengths are spread, how
+    # far meanings travel) cannot be pinned to one sentence, and the interface
+    # says so instead of spreading the blame evenly.
+    local: bool = False
 
 
 SIGNALS: list[Signal] = [
@@ -55,12 +60,12 @@ SIGNALS: list[Signal] = [
            0.0, 3.0, 1.0,
            "Stock phrases from the pattern library appear often.",
            "Few stock phrases from the pattern library.",
-           "Textbooks, student essays and business writing use these phrases constantly."),
+           "Textbooks, student essays and business writing use these phrases constantly.", local=True),
     Signal("marker_openings", "linguistic", "Marker-led sentences", "marker_initial_ratio",
            0.05, 0.45, 0.7,
            "Many sentences open with a discourse marker such as \u201cHowever\u201d or \u201cFurthermore\u201d.",
            "Sentences rarely open with a discourse marker.",
-           "Marker-led sentences are taught as good structure in academic writing."),
+           "Marker-led sentences are taught as good structure in academic writing.", local=True),
     Signal("semantic_spread", "semantic", "Semantic spread", "semantic_diversity",
            0.95, 0.60, 1.4,
            "Sentences stay close to one another in meaning, covering little ground.",
@@ -70,7 +75,7 @@ SIGNALS: list[Signal] = [
            0.10, 0.45, 1.0,
            "Consecutive sentences restate each other closely.",
            "Consecutive sentences move the text forward.",
-           "Careful, well-linked prose can also score high here."),
+           "Careful, well-linked prose can also score high here.", local=True),
     Signal("opening_variety", "structural", "Sentence openings", "opening_pattern_diversity",
            0.95, 0.45, 0.8,
            "Sentences begin in a small number of grammatical shapes.",
@@ -80,12 +85,12 @@ SIGNALS: list[Signal] = [
            0.0, 0.4, 0.6,
            "Several sentences begin with the same two words.",
            "Sentence openings rarely repeat.",
-           "Lists and parallel constructions repeat openings deliberately."),
+           "Lists and parallel constructions repeat openings deliberately.", local=True),
     Signal("length_regularity", "statistical", "Sentence-length regularity", "sentence_length_cv",
            0.55, 0.15, 0.5,
            "Sentence lengths are unusually even.",
            "Sentence lengths vary.",
-           "Edited prose is often regular. In testing this signal separated a human/AI pair by almost nothing, so it carries little weight."),
+           "Edited prose is often regular. In testing this signal separated a human/AI pair by almost nothing, so it carries little weight.", local=True),
     Signal("vocabulary_flatness", "statistical", "Vocabulary spread", "normalized_entropy",
            0.99, 0.90, 0.5,
            "A small set of words carries much of the text.",

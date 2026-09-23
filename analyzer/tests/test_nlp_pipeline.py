@@ -208,29 +208,34 @@ class SoftWrapTests(SimpleTestCase):
 
 
 class HeadingTests(SimpleTestCase):
-    """A heading is a few words long. Counting it as a sentence distorted
-    burstiness by 0.16 when comparing two documents: more than the difference
-    being measured."""
+    """Headings count as sentences everywhere; nothing is silently dropped.
+    They are counted separately so the interface can say "includes 2 headings",
+    because a three-word heading legitimately pulls the mean length down."""
 
     BODY = ("The dataset was partitioned into training and test sets for our experiments. "
             "We applied stratified sampling to keep the class balance across all splits. "
             "The result is reported in the table below for every annotation dimension.")
 
-    def test_heading_is_detected_and_excluded_from_rhythm(self):
+    def test_headings_are_detected_and_counted(self):
+        from analyzer.services.document_stats import compute_document_stats
+        stats = compute_document_stats(preprocess(f"3.3 Data Split\n{self.BODY}"))
+        self.assertEqual(stats["heading_count"], 1)
+        self.assertEqual(stats["sentence_count"], 4)
+
+    def test_headings_count_towards_the_length_statistics(self):
         from analyzer.services.document_stats import compute_document_stats
         with_heading = compute_document_stats(preprocess(f"3.3 Data Split\n{self.BODY}"))
         without = compute_document_stats(preprocess(self.BODY))
-        self.assertEqual(with_heading["heading_count"], 1)
-        self.assertEqual(with_heading["sentence_count"], without["sentence_count"] + 1)
-        for key in ("sentence_length_mean", "sentence_length_cv", "sentence_length_min"):
-            self.assertAlmostEqual(with_heading[key], without[key], places=6, msg=key)
+        self.assertLess(with_heading["sentence_length_mean"], without["sentence_length_mean"])
+        self.assertGreater(with_heading["sentence_length_cv"], without["sentence_length_cv"])
+        self.assertEqual(with_heading["sentence_length_min"], 3)
 
-    def test_burstiness_ignores_headings(self):
+    def test_burstiness_counts_headings_too(self):
         from analyzer.services.statistics_features import compute_statistics
         with_heading, _ = compute_statistics(preprocess(f"3.3 Data Split\n{self.BODY}"))
         without, _ = compute_statistics(preprocess(self.BODY))
-        self.assertAlmostEqual(with_heading["sentence_length_burstiness"],
-                               without["sentence_length_burstiness"], places=6)
+        self.assertNotAlmostEqual(with_heading["sentence_length_burstiness"],
+                                  without["sentence_length_burstiness"], places=3)
 
     def test_real_sentences_are_not_treated_as_headings(self):
         doc = preprocess("The rain stopped.\nWe went outside and sat on the steps until it was dark.")
@@ -244,4 +249,3 @@ class HeadingTests(SimpleTestCase):
     def test_a_single_short_line_document_is_not_a_heading(self):
         doc = preprocess("Just a short note")
         self.assertFalse(doc.sentences[0].is_heading)
-        self.assertEqual(len(doc.body_sentences), 1)

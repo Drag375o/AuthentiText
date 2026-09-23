@@ -115,7 +115,7 @@ def distinctive_terms(doc: ProcessedDocument) -> list[dict]:
 def compute_statistics(doc: ProcessedDocument) -> tuple[dict[str, float | None], dict]:
     forms = [w.norm for w in doc.words]
     counts = Counter(forms)
-    lengths = [len(s.words) for s in doc.body_sentences]   # headings excluded, as in document_stats
+    lengths = [len(s.words) for s in doc.sentences]   # headings included, as in document_stats
     features = {
         "word_entropy": shannon_entropy(counts),
         "normalized_entropy": normalized_entropy(counts),

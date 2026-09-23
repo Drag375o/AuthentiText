@@ -30,6 +30,10 @@ from django.conf import settings
 
 from .signals import FAMILIES, FAMILY_DESCRIPTIONS, SIGNALS, Signal, contribution
 
+
+def clamp01(value: float) -> float:
+    return max(0.0, min(1.0, value))
+
 logger = logging.getLogger("authentitext")
 
 DEMO_VERSION = "demo-0.1"
@@ -78,8 +82,10 @@ class BaseDetector:
     def analyze(self, features: dict[str, float | None], *, word_count: int) -> DetectionResult:
         raise NotImplementedError
 
-    def sentence_scores(self, sentences: list[dict], features: dict) -> list[float | None]:
-        return [None] * len(sentences)
+    def sentence_scores(self, sentences: list[dict], features: dict,
+                        document_probability: float | None = None) -> list[dict]:
+        """One {"score": float | None, "reasons": [str]} per sentence."""
+        return [{"score": None, "reasons": []} for _ in sentences]
 
 
 def insufficient(word_count: int, version: str, is_demo: bool, reasons: list[str]) -> DetectionResult:
@@ -199,35 +205,122 @@ class DemoDetector(BaseDetector):
             signals=scores,
         )
 
-    def sentence_scores(self, sentences: list[dict], features: dict) -> list[float | None]:
-        """
-        A per-sentence signal from that sentence's own measurements.
+    SENTENCE_MIN_WORDS = 3            # below this there is nothing to measure
+    NEIGHBOUR_LOW = 0.20              # similarity to the closest other sentence
+    NEIGHBOUR_HIGH = 0.70
+    LENGTH_MATCH_WITHIN = 0.20        # a length within 20% of the mean counts as conforming
+    EVEN_DOCUMENT_CV = 0.40           # ... but only matters when the document is unusually even
+    BASELINE_REASON = ("Marked at the document's overall level: nothing in this sentence itself stands out.")
 
-        Deliberately conservative: one sentence holds far less evidence than a
-        document, so a plain sentence with no marker, no internal repetition and
-        ordinary vocabulary scores near zero rather than in the middle. Without
-        this the heatmap contradicted the document score, marking most sentences
-        of a text scored 11% overall.
+    def sentence_evidence(self, sentence: dict, features: dict) -> tuple[float, list[str]] | None:
         """
-        results: list[float | None] = []
-        for sentence in sentences:
-            signals = sentence["signals"]
-            if signals.get("heading") or signals["words"] < 5:
-                results.append(None)
+        How much of the document's signal this one sentence carries, 0-1, and
+        why. Only things measurable inside a single sentence, or the sentence's
+        own part in a document-wide pattern: stock phrases and discourse
+        markers, repetition within the sentence, ordinary vocabulary, an opening
+        shared with other sentences, a length matching the document average, and
+        resemblance to its closest neighbour.
+        """
+        signals = sentence["signals"]
+        if signals["words"] < self.SENTENCE_MIN_WORDS:
+            return None
+
+        parts: list[tuple[float, float, str]] = []   # (value, weight, reason when it counts)
+
+        markers = signals.get("markers") or []
+        if "academic_formula" in markers:
+            parts.append((1.0, 1.0, "Contains a stock phrase from the pattern library."))
+        else:
+            parts.append((0.5 if markers else 0.0, 1.0, "Contains a discourse marker."))
+
+        ratio = signals.get("type_token_ratio")
+        span = self.SENTENCE_REPETITION_LOW - self.SENTENCE_REPETITION_HIGH
+        repetition = 0.0 if ratio is None else clamp01((self.SENTENCE_REPETITION_LOW - ratio) / span)
+        parts.append((repetition, 0.8, "Words repeat within the sentence."))
+
+        parts.append((0.0 if signals.get("rare_words") else 1.0, 0.5, "No uncommon vocabulary."))
+
+        parts.append((1.0 if signals.get("repeated_opening") else 0.0, 0.6,
+                      "Begins with the same two words as another sentence."))
+
+        # Conforming to the average only means something when the document's
+        # lengths are unusually even; in varied prose it is unremarkable.
+        mean_length = features.get("sentence_length_mean") or 0
+        variation = features.get("sentence_length_cv")
+        if mean_length and variation is not None and variation < self.EVEN_DOCUMENT_CV:
+            distance = abs(signals["words"] - mean_length) / mean_length
+            parts.append((clamp01(1 - distance), 0.6,
+                          "Its length matches the average, in a document of unusually even sentences."
+                          if distance <= self.LENGTH_MATCH_WITHIN else ""))
+
+        similarity = signals.get("closest_similarity")
+        neighbour = 0.0 if similarity is None else clamp01(
+            (similarity - self.NEIGHBOUR_LOW) / (self.NEIGHBOUR_HIGH - self.NEIGHBOUR_LOW))
+        parts.append((neighbour, 0.8, "Very close in meaning to another sentence."))
+
+        total = sum(weight for _, weight, _ in parts)
+        evidence = sum(value * weight for value, weight, _ in parts) / total
+        reasons = [reason for value, _, reason in parts if reason and value >= 0.5]
+        return evidence, reasons
+
+    def sentence_scores(self, sentences: list[dict], features: dict,
+                        document_probability: float | None = None) -> list[dict]:
+        """
+        Per-sentence marks, centred on the document's own score.
+
+        The evidence above says which sentences carry more of the signal than
+        their neighbours; the document score says how strong that signal is
+        overall. Combining them means the marks show *where* a document's signal
+        sits without ever contradicting the headline: a document at 11% has
+        mostly low marks, one at 45% has marks spread either side of 45%.
+        """
+        empty = [{"score": None, "reasons": []} for _ in sentences]
+        if document_probability is None:
+            return empty
+
+        measured = [self.sentence_evidence(sentence, features) for sentence in sentences]
+        values = [entry[0] for entry in measured if entry is not None]
+        if not values:
+            return empty
+
+        average = sum(values) / len(values)
+        results = []
+        for entry in measured:
+            if entry is None:
+                results.append({"score": None, "reasons": ["Too short to measure on its own."]})
                 continue
-
-            markers = signals.get("markers") or []
-            marker_score = 1.0 if "academic_formula" in markers else (0.5 if markers else 0.0)
-
-            ratio = signals.get("type_token_ratio")
-            span = self.SENTENCE_REPETITION_LOW - self.SENTENCE_REPETITION_HIGH
-            repetition = 0.0 if ratio is None else max(0.0, min(1.0, (self.SENTENCE_REPETITION_LOW - ratio) / span))
-
-            vocabulary = 0.0 if signals.get("rare_words") else 0.35
-
-            weighted = marker_score * 1.0 + repetition * 0.8 + vocabulary * 0.5
-            results.append(round(weighted / (1.0 + 0.8 + 0.5), 3))
+            evidence, reasons = entry
+            score = round(clamp01(document_probability + (evidence - average)), 3)
+            results.append({"score": score, "reasons": reasons or [self.BASELINE_REASON]})
         return results
+
+    def heatmap_note(self, result: DetectionResult) -> str:
+        """
+        Explains a quiet heatmap under a document that scored highly.
+
+        Some evidence belongs to the whole set, not to any sentence: how evenly
+        lengths are spread, how far meanings travel across the text, whether
+        contractions appear anywhere at all. When most of the score comes from
+        those, the interface says so rather than spreading the blame evenly.
+        """
+        scored = [s for s in result.signals if s.score is not None]
+        if not scored or result.probability is None:
+            return ""
+        weighted = {s.key: s.score * s.weight for s in scored}
+        total = sum(weighted.values())
+        if total <= 0:
+            return ""
+        local_keys = {s.key for s in SIGNALS if s.local}
+        diffuse = sum(value for key, value in weighted.items() if key not in local_keys) / total
+        if diffuse < 0.55:
+            return ""
+        names = sorted(((s.label, weighted[s.key]) for s in scored
+                        if s.key not in local_keys and weighted[s.key] > 0), key=lambda pair: -pair[1])[:3]
+        if not names:
+            return ""
+        listed = ", ".join(label.lower() for label, _ in names)
+        return (f"Most of this document's signal comes from patterns across the whole text "
+                f"({listed}) rather than from anything inside a particular sentence.")
 
 
 class TrainedDetector(BaseDetector):

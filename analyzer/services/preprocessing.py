@@ -82,8 +82,17 @@ class ProcessedDocument:
 
     @property
     def body_sentences(self) -> list[Sentence]:
-        """Sentences excluding headings: the basis for every rhythm measure."""
-        return [s for s in self.sentences if not s.is_heading]
+        """
+        Every sentence, headings included.
+
+        Headings were excluded from the rhythm measures for a while, because a
+        three-word heading pulls the mean down and inflates the variation: in
+        testing, one "3.3 Data Split" shifted burstiness by 0.16. They are back
+        in by request, so a document's own structure counts as part of its
+        rhythm. The consequence is that a document with headings and one
+        without are no longer directly comparable on sentence length.
+        """
+        return list(self.sentences)
 
     @property
     def words(self) -> list[Token]:

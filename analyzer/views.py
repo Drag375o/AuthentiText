@@ -188,17 +188,10 @@ def heatmap_sentences(sentences: list, detection: dict) -> list[dict]:
     for sentence in sentences:
         level, level_label = signal_band(sentence.ai_probability)
         signals = sentence.signals or {}
-        reasons = []
-        if signals.get("markers"):
-            reasons.append("Opens with or contains a discourse marker.")
-        if signals.get("passive"):
-            reasons.append("Passive construction.")
-        if not signals.get("rare_words"):
-            reasons.append("No uncommon vocabulary.")
-        if signals.get("type_token_ratio") is not None and signals["type_token_ratio"] < 0.7:
-            reasons.append("Words repeat within the sentence.")
-        if signals.get("heading"):
-            reasons = ["A heading, so it is not scored."]
+        # Reasons come from the detector, so the mark and its explanation can't drift apart.
+        reasons = list(signals.get("signal_reasons") or [])
+        if not reasons:
+            reasons = ["Nothing notable in this sentence."]
         rows.append({
             "text": sentence.text, "level": level, "level_label": level_label,
             "index": sentence.sentence_index, "probability": sentence.ai_probability,

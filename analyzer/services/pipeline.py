@@ -89,6 +89,8 @@ def run_pipeline(text: str) -> PipelineResult:
     stylometric = timed("stylometry", compute_stylometry, processed, syntax)
 
     closest = {row["index"]: row for row in semantic_details.get("sentence_similarity", [])}
+    repeated_openings = {index for group in discourse_details.get("repeated_openings", [])
+                         for index in group["sentences"]}
     markers_by_sentence: dict[int, list[str]] = {}
     for pattern in discourse_details["patterns"]:
         for _, _, sentence_index in pattern["spans"]:
@@ -98,7 +100,8 @@ def run_pipeline(text: str) -> PipelineResult:
          "signals": {**sentence_signals(s), **sentence_syntax(s), "paragraph": s.paragraph, "heading": s.is_heading,
                      "markers": sorted(set(markers_by_sentence.get(s.index, []))),
                      "closest_sentence": closest.get(s.index, {}).get("closest"),
-                     "closest_similarity": closest.get(s.index, {}).get("similarity")}}
+                     "closest_similarity": closest.get(s.index, {}).get("similarity"),
+                     "repeated_opening": s.index in repeated_openings}}
         for s in processed.sentences
     ])
 
@@ -110,9 +113,9 @@ def run_pipeline(text: str) -> PipelineResult:
     started = time.perf_counter()
     detection = detector.analyze(features, word_count=int(features["word_count"] or 0))
     timings["detection"] = round((time.perf_counter() - started) * 1000)
-    sentence_signal = detector.sentence_scores(sentences, features)
-    for sentence, score in zip(sentences, sentence_signal):
-        sentence["ai_probability"] = score
+    for sentence, scored in zip(sentences, detector.sentence_scores(sentences, features, detection.probability)):
+        sentence["ai_probability"] = scored["score"]
+        sentence["signals"]["signal_reasons"] = scored["reasons"]
 
     notes = []
     if processed.language != "en":
@@ -123,8 +126,9 @@ def run_pipeline(text: str) -> PipelineResult:
         **statistical_details,
         **semantic_details,
         "profile": build_profile(features),
-        "detection": detection.as_dict(),
-        "sentence_lengths": [s["signals"]["words"] for s in sentences if not s["signals"]["heading"]],
+        "detection": {**detection.as_dict(),
+                      "heatmap_note": getattr(detector, "heatmap_note", lambda _: "")(detection)},
+        "sentence_lengths": [s["signals"]["words"] for s in sentences],
         "language_checked": processed.language_checked,
         "notes": notes,
         "timings_ms": timings,

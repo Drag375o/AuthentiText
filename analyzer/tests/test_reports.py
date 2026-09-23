@@ -145,6 +145,42 @@ class ContentTests(ReportTestCase):
         self.assertEqual(band_for(1.0)["key"], "high")
 
 
+class HeatmapReasonTests(ReportTestCase):
+    """Every mark states why, and a quiet heatmap explains itself."""
+
+    def test_each_sentence_carries_its_reasons(self):
+        for sentence in self.analysis.sentences.all():
+            with self.subTest(index=sentence.sentence_index):
+                self.assertTrue(sentence.signals.get("signal_reasons"))
+
+    def test_headings_are_scored_and_labelled(self):
+        from analyzer.models import Analysis
+        self.client.post(reverse("analyzer:analyze"),
+                         {"title": "With heading", "text": "3.3 Data Split\n\n" + TEXT})
+        analysis = Analysis.objects.exclude(pk=self.analysis.pk).get()
+        heading = analysis.sentences.first()
+        self.assertTrue(heading.signals["heading"])
+        self.assertIsNotNone(heading.ai_probability)          # scored, not skipped
+        page = self.client.get(reverse("analyzer:detail", args=[analysis.pk]))
+        self.assertContains(page, "Includes 1 heading")
+
+    def test_the_note_appears_only_when_the_evidence_is_document_wide(self):
+        from analyzer.services.detector import DemoDetector
+        detector = DemoDetector()
+        local = detector.analyze({"formulaic_phrases_per_100": 4.0, "marker_initial_ratio": 0.5,
+                                  "semantic_diversity": 0.9, "local_coherence": 0.5,
+                                  "opening_pattern_diversity": 0.9, "repeated_opening_ratio": 0.4,
+                                  "sentence_length_cv": 0.5, "normalized_entropy": 0.99,
+                                  "first_person_ratio": 0.05, "contraction_ratio": 0.03}, word_count=600)
+        diffuse = detector.analyze({"formulaic_phrases_per_100": 0.0, "marker_initial_ratio": 0.0,
+                                    "semantic_diversity": 0.95, "local_coherence": 0.1,
+                                    "opening_pattern_diversity": 0.45, "repeated_opening_ratio": 0.0,
+                                    "sentence_length_cv": 0.55, "normalized_entropy": 0.90,
+                                    "first_person_ratio": 0.0, "contraction_ratio": 0.0}, word_count=600)
+        self.assertEqual(detector.heatmap_note(local), "")
+        self.assertIn("patterns across the whole text", detector.heatmap_note(diffuse))
+
+
 class SentenceScoreCalibrationTests(TestCase):
     """Regression: sentence marks contradicted the document score, marking most
     sentences of a document that scored 11% overall."""
@@ -156,16 +192,30 @@ class SentenceScoreCalibrationTests(TestCase):
         document = result.report["detection"]["probability"]
         self.assertLess(abs(sum(scores) / len(scores) - document), 0.25)
 
-    def test_a_plain_sentence_scores_near_zero(self):
+    def test_marks_never_contradict_the_document_score(self):
+        """A sentence with no local evidence sits at the document's own level."""
         from analyzer.services.detector import DemoDetector
-        plain = {"signals": {"words": 12, "type_token_ratio": 0.95, "rare_words": 2, "markers": [], "heading": False}}
-        self.assertLess(DemoDetector().sentence_scores([plain], {})[0], 0.1)
+        rows = [{"signals": {"words": 12, "type_token_ratio": 0.95, "rare_words": 2, "markers": [],
+                             "heading": False, "closest_similarity": 0.1, "repeated_opening": False}}]
+        scored = DemoDetector().sentence_scores(rows, {"sentence_length_mean": 12}, 0.40)[0]
+        self.assertAlmostEqual(scored["score"], 0.40, places=2)
+        self.assertEqual(scored["reasons"], [DemoDetector.BASELINE_REASON])
 
-    def test_headings_and_very_short_sentences_are_not_scored(self):
+    def test_a_sentence_with_local_evidence_rises_above_its_neighbours(self):
         from analyzer.services.detector import DemoDetector
-        rows = [{"signals": {"words": 3, "type_token_ratio": 1.0, "rare_words": 0, "markers": [], "heading": True}},
-                {"signals": {"words": 4, "type_token_ratio": 1.0, "rare_words": 0, "markers": [], "heading": False}}]
-        self.assertEqual(DemoDetector().sentence_scores(rows, {}), [None, None])
+        plain = {"signals": {"words": 12, "type_token_ratio": 0.95, "rare_words": 2, "markers": [],
+                             "heading": False, "closest_similarity": 0.1, "repeated_opening": False}}
+        loaded = {"signals": {"words": 12, "type_token_ratio": 0.5, "rare_words": 0,
+                              "markers": ["academic_formula"], "heading": False,
+                              "closest_similarity": 0.8, "repeated_opening": True}}
+        scores = DemoDetector().sentence_scores([plain, loaded], {"sentence_length_mean": 12}, 0.40)
+        self.assertLess(scores[0]["score"], scores[1]["score"])
+        self.assertIn("Contains a stock phrase from the pattern library.", scores[1]["reasons"])
+
+    def test_very_short_sentences_are_not_scored(self):
+        from analyzer.services.detector import DemoDetector
+        rows = [{"signals": {"words": 2, "type_token_ratio": 1.0, "rare_words": 0, "markers": [], "heading": False}}]
+        self.assertIsNone(DemoDetector().sentence_scores(rows, {}, 0.4)[0]["score"])
 
 
 class HeatmapPdfTests(ReportTestCase):

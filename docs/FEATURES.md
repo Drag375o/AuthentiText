@@ -10,16 +10,16 @@ Don't edit this file by hand; change the registry and regenerate it.
 | `word_count` | Words | count | Word tokens, counting contractions like “can't” once. | always available |
 | `unique_word_count` | Unique words | count | Distinct word forms, ignoring case. | always available |
 | `sentence_count` | Sentences | count | Sentences found by spaCy's parser, never crossing a paragraph break. | always available |
-| `heading_count` | Headings | count | Short lines without sentence-ending punctuation. They are excluded from every sentence-length measure, because a heading is not a sentence. | always available |
+| `heading_count` | Headings | count | Short lines without sentence-ending punctuation. They are counted in the sentence-length measures along with everything else. | always available |
 | `paragraph_count` | Paragraphs | count | Blocks separated by blank lines, or by line breaks if there are no blank lines. | always available |
 | `character_count` | Characters | count | All characters in the original text. | always available |
 | `reading_minutes` | Reading time | number | Minutes at 238 words per minute, rounded up. | always available |
-| `sentence_length_mean` | Mean sentence length | words | Average words per sentence, excluding headings. | always available |
+| `sentence_length_mean` | Mean sentence length | words | Average words per sentence, headings included. | always available |
 | `sentence_length_median` | Median sentence length | words | The middle sentence length; less affected by one very long sentence. | always available |
-| `sentence_length_std` | Sentence length spread | words | Standard deviation of sentence lengths, excluding headings. Higher means more varied rhythm. | always available |
+| `sentence_length_std` | Sentence length spread | words | Standard deviation of sentence lengths. Higher means more varied rhythm. | always available |
 | `sentence_length_min` | Shortest sentence | words | Words in the shortest sentence. | always available |
 | `sentence_length_max` | Longest sentence | words | Words in the longest sentence. | always available |
-| `sentence_length_cv` | Sentence length variation | share (0-1, shown as %) | Spread divided by the mean, so texts with long and short average sentences can be compared. Low variation is common in careful editing as well as generated text; it isn't evidence on its own. | Needs at least one sentence, excluding headings. |
+| `sentence_length_cv` | Sentence length variation | share (0-1, shown as %) | Spread divided by the mean, so texts with long and short average sentences can be compared. Low variation is common in careful editing as well as generated text; it isn't evidence on its own. | Needs at least one sentence. |
 | `paragraph_length_mean` | Mean paragraph length | words | Average words per paragraph. | always available |
 | `avg_word_length` | Average word length | number | Average letters per word. | always available |
 | `commas_per_100` | Commas | per 100 words | Commas per 100 words. | always available |
@@ -97,7 +97,7 @@ Don't edit this file by hand; change the registry and regenerate it.
 |---|---|---|---|---|
 | `word_entropy` | Word entropy | number | Shannon entropy of the word distribution, in bits: how unpredictable the next word is, given only how often each word appears. Longer texts naturally score higher. | always available |
 | `normalized_entropy` | Entropy, normalised | share (0-1, shown as %) | Word entropy divided by the maximum possible for this vocabulary size, so texts of different lengths can be compared. Near 100% means words are spread evenly; lower means a few words dominate. | Needs at least two distinct words. |
-| `sentence_length_burstiness` | Burstiness | number | Unevenness of sentence lengths on a scale from -1 to +1 (Goh & Barabasi, 2008). -1 is perfectly regular, 0 is random-like, and positive values mean bursts of short and long sentences. Regular rhythm alone is not evidence of anything. | Needs at least three sentences, excluding headings. |
+| `sentence_length_burstiness` | Burstiness | number | Unevenness of sentence lengths on a scale from -1 to +1 (Goh & Barabasi, 2008). -1 is perfectly regular, 0 is random-like, and positive values mean bursts of short and long sentences. Regular rhythm alone is not evidence of anything. | Needs at least three sentences. |
 | `bigram_repeat_rate` | Repeated word pairs | share (0-1, shown as %) | Share of two-word sequences that occur more than once. | always available |
 | `trigram_repeat_rate` | Repeated word triples | share (0-1, shown as %) | Share of three-word sequences that occur more than once. | always available |
 | `zipf_slope` | Frequency slope | number | Slope of word frequency against rank on a log scale. Natural English text sits near -1; a flatter slope means no small set of words dominates. | Needs at least ten distinct words. |
