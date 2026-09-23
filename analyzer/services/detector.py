@@ -28,7 +28,7 @@ from pathlib import Path
 
 from django.conf import settings
 
-from .signals import FAMILIES, SIGNALS, Signal, contribution
+from .signals import FAMILIES, FAMILY_DESCRIPTIONS, SIGNALS, Signal, contribution
 
 logger = logging.getLogger("authentitext")
 
@@ -104,6 +104,10 @@ class DemoDetector(BaseDetector):
 
     LABEL_BANDS = [(0.34, "likely_human"), (0.52, "possibly_ai_assisted"), (1.01, "likely_ai_associated")]
     UNCERTAIN_BELOW = 0.45   # confidence under this reports "uncertain" instead of a band
+    # Per-sentence repetition anchors: a type-token ratio at or above LOW
+    # contributes nothing, at or below HIGH contributes fully.
+    SENTENCE_REPETITION_LOW = 0.75
+    SENTENCE_REPETITION_HIGH = 0.45
 
     def score_signals(self, features: dict[str, float | None]) -> list[SignalScore]:
         scored = []
@@ -131,7 +135,7 @@ class DemoDetector(BaseDetector):
         for key, label in FAMILIES.items():
             members = [s for s in scores if s.family == key and s.score is not None]
             families.append({
-                "key": key, "label": label,
+                "key": key, "label": label, "description": FAMILY_DESCRIPTIONS[key],
                 "score": self.weighted_mean(members) if members else None,
                 "signals": [s.key for s in members],
             })
@@ -197,23 +201,32 @@ class DemoDetector(BaseDetector):
 
     def sentence_scores(self, sentences: list[dict], features: dict) -> list[float | None]:
         """
-        A per-sentence signal from the sentence's own measurements. Same caveat
-        as the document score: heuristics, not a trained model.
+        A per-sentence signal from that sentence's own measurements.
+
+        Deliberately conservative: one sentence holds far less evidence than a
+        document, so a plain sentence with no marker, no internal repetition and
+        ordinary vocabulary scores near zero rather than in the middle. Without
+        this the heatmap contradicted the document score, marking most sentences
+        of a text scored 11% overall.
         """
-        mean_length = features.get("sentence_length_mean") or 0
-        results = []
+        results: list[float | None] = []
         for sentence in sentences:
             signals = sentence["signals"]
             if signals.get("heading") or signals["words"] < 5:
                 results.append(None)
                 continue
-            parts = [
-                1.0 if signals.get("markers") else 0.0,
-                min(1.0, max(0.0, (0.45 - (signals.get("type_token_ratio") or 1.0)) / 0.25)),
-                0.0 if signals.get("rare_words") else 0.6,
-                min(1.0, abs(signals["words"] - mean_length) / max(mean_length, 1)) * -1 + 1 if mean_length else 0.5,
-            ]
-            results.append(round(sum(parts) / len(parts), 3))
+
+            markers = signals.get("markers") or []
+            marker_score = 1.0 if "academic_formula" in markers else (0.5 if markers else 0.0)
+
+            ratio = signals.get("type_token_ratio")
+            span = self.SENTENCE_REPETITION_LOW - self.SENTENCE_REPETITION_HIGH
+            repetition = 0.0 if ratio is None else max(0.0, min(1.0, (self.SENTENCE_REPETITION_LOW - ratio) / span))
+
+            vocabulary = 0.0 if signals.get("rare_words") else 0.35
+
+            weighted = marker_score * 1.0 + repetition * 0.8 + vocabulary * 0.5
+            results.append(round(weighted / (1.0 + 0.8 + 0.5), 3))
         return results
 
 

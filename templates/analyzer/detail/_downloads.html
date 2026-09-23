@@ -1,0 +1,42 @@
+<section class="mt-12" aria-labelledby="downloads-heading">
+  <h2 id="downloads-heading" class="h-section !text-display-md">Download</h2>
+  <p class="mt-3 text-graphite max-w-prose">Take this analysis with you. Every file states which detector produced it and repeats the limitations.</p>
+
+  <div class="bento mt-8">
+    <a href="{% url 'analyzer:report' analysis.id 'pdf' %}" class="bento-card bento-card--interactive span-2x1 group no-underline">
+      <div class="flex items-start justify-between gap-4">
+        <svg viewBox="0 0 24 24" class="w-8 h-8 text-ink" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/><path d="M9 17l3-3 3 3M12 14v6" stroke-linecap="round"/></svg>
+        <span class="chip">PDF</span>
+      </div>
+      <h3 class="h-card mt-6 group-hover:underline underline-offset-4">Full report</h3>
+      <p class="mt-2 text-graphite">The plain-language summary, the result, the signal breakdown, the writing profile, every measured feature, the sentence table and the limitations.</p>
+    </a>
+
+    <a href="{% url 'analyzer:report' analysis.id 'heatmap.pdf' %}" class="bento-card bento-card--interactive span-2x1 group no-underline">
+      <div class="flex items-start justify-between gap-4">
+        <svg viewBox="0 0 24 24" class="w-8 h-8 text-ink" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4" stroke-linecap="round"/></svg>
+        <span class="chip">PDF</span>
+      </div>
+      <h3 class="h-card mt-6 group-hover:underline underline-offset-4">Text with heatmap</h3>
+      <p class="mt-2 text-graphite">Your document with every sentence marked, opening with a three-point key: red tint and a double underline for high signal, grey tint and a single underline for medium, nothing for low.</p>
+    </a>
+
+    <a href="{% url 'analyzer:report' analysis.id 'docx' %}" class="bento-card bento-card--interactive group no-underline">
+      <span class="chip self-start">Word</span>
+      <h3 class="h-card mt-6 group-hover:underline underline-offset-4">Editable heatmap</h3>
+      <p class="mt-2 text-graphite">The same marked document as .docx, so a reader can edit the marks.</p>
+    </a>
+
+    <a href="{% url 'analyzer:report' analysis.id 'json' %}" class="bento-card bento-card--interactive group no-underline">
+      <span class="chip self-start">JSON</span>
+      <h3 class="h-card mt-6 group-hover:underline underline-offset-4">Structured data</h3>
+      <p class="mt-2 text-graphite">Everything, for your own tools.</p>
+    </a>
+
+    <a href="{% url 'analyzer:report' analysis.id 'csv' %}" class="bento-card bento-card--interactive span-2x1 group no-underline">
+      <span class="chip self-start">CSV</span>
+      <h3 class="h-card mt-6 group-hover:underline underline-offset-4">Spreadsheet</h3>
+      <p class="mt-2 text-graphite">One row per feature, signal and sentence.</p>
+    </a>
+  </div>
+</section>

@@ -1,11 +1,13 @@
-{% load analysis_format %}
-<div class="bento mt-10">
-  <article class="bento-card"><p class="meta">Words</p><p class="metric mt-auto pt-6">{{ values.word_count|feature_display:"count" }}</p><p class="meta mt-2">{{ values.unique_word_count|feature_display:"count" }} unique</p></article>
-  <article class="bento-card"><p class="meta">Sentences</p><p class="metric mt-auto pt-6">{{ values.sentence_count|feature_display:"count" }}</p></article>
-  <article class="bento-card"><p class="meta">Paragraphs</p><p class="metric mt-auto pt-6">{{ values.paragraph_count|feature_display:"count" }}</p></article>
-  <article class="bento-card bento-card--fog">
-    <p class="meta">AI-associated signal</p>
-    <p class="h-card mt-auto pt-6">Not available yet</p>
-    <p class="meta mt-2 leading-relaxed">The classifier arrives in a later phase. Everything on this page is measured directly from the text.</p>
-  </article>
-</div>
+<section class="bento-card mt-4" aria-labelledby="summary-heading">
+  <h2 id="summary-heading" class="label">In plain language</h2>
+  <p class="font-display font-bold text-2xl text-ink mt-3">{{ summary.headline }}</p>
+
+  <dl class="mt-6 divide-y divide-rule border-t border-rule">
+    {% for point in summary.points %}
+      <div class="grid gap-x-8 gap-y-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+        <dt class="meta pt-1">{{ point.label }}</dt>
+        <dd class="text-graphite leading-relaxed text-justify hyphens-auto">{{ point.text }}</dd>
+      </div>
+    {% endfor %}
+  </dl>
+</section>

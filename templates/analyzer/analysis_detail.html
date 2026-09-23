@@ -12,11 +12,13 @@
     </p>
 
     {% for note in analysis.report.notes %}
-      <p class="mt-6 rounded-md border border-signal-warn/40 bg-brass-soft px-4 py-3 text-ink" role="note">{{ note }}</p>
+      <p class="mt-6 rounded-md border border-rule bg-paper shadow-card px-4 py-3 text-ink" role="note">{{ note }}</p>
     {% endfor %}
 
     {% if analysis.is_processed %}
       {% include "analyzer/detail/_result.html" %}
+      {% include "analyzer/detail/_summary.html" %}
+      {% if detection.families %}{% include "analyzer/detail/_signal_breakdown.html" %}{% endif %}
       {% include "analyzer/detail/_heatmap.html" %}
       {% include "analyzer/detail/_rhythm.html" %}
       {% include "analyzer/detail/_lexical.html" %}
@@ -34,7 +36,9 @@
       <div class="mt-5 max-w-prose whitespace-pre-line text-ink max-h-[32rem] overflow-y-auto pr-2">{{ analysis.original_text }}</div>
     </details>
 
-    <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-10"
+    {% if analysis.is_processed %}{% include "analyzer/detail/_downloads.html" %}{% endif %}
+
+    <form method="post" action="{% url 'analyzer:delete' analysis.id %}" class="mt-14"
           data-confirm-title="Delete this analysis?"
           data-confirm="“{name}” and its results will be permanently deleted. This can't be undone."
           data-confirm-name="{{ analysis.display_name }}"

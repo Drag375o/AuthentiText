@@ -44,6 +44,12 @@ Testing on one human/AI paraphrase pair (same section of a paper, one rewritten 
 
 One pair proves nothing, but it is enough to show why thresholds picked by hand are a poor foundation, and why the demo is labelled as a demo.
 
+## Sentence-level scores
+
+Each sentence also gets its own score, from what can be measured inside one sentence: discourse markers and stock phrases, repetition within the sentence, and whether it uses any uncommon vocabulary. It is deliberately conservative, because a single sentence holds far less evidence than a document: a plain sentence with none of those features scores near zero. Without that, the heatmap contradicted the document score, marking most sentences of a document that scored 11% overall.
+
+The three bands are low (under 34%), medium (34-60%) and high (above 60%). In both exported heatmaps each band has a tint **and** a different underline, so the marks never depend on colour alone: in the PDF, high signal is a red tint with a double underline, medium a grey tint with a single underline, and low is left plain; the Word file uses highlight colours with dotted and dashed underlines.
+
 ## What a result never means
 
 A result describes measured characteristics of the text. It does not prove authorship, AI use, plagiarism, academic misconduct or intent. Every pattern the system looks for appears in human writing as well. Use a result as a reason to read more closely, or to start a conversation, never as a verdict.

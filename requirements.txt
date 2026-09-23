@@ -6,6 +6,7 @@ spacy>=3.7,<4         # tokenisation, tagging, parsing, sentence segmentation
 wordfreq>=3.0         # word frequency norms (Zipf scale); also covers Bengali
 scikit-learn>=1.4     # TF-IDF sentence vectors; the ML baseline in a later phase
 numpy>=1.26
+reportlab>=4.0        # PDF reports (pure Python: no system libraries needed on Windows)
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 # Optional: meaning-based sentence embeddings (a few hundred MB on first run).
 # Install it and AuthentiText uses it automatically; without it, TF-IDF is used.

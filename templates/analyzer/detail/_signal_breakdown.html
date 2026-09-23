@@ -8,10 +8,13 @@
     <dl class="mt-5 space-y-4">
       {% for family in detection.families %}
         <div>
-          <div class="flex items-baseline justify-between gap-4">
-            <dt class="text-ink">{{ family.label }}</dt>
-            <dd class="font-display font-bold text-ink tabular-nums">{% if family.score is None %}&mdash;{% else %}{{ family.score|percent_of:1|floatformat:0 }}%{% endif %}</dd>
-          </div>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-baseline justify-between gap-4">
+              <dt class="text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ family.label }}</dt>
+              <dd class="font-display font-bold text-ink tabular-nums shrink-0">{% if family.score is None %}&mdash;{% else %}{{ family.score|percent_of:1|floatformat:0 }}%{% endif %}</dd>
+            </summary>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-graphite">{{ family.description }}</p>
+          </details>
           <div class="meter mt-2" role="img" aria-label="{{ family.label }}: {% if family.score is None %}not measured{% else %}{{ family.score|percent_of:1|floatformat:0 }} percent{% endif %}">
             <span style="transform: scaleX(0)" data-meter="{{ family.score|percent_of:1 }}"></span>
           </div>

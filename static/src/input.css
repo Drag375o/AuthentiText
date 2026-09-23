@@ -22,6 +22,9 @@
   /* Type roles */
   .wordmark { @apply font-script text-ink leading-none; }
   .label { @apply font-label text-[0.8rem] tracking-[0.06em] text-ink; }
+  /* Justified prose needs hyphenation, or wide lines open ugly gaps between words. */
+  .text-justify { hyphens: auto; -webkit-hyphens: auto; }
+
   .lede { @apply font-serif text-lg md:text-xl text-graphite max-w-prose leading-[1.65]; }
   .h-section { @apply font-display font-bold text-display-lg text-ink; }
   .h-card { @apply font-display font-semibold text-lg text-ink leading-snug; }
@@ -51,6 +54,9 @@
 
   /* Rename */
   .rename-trigger { @apply inline-flex items-center gap-1.5 rounded-[3px] px-2 py-1 -mx-2 font-label text-[0.78rem] tracking-[0.06em] text-muted transition-[color,background-color,transform] hover:bg-fog hover:text-ink active:scale-[0.97]; }
+
+  /* Summary: justified, with hyphenation so the ragged gaps stay small */
+  .summary-text { @apply text-justify [hyphens:auto]; }
 
   /* Pattern explorer */
   .chip { @apply inline-flex items-center rounded-full border border-rule bg-paper px-2.5 py-0.5 font-label text-[0.7rem] tracking-[0.05em] text-graphite; }

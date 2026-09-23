@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 6 complete.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Next: document comparison, the writing profile page, and reports. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 7 in progress.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Reports download as PDF, Word (with the sentence heatmap), JSON and CSV. Next: document comparison and the writing profile page. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -120,6 +120,20 @@ python manage.py train_detector data/labelled.jsonl   # {"text": ..., "label": "
 ```
 
 It trains on features from the application's own pipeline, measures itself on held-out data, and saves those metrics with the model. Drop the bundle in `ml/models/` and AuthentiText uses it automatically. See [docs/DETECTION.md](docs/DETECTION.md).
+
+## Reports
+
+Every analyzed document has a **Download** section after its original text:
+
+| Format | What it is |
+|---|---|
+| **PDF** | the full report: plain-language summary, result, signal breakdown, writing profile, every measured feature, the sentence table and the limitations |
+| **PDF heatmap** | your document with each sentence marked, opening with a three-point key: red tint and a double underline for high signal, grey tint and a single underline for medium, nothing for low |
+| **Word (.docx)** | the same marked document, editable: Times New Roman throughout, headings bold and black, and the marks are ordinary Word formatting a reader can change or remove |
+| **JSON** | the whole analysis, for your own tools |
+| **CSV** | one row per feature, signal, profile score and sentence (UTF-8 with a BOM, so Excel reads it correctly) |
+
+The page also shows the same summary in plain language, as labelled points (the document, the result, what stands out, the strongest signals, and what the result is not), justified across the full width. Rendering is in `analyzer/services/reports/`; ReportLab is used for PDF because it installs with pip on Windows without system libraries.
 
 ## Semantic embeddings
 

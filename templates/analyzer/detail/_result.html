@@ -1,6 +1,6 @@
 {% load analysis_format %}
 {% if analysis.is_demo %}
-  <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-signal-warn/40 bg-brass-soft px-5 py-3" role="note">
+  <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-rule bg-paper px-5 py-3 shadow-card" role="note">
     <span class="font-label text-[0.72rem] tracking-[0.08em] bg-ink text-paper px-2 py-0.5">{{ detection.notice }}</span>
     <span class="text-ink">This score comes from hand-chosen heuristics, not a trained model. It has no measured accuracy.</span>
   </p>
@@ -56,7 +56,3 @@
     </article>
   {% endif %}
 </div>
-
-{% if detection.families %}
-  {% include "analyzer/detail/_signal_breakdown.html" %}
-{% endif %}

@@ -26,6 +26,15 @@ FAMILIES = {
     "structural": "Structural",
 }
 
+# One line per family, shown under its name in the breakdown.
+FAMILY_DESCRIPTIONS = {
+    "linguistic": "Discourse markers and stock phrases: the connective words a text leans on, and how often it reaches for a ready-made phrase.",
+    "stylometric": "Habits of voice: first-person language and contractions. These track register more than authorship, so they carry less weight.",
+    "statistical": "Distribution of words and sentence lengths: how evenly vocabulary is spread, and how regular the rhythm is.",
+    "semantic": "Meaning, measured with sentence embeddings: how far ideas travel and how much neighbouring sentences restate each other.",
+    "structural": "The shape of the text: how sentences begin, and how often those openings repeat.",
+}
+
 
 @dataclass(frozen=True)
 class Signal:

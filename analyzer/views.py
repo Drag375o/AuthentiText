@@ -1,9 +1,11 @@
+import io
+
 from django.conf import settings
 from django.core import signing
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -13,6 +15,9 @@ from .models import Analysis
 from .services.features import BY_NAME
 from .services.parser import extract_text
 from .services.pipeline import analyze_document
+from .services.reports.data import build_report
+from .services.signals import FAMILY_DESCRIPTIONS
+from .services.summary import build_summary
 from .services.text_stats import READING_WPM, compute_text_stats
 from .services.uploads import UploadRejected, validate_upload
 
@@ -214,6 +219,16 @@ def group_by_paragraph(rows: list[dict]) -> list[dict]:
 CONTEXT_CHARS = 70
 
 
+def with_family_descriptions(detection: dict) -> dict:
+    """
+    Family explanations come from the code, not the stored report, so an analysis
+    saved before they existed still shows them without being re-analyzed.
+    """
+    families = [{**family, "description": FAMILY_DESCRIPTIONS.get(family["key"], family.get("description", ""))}
+                for family in detection.get("families", [])]
+    return {**detection, "families": families} if families else detection
+
+
 def similar_pair_rows(analysis: Analysis, sentences: list) -> list[dict]:
     """The most similar sentence pairs, with their text, for the semantics card."""
     by_index = {s.sentence_index: s for s in sentences}
@@ -274,7 +289,8 @@ def analysis_detail(request: HttpRequest, analysis_id) -> HttpResponse:
             },
             "max_top_word": max((w["count"] for w in analysis.report.get("top_words", [])), default=1),
             "pattern_entries": pattern_examples(analysis, sentences),
-            "detection": analysis.report.get("detection", {}),
+            "detection": with_family_descriptions(analysis.report.get("detection", {})),
+            "summary": build_summary(analysis, values, analysis.report),
             "heatmap_sentences": (heat := heatmap_sentences(sentences, analysis.report.get("detection", {}))),
             "heatmap_blocks": group_by_paragraph(heat),
             "profile": analysis.report.get("profile", []),
@@ -333,3 +349,44 @@ def analysis_rename(request: HttpRequest, analysis_id) -> HttpResponse:
         return JsonResponse({"ok": True, "title": analysis.title, "display_name": analysis.display_name})
     messages.success(request, f"Renamed to \u201c{analysis.display_name}\u201d.")
     return redirect("analyzer:detail", analysis_id=analysis.pk)
+
+
+# Report formats: extension -> (renderer path, content type)
+REPORT_FORMATS = {
+    "pdf": ("analyzer.services.reports.pdf:render_pdf", "application/pdf"),
+    "heatmap.pdf": ("analyzer.services.reports.pdf_heatmap:render_heatmap_pdf", "application/pdf"),
+    "docx": ("analyzer.services.reports.docx_heatmap:render_docx",
+             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    "json": ("analyzer.services.reports.tabular:render_json", "application/json"),
+    "csv": ("analyzer.services.reports.tabular:render_csv", "text/csv"),
+}
+
+
+def report_filename(analysis, extension: str) -> str:
+    """A safe, readable filename: letters, digits, dashes and underscores only."""
+    import re
+    stem = re.sub(r"[^\w\s-]", "", analysis.display_name).strip() or "analysis"
+    stem = re.sub(r"[\s_]+", "-", stem)[:60].strip("-").lower() or "analysis"
+    date = (analysis.processed_at or analysis.created_at).strftime("%Y-%m-%d")
+    suffix = "heatmap" if "heatmap" in extension or extension == "docx" else "report"
+    return f"authentitext-{suffix}-{stem}-{date}.{extension.split('.')[-1]}"
+
+
+@login_required
+def analysis_report(request: HttpRequest, analysis_id, extension: str) -> HttpResponse:
+    """Download the analysis as PDF, DOCX (heatmap), JSON or CSV."""
+    from importlib import import_module
+
+    analysis = owned_analysis_or_404(request, analysis_id)
+    if extension not in REPORT_FORMATS or not analysis.is_processed:
+        raise Http404("No report available in that format.")
+
+    target, content_type = REPORT_FORMATS[extension]
+    module_path, function_name = target.split(":")
+    render = getattr(import_module(module_path), function_name)
+    payload = render(build_report(analysis))
+
+    response = FileResponse(io.BytesIO(payload), content_type=content_type,
+                            as_attachment=True, filename=report_filename(analysis, extension))
+    response["Content-Length"] = len(payload)
+    return response
