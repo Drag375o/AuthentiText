@@ -2,6 +2,7 @@ import io
 
 from django.conf import settings
 from django.core import signing
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
@@ -15,6 +16,7 @@ from .models import Analysis
 from .services.features import BY_NAME
 from .services.parser import extract_text
 from .services.pipeline import analyze_document
+from .services.compare import build_comparison
 from .services.reports.data import build_report
 from .services.signals import FAMILY_DESCRIPTIONS
 from .services.summary import build_summary
@@ -383,3 +385,27 @@ def analysis_report(request: HttpRequest, analysis_id, extension: str) -> HttpRe
                             as_attachment=True, filename=report_filename(analysis, extension))
     response["Content-Length"] = len(payload)
     return response
+
+
+@login_required
+def compare(request: HttpRequest) -> HttpResponse:
+    """Two of the user's own analyses, side by side."""
+    analyses = Analysis.objects.for_user(request.user).filter(status=Analysis.Status.COMPLETE)
+    ids = [request.GET.get("a"), request.GET.get("b")]
+    chosen = []
+    for value in ids:
+        try:
+            chosen.append(analyses.get(pk=value) if value else None)
+        except (Analysis.DoesNotExist, ValidationError, ValueError):
+            chosen.append(None)
+
+    context = {"analyses": analyses, "a": chosen[0], "b": chosen[1],
+               "choices": {"a": ids[0] or "", "b": ids[1] or ""}}
+    if chosen[0] and chosen[1]:
+        if chosen[0].pk == chosen[1].pk:
+            context["error"] = "Choose two different documents."
+        else:
+            context["comparison"] = build_comparison(chosen[0], chosen[1])
+    elif any(ids):
+        context["error"] = "One of those documents could not be found in your account."
+    return render(request, "analyzer/compare.html", context)

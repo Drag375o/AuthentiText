@@ -58,6 +58,12 @@
   /* Summary: justified, with hyphenation so the ragged gaps stay small */
   .summary-text { @apply text-justify [hyphens:auto]; }
 
+  /* Comparison: never colour alone, so the diff reads in greyscale too */
+  .diff-removed { @apply line-through decoration-signal-high decoration-2 bg-signal-high-bg/70 text-ink; }
+  .diff-added { @apply underline decoration-signal-ok decoration-2 underline-offset-4 bg-signal-ok/10 text-ink; }
+  .delta-up { @apply text-ink font-semibold; }
+  .delta-down { @apply text-muted font-semibold; }
+
   /* Pattern explorer */
   .chip { @apply inline-flex items-center rounded-full border border-rule bg-paper px-2.5 py-0.5 font-label text-[0.7rem] tracking-[0.05em] text-graphite; }
   .chip--marker { @apply border-slate/30 bg-slate-soft text-slate; }

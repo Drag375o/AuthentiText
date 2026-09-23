@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static analysis_format %}
+{% block title %}Compare · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="section pt-12 lg:pt-16">
+  <div class="page">
+    <h1 class="h-section">Compare two documents.</h1>
+    <p class="lede mt-5">See what changed between a draft and a revision: the wording, the rhythm, the vocabulary, and how the signals moved.</p>
+
+    {% include "analyzer/compare/_picker.html" %}
+
+    {% if error %}
+      <p class="mt-8 rounded-md border border-signal-high/40 bg-signal-high-bg px-5 py-3 field-error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if comparison %}
+      {% include "analyzer/compare/_overview.html" %}
+      {% include "analyzer/compare/_diff.html" %}
+      {% include "analyzer/compare/_metrics.html" %}
+      {% include "analyzer/compare/_vocabulary.html" %}
+    {% elif not error %}
+      {% include "analyzer/compare/_empty.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

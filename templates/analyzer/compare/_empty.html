@@ -1,0 +1,12 @@
+<div class="bento mt-6">
+  <article class="bento-card bento-card--fog span-full items-start !p-10 md:!p-14">
+    {% if analyses|length < 2 %}
+      <h2 class="font-display font-bold text-display-md">You need two analyzed documents.</h2>
+      <p class="lede mt-4">Comparison works on documents that have been analyzed. Analyze at least two, then come back.</p>
+      <a href="{% url 'analyzer:analyze' %}" class="btn-primary mt-8">Analyze a document</a>
+    {% else %}
+      <h2 class="font-display font-bold text-display-md">Choose two documents to compare.</h2>
+      <p class="lede mt-4">Pick a draft and its revision above. The comparison works best on two versions of the same piece: between unrelated documents, most differences come from topic and genre rather than from how they were written.</p>
+    {% endif %}
+  </article>
+</div>

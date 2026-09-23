@@ -1,0 +1,77 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">How the numbers moved</h2>
+<p class="mt-3 text-graphite max-w-prose">Every measured feature, side by side. Differences between documents of different length, topic or genre say more about those things than about how the text was written.</p>
+
+<div class="bento mt-8">
+  <article class="bento-card span-wide !p-0 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <caption class="sr-only">Measured features for document A and document B</caption>
+        <thead>
+          <tr class="meta border-b border-rule">
+            <th scope="col" class="px-7 py-3 font-normal">Feature</th>
+            <th scope="col" class="px-4 py-3 font-normal text-right">A</th>
+            <th scope="col" class="px-4 py-3 font-normal text-right">B</th>
+            <th scope="col" class="px-7 py-3 font-normal text-right">Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in comparison.features %}
+            <tr class="border-b border-rule last:border-0">
+              <td class="px-7 py-3">
+                <details class="group">
+                  <summary class="cursor-pointer list-none text-ink underline decoration-dotted decoration-rule underline-offset-4 group-open:decoration-ink">{{ row.spec.label }}</summary>
+                  <p class="mt-2 text-[0.95rem] text-graphite">{{ row.spec.description }}</p>
+                </details>
+              </td>
+              <td class="px-4 py-3 text-right tabular-nums">{% if row.a is None %}<span class="meta">&mdash;</span>{% else %}{{ row.a|feature_display:row.spec.unit }}{% endif %}</td>
+              <td class="px-4 py-3 text-right tabular-nums">{% if row.b is None %}<span class="meta">&mdash;</span>{% else %}{{ row.b|feature_display:row.spec.unit }}{% endif %}</td>
+              <td class="px-7 py-3 text-right tabular-nums whitespace-nowrap">
+                {% if row.delta is None %}<span class="meta">&mdash;</span>
+                {% else %}
+                  <span class="{% if row.direction == 'up' %}delta-up{% elif row.direction == 'down' %}delta-down{% else %}meta{% endif %}">
+                    {% if row.direction == 'up' %}&uarr;{% elif row.direction == 'down' %}&darr;{% else %}&middot;{% endif %}
+                    {{ row.delta|feature_display:row.spec.unit }}
+                  </span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="bento-card">
+    <p class="meta">Writing profile</p>
+    <dl class="mt-5 space-y-4">
+      {% for row in comparison.profile %}
+        <div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-ink">{{ row.label }}</dt>
+            <dd class="tabular-nums meta">{% if row.a is None %}&mdash;{% else %}{{ row.a }}{% endif %} &rarr; <span class="font-display font-bold text-ink">{% if row.b is None %}&mdash;{% else %}{{ row.b }}{% endif %}</span></dd>
+          </div>
+          <div class="mt-2 h-1.5 rounded-full bg-rule relative overflow-hidden">
+            {% if row.a is not None %}<span class="absolute inset-y-0 left-0 bg-muted/60" style="width: {{ row.a }}%"></span>{% endif %}
+            {% if row.b is not None %}<span class="absolute inset-y-0 left-0 bg-ink" style="width: {{ row.b }}%; clip-path: inset(50% 0 0 0)"></span>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </dl>
+    <p class="meta mt-5">Grey is A, black is B.</p>
+  </article>
+</div>
+
+{% if comparison.detection.families %}
+  <article class="bento-card mt-4">
+    <p class="meta">Signal families</p>
+    <dl class="mt-5 grid gap-x-10 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for family in comparison.detection.families %}
+        <div class="flex items-baseline justify-between gap-3">
+          <dt class="text-ink">{{ family.label }}</dt>
+          <dd class="tabular-nums meta">{% if family.a is None %}&mdash;{% else %}{{ family.a|percent_of:1|floatformat:0 }}%{% endif %} &rarr; <span class="font-display font-bold text-ink">{% if family.b is None %}&mdash;{% else %}{{ family.b|percent_of:1|floatformat:0 }}%{% endif %}</span></dd>
+        </div>
+      {% endfor %}
+    </dl>
+  </article>
+{% endif %}

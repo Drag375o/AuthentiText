@@ -4,7 +4,7 @@
 
 AuthentiText is an NLP-powered writing analysis platform that combines linguistic analysis, stylometry, statistical text features, semantic similarity, and machine learning to provide explainable document-level and sentence-level writing analysis.
 
-> **Status: Phase 7 in progress.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Reports download as PDF, Word (with the sentence heatmap), JSON and CSV. Next: document comparison and the writing profile page. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
+> **Status: Phase 7 in progress.** The full path now runs: upload or paste, NLP pipeline, detector, explainable results with a sentence heatmap. The shipped detector is a clearly labelled **demo** with no measured accuracy; a training command is included so a real classifier can replace it. Reports download as PDF, Word and PDF heatmaps, JSON and CSV, and two documents can be compared side by side. Next: the writing profile page and the remaining documentation. The NLP pipeline comes next; routes for unbuilt features show an honest "not built yet" page. All analysis on the landing page is a hand-written illustration and is labelled that way.
 
 ## Setup
 
@@ -120,6 +120,12 @@ python manage.py train_detector data/labelled.jsonl   # {"text": ..., "label": "
 ```
 
 It trains on features from the application's own pipeline, measures itself on held-out data, and saves those metrics with the model. Drop the bundle in `ml/models/` and AuthentiText uses it automatically. See [docs/DETECTION.md](docs/DETECTION.md).
+
+## Comparing documents
+
+`/compare/` puts two of your analyzed documents side by side: the sentence diff (removed wording struck through on the left, added wording underlined on the right), every measured feature with its change, the writing profile, the signal families, and the vocabulary that appears in only one of them.
+
+Sentences are aligned with `difflib`, and similarity is measured **over words, not characters**: two unrelated English sentences share plenty of letters (0.31 for "The cat sat on the mat" against "Feline occupancy of floor coverings remains widespread") but no words, so a character-level measure made every pair look vaguely related. A pair sharing under 20% of its wording is reported as a removal plus an addition rather than an edit.
 
 ## Reports
 

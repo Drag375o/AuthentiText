@@ -1,0 +1,28 @@
+<h2 class="h-section !text-display-md mt-16">Vocabulary</h2>
+<p class="mt-3 text-graphite max-w-prose">Word forms that appear in one document but not the other. {{ comparison.vocabulary.shared }} forms are shared.</p>
+
+<div class="bento mt-8">
+  <article class="bento-card span-2x1">
+    <p class="meta">Only in A &middot; {{ comparison.vocabulary.removed_count }} form{{ comparison.vocabulary.removed_count|pluralize }}</p>
+    {% if comparison.vocabulary.removed %}
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {% for word in comparison.vocabulary.removed %}<li class="chip">{{ word }}</li>{% endfor %}
+      </ul>
+      {% if comparison.vocabulary.removed_count > 40 %}<p class="meta mt-4">Showing the first 40.</p>{% endif %}
+    {% else %}
+      <p class="mt-5 text-graphite">Every word form in A also appears in B.</p>
+    {% endif %}
+  </article>
+
+  <article class="bento-card span-2x1">
+    <p class="meta">Only in B &middot; {{ comparison.vocabulary.added_count }} form{{ comparison.vocabulary.added_count|pluralize }}</p>
+    {% if comparison.vocabulary.added %}
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {% for word in comparison.vocabulary.added %}<li class="chip">{{ word }}</li>{% endfor %}
+      </ul>
+      {% if comparison.vocabulary.added_count > 40 %}<p class="meta mt-4">Showing the first 40.</p>{% endif %}
+    {% else %}
+      <p class="mt-5 text-graphite">Every word form in B also appears in A.</p>
+    {% endif %}
+  </article>
+</div>

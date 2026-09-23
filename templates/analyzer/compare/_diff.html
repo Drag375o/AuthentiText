@@ -1,0 +1,41 @@
+{% load analysis_format %}
+<h2 class="h-section !text-display-md mt-16">What changed</h2>
+<p class="mt-3 text-graphite max-w-prose">Sentence by sentence. Removed wording is struck through on the left, added wording is underlined on the right.</p>
+
+<div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 meta" aria-label="Key">
+  <span class="flex items-center gap-2"><span class="diff-removed px-1">removed</span></span>
+  <span class="flex items-center gap-2"><span class="diff-added px-1">added</span></span>
+  <span>Unchanged sentences are shown in grey.</span>
+</div>
+
+<div class="bento-card mt-6 !p-0 overflow-hidden">
+  <div class="grid grid-cols-2 border-b border-rule">
+    <p class="label p-5 border-r border-rule">A &nbsp;{{ comparison.a.display_name|truncatechars:40 }}</p>
+    <p class="label p-5">B &nbsp;{{ comparison.b.display_name|truncatechars:40 }}</p>
+  </div>
+  <ol class="divide-y divide-rule">
+    {% for row in comparison.rows %}
+      <li class="grid grid-cols-1 sm:grid-cols-2 {% if row.kind != 'unchanged' %}bg-fog/60{% endif %}">
+        <div class="p-5 sm:border-r border-rule {% if row.kind == 'added' %}bg-fog{% endif %}">
+          {% if row.kind == 'changed' %}
+            <p class="leading-relaxed text-ink">{% for run in row.a_runs %}{% if run.change == 'removed' %}<span class="diff-removed">{{ run.text }}</span>{% else %}{{ run.text }}{% endif %}{% endfor %}</p>
+          {% elif row.a %}
+            <p class="leading-relaxed {% if row.kind == 'removed' %}text-ink{% else %}text-muted{% endif %}">{% if row.kind == 'removed' %}<span class="diff-removed">{{ row.a }}</span>{% else %}{{ row.a }}{% endif %}</p>
+          {% else %}
+            <p class="meta">not in A</p>
+          {% endif %}
+        </div>
+        <div class="p-5 {% if row.kind == 'removed' %}bg-fog{% endif %}">
+          {% if row.kind == 'changed' %}
+            <p class="leading-relaxed text-ink">{% for run in row.b_runs %}{% if run.change == 'added' %}<span class="diff-added">{{ run.text }}</span>{% else %}{{ run.text }}{% endif %}{% endfor %}</p>
+            {% if row.rewritten %}<p class="meta mt-2">Rewritten rather than edited ({{ row.similarity|percent_of:1|floatformat:0 }}% of the wording in common).</p>{% endif %}
+          {% elif row.b %}
+            <p class="leading-relaxed {% if row.kind == 'added' %}text-ink{% else %}text-muted{% endif %}">{% if row.kind == 'added' %}<span class="diff-added">{{ row.b }}</span>{% else %}{{ row.b }}{% endif %}</p>
+          {% else %}
+            <p class="meta">not in B</p>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+</div>

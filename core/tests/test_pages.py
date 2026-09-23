@@ -54,7 +54,7 @@ class SecondaryPageTests(TestCase):
         self.assertEqual(self.client.get(reverse("core:about")).status_code, 200)
 
     def test_unbuilt_routes_are_honest(self):
-        for name in ["compare", "profile"]:
+        for name in ["profile"]:
             response = self.client.get(reverse(f"core:{name}"))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, "isn't built yet")

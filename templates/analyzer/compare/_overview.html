@@ -1,0 +1,39 @@
+{% load analysis_format %}
+<div class="bento mt-8">
+  <article class="bento-card span-2x1">
+    <p class="meta">Document A</p>
+    <a href="{% url 'analyzer:detail' comparison.a.id %}" class="h-card mt-3 hover:underline underline-offset-4 break-words">{{ comparison.a.display_name }}</a>
+    <p class="meta mt-2">{{ comparison.a.created_at|date:"j M Y" }} &middot; {{ comparison.a.word_count }} words</p>
+    <p class="font-display font-bold text-3xl text-ink mt-auto pt-6">{% if comparison.detection.a.probability is None %}&mdash;{% else %}{{ comparison.detection.a.probability|percent_of:1|floatformat:0 }}%{% endif %}</p>
+    <p class="meta mt-1">{{ comparison.detection.a.label|default:"not analyzed" }}</p>
+  </article>
+
+  <article class="bento-card span-2x1">
+    <p class="meta">Document B</p>
+    <a href="{% url 'analyzer:detail' comparison.b.id %}" class="h-card mt-3 hover:underline underline-offset-4 break-words">{{ comparison.b.display_name }}</a>
+    <p class="meta mt-2">{{ comparison.b.created_at|date:"j M Y" }} &middot; {{ comparison.b.word_count }} words</p>
+    <p class="font-display font-bold text-3xl text-ink mt-auto pt-6">{% if comparison.detection.b.probability is None %}&mdash;{% else %}{{ comparison.detection.b.probability|percent_of:1|floatformat:0 }}%{% endif %}</p>
+    <p class="meta mt-1">{{ comparison.detection.b.label|default:"not analyzed" }}</p>
+  </article>
+
+  <article class="bento-card">
+    <p class="meta">Sentences</p>
+    <dl class="mt-4 space-y-2">
+      <div class="flex justify-between"><dt>Unchanged</dt><dd class="tabular-nums font-display font-bold text-ink">{{ comparison.counts.unchanged }}</dd></div>
+      <div class="flex justify-between"><dt>Changed</dt><dd class="tabular-nums font-display font-bold text-ink">{{ comparison.counts.changed }}</dd></div>
+      <div class="flex justify-between"><dt>Added</dt><dd class="tabular-nums font-display font-bold text-ink">{{ comparison.counts.added }}</dd></div>
+      <div class="flex justify-between"><dt>Removed</dt><dd class="tabular-nums font-display font-bold text-ink">{{ comparison.counts.removed }}</dd></div>
+    </dl>
+    {% if comparison.rewritten %}<p class="meta mt-4">{{ comparison.rewritten }} of the changed sentences were rewritten rather than edited.</p>{% endif %}
+  </article>
+
+  <article class="bento-card bento-card--fog">
+    <p class="meta">Signal change</p>
+    {% if comparison.detection.probability_delta is None %}
+      <p class="h-card mt-auto pt-6">Not comparable</p>
+    {% else %}
+      <p class="metric mt-auto pt-6">{% if comparison.detection.probability_delta > 0 %}+{% endif %}{{ comparison.detection.probability_delta|percent_of:1|floatformat:0 }}%</p>
+      <p class="meta mt-2 leading-relaxed">from A to B. Both results come from the same detector{% if comparison.detection.a.is_demo %}, which is the demo{% endif %}.</p>
+    {% endif %}
+  </article>
+</div>
